@@ -1,5 +1,5 @@
 /**
- * CONFERENCIA NACIONAL DE JÓVENES 2026 - UPPER ROOM IBC
+ * CONFERENCIA DE JÓVENES 2026 - UPPER ROOM IBC
  * Google Apps Script para captura de datos en Google Sheets y envío automático de boletas por correo.
  * 
  * INSTRUCCIONES DE INSTALACIÓN:

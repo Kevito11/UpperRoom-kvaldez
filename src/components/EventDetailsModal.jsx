@@ -47,7 +47,7 @@ const EventDetailsModal = ({ isOpen, onClose }) => {
         <div className="modal-body-scroll">
           <div className="modal-title-wrap">
             <span className="modal-lema">«LA LLAMA VUELVE A ENCENDERSE»</span>
-            <h2>Conferencia Nacional de Jóvenes 2026</h2>
+            <h2>Conferencia de Jóvenes 2026</h2>
             <p className="modal-subtitle">
               Un día consagrado para buscar al Señor en unidad, ser confrontados por las Escrituras y avivar nuestro celo por el Evangelio en <strong>Upper Room IBC</strong>.
             </p>

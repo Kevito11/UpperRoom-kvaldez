@@ -315,7 +315,7 @@ const Registration = () => {
                   <span className="chip-code">// SISTEMA OFICIAL DE EMISIÓN DE BOLETOS</span>
                 </div>
                 <div className="accreditation-edition">
-                  <span>EDICIÓN NACIONAL 2026</span>
+                  <span>CONFERENCIA 2026</span>
                 </div>
               </div>
 

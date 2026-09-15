@@ -26,7 +26,7 @@ const Home = () => {
 
           <div className="hero-content-col">
             <div className="hero-slogan-wrap">
-              <span className="hero-slogan">// CONFERENCIA NACIONAL 2026 • SANTO DOMINGO</span>
+              <span className="hero-slogan">// CONFERENCIA 2026 • SANTO DOMINGO</span>
             </div>
 
             <h1 className="hero-title">

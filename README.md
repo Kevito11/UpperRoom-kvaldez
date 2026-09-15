@@ -1,6 +1,6 @@
 # Upper Room IBC • Conferencia Despierta 2026
 
-Sitio web oficial y plataforma de registro para la Conferencia Nacional de Jóvenes **Upper Room IBC** (Iglesia Bautista Cristiana) en Santo Domingo, República Dominicana.
+Sitio web oficial y plataforma de registro para la Conferencia de Jóvenes **Upper Room IBC** (Iglesia Bautista Cristiana) en Santo Domingo, República Dominicana.
 
 ---
 
