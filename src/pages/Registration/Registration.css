@@ -676,6 +676,29 @@
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
+  transition: all var(--transition-base);
+}
+
+.portal-submit-btn:disabled {
+  opacity: 0.85;
+  cursor: wait;
+}
+
+.submit-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2.5px solid rgba(255, 255, 255, 0.25);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: submitSpin 0.75s linear infinite;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+@keyframes submitSpin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .portal-security-notice {

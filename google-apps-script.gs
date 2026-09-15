@@ -29,6 +29,16 @@
 // 1. Recibe los datos desde la aplicación web de React
 function doPost(e) {
   try {
+    // Si se ejecuta manualmente desde el botón "Ejecutar" del editor de Apps Script (sin petición HTTP real)
+    if (!e || !e.postData) {
+      Logger.log("⚠️ AVISO: 'doPost' fue ejecutado manualmente desde el editor de Apps Script.");
+      Logger.log("👉 Para probar el script directamente desde el editor, selecciona la función 'testDoPost' en el menú superior y pulsa 'Ejecutar'.");
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "notice",
+        message: "doPost espera una petición HTTP POST real de la web. Para pruebas dentro del editor usa testDoPost()."
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
     var rawData = e.postData.contents;
     var data = JSON.parse(rawData);
     
@@ -373,3 +383,36 @@ function sendTestEmail() {
   }
 }
 
+/**
+ * Función especial para probar todo el flujo directamente desde el editor de Google Apps Script.
+ * Selecciona "testDoPost" en el menú de funciones de arriba y pulsa "▷ Ejecutar".
+ * Esto simulará un registro web real, insertará la fila en tu Google Sheet y te enviará el correo a ti.
+ */
+function testDoPost() {
+  var myEmail = Session.getActiveUser().getEmail();
+  Logger.log("Iniciando prueba simulada con destino: " + myEmail);
+  
+  var mockEvent = {
+    postData: {
+      contents: JSON.stringify({
+        ticketCode: "IBC-UR-" + Math.floor(100000 + Math.random() * 900000),
+        firstName: "Usuario",
+        lastName: "De Prueba",
+        fullName: "Usuario De Prueba",
+        email: myEmail,
+        phone: "809-555-0123",
+        ageGroup: "19 - 25",
+        church: "Iglesia Bautista Cristiana (IBC)",
+        taller: "¿Dónde quedó el fuego? (Rojo)",
+        merch: "Hoodie (M - Negro Obsidian)",
+        eventName: "Conferencia Despierta 2026 - Upper Room IBC",
+        eventDate: "Sábado 31 de Octubre, 2026 (03:00 PM - 08:30 PM)",
+        location: "Auditorio Principal IBC, C. Juan Luis Franco Bidó 25, Santo Domingo",
+        createdAt: new Date().toISOString()
+      })
+    }
+  };
+  
+  var result = doPost(mockEvent);
+  Logger.log("✅ Prueba completada con resultado: " + result.getContent());
+}

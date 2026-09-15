@@ -221,13 +221,11 @@ const Registration = () => {
       createdAt: new Date().toISOString()
     };
 
-    // Save to localStorage
-    saveRegistration(registrationRecord);
-
-    // Generate dynamic QR Code
+    // 1. Generar código QR dinámico
     const verificationUrl = `${window.location.origin}/ticket/${generatedCode}`;
+    let qrUrl = '';
     try {
-      const qrUrl = await QRCode.toDataURL(verificationUrl, {
+      qrUrl = await QRCode.toDataURL(verificationUrl, {
         width: 320,
         margin: 1,
         color: {
@@ -235,33 +233,40 @@ const Registration = () => {
           light: '#ffffff'
         }
       });
-
       setQrCodeUrl(qrUrl);
-      setTicketData(registrationRecord);
-      setIsRegistered(true);
-      setIsSubmitting(false);
-      triggerCelebration();
-
-      // Trigger Google Sheets + Email send in background
-      setSheetStatus('sending');
-      sendRegistrationToGoogleSheets(registrationRecord, qrUrl).then(res => {
-        if (res.success) {
-          setSheetStatus('success');
-        } else if (res.reason === 'NO_URL_CONFIGURED') {
-          setSheetStatus('no_url');
-        } else {
-          setSheetStatus('error');
-        }
-      }).catch(() => {
-        setSheetStatus('error');
-      });
-
     } catch (err) {
       console.error("QR Code Error:", err);
-      setTicketData(registrationRecord);
-      setIsRegistered(true);
+    }
+
+    // 2. Esperar confirmación de Google Sheets y envío de correo ANTES de mostrar el ticket
+    setSheetStatus('sending');
+    try {
+      const sheetResponse = await sendRegistrationToGoogleSheets(registrationRecord, qrUrl);
+
+      if (sheetResponse.success) {
+        saveRegistration(registrationRecord);
+        setTicketData(registrationRecord);
+        setSheetStatus('success');
+        setIsSubmitting(false);
+        setIsRegistered(true); // Solo se muestra el ticket una vez guardado en Google Sheets
+        triggerCelebration();
+      } else if (sheetResponse.reason === 'NO_URL_CONFIGURED') {
+        saveRegistration(registrationRecord);
+        setTicketData(registrationRecord);
+        setSheetStatus('no_url');
+        setIsSubmitting(false);
+        setIsRegistered(true);
+        triggerCelebration();
+      } else {
+        setIsSubmitting(false);
+        setSheetStatus('error');
+        setFormError('No se pudo confirmar el guardado en Google Sheets ni el envío del correo. Por favor verifica tu conexión a internet e inténtalo de nuevo.');
+      }
+    } catch (err) {
+      console.error("Error al registrar en Google Sheets:", err);
       setIsSubmitting(false);
-      triggerCelebration();
+      setSheetStatus('error');
+      setFormError('Ocurrió un error al conectar con Google Sheets. Por favor inténtalo de nuevo.');
     }
   };
 
@@ -324,10 +329,10 @@ const Registration = () => {
                 </div>
                 <div className="accreditation-title-block">
                   <h1 className="accreditation-title">
-                    ACREDITACIÓN & PASE DIGITAL
+                    PASE DIGITAL
                   </h1>
                   <p className="accreditation-lead">
-                    Registro individual con generación inmediata de credencial escaneable y confirmación automatizada vía correo electrónico.
+                    Registro individual con confirmación automatizada vía correo electrónico.
                   </p>
                 </div>
               </div>
@@ -708,8 +713,17 @@ const Registration = () => {
                     className="btn btn-primary portal-submit-btn"
                     disabled={isSubmitting}
                   >
-                    <Ticket size={22} />
-                    <span>{isSubmitting ? 'Verificando y Generando Boleto...' : 'Emitir Mi Boleto Digital Oficial'}</span>
+                    {isSubmitting ? (
+                      <>
+                        <span className="submit-spinner" aria-hidden="true"></span>
+                        <span>Guardando en Google Sheets y enviando correo...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Ticket size={22} />
+                        <span>Emitir Mi Boleto Digital Oficial</span>
+                      </>
+                    )}
                   </button>
 
                   <div className="portal-security-notice">
