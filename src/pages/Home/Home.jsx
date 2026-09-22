@@ -63,7 +63,7 @@ const Home = () => {
               <div className="quick-spec-divider"></div>
               <div className="quick-spec-item">
                 <span className="quick-spec-tag">HORA</span>
-                <strong>03:00 PM – 08:30 PM</strong>
+                <strong>02:00 PM – 08:00 PM</strong>
               </div>
               <div className="quick-spec-divider"></div>
               <div className="quick-spec-item">
@@ -74,7 +74,7 @@ const Home = () => {
 
             {/* Countdown Timer */}
             <div className="hero-countdown-wrap">
-              <CountdownTimer targetDate="2026-10-31T15:00:00" />
+              <CountdownTimer targetDate="2026-10-31T14:00:00" />
             </div>
 
             {/* Hero CTAs */}
@@ -88,8 +88,8 @@ const Home = () => {
                 className="btn btn-secondary hero-btn-sub"
                 onClick={() => setIsDetailsOpen(true)}
               >
-                <Info size={16} />
-                <span>Detalles del Programa</span>
+                <Clock size={16} />
+                <span>Ver Cronograma Oficial</span>
               </button>
             </div>
           </div>

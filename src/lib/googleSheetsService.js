@@ -55,7 +55,7 @@ export const sendRegistrationToGoogleSheets = async (registrationData, qrCodeUrl
     tallerColor: registrationData.tallerColorName || 'N/A',
     merch: merchSummary,
     eventName: "Conferencia Despierta 2026 - Upper Room IBC",
-    eventDate: "Sábado 31 de Octubre, 2026 (03:00 PM - 08:30 PM)",
+    eventDate: "Sábado 31 de Octubre, 2026 (02:00 PM - 08:00 PM)",
     location: "Auditorio Principal IBC, C. Juan Luis Franco Bidó 25, Santo Domingo",
     qrCodeUrl: qrCodeUrl || `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(registrationData.ticketCode)}`,
     createdAt: registrationData.createdAt || new Date().toISOString()

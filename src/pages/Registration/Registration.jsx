@@ -35,6 +35,7 @@ const TALLERES = [
   {
     id: 'taller-1',
     nombre: '¿Dónde quedó el fuego?',
+    facilitador: 'Natalie Ruiz',
     tema: 'Estancamiento espiritual',
     pregunta: '¿En qué momento dejé de buscar a Dios?',
     descripcion: 'Un espacio para identificar las raíces del enfriamiento espiritual y reavivar la pasión por Cristo. Exploraremos cómo el corazón se aleja de Dios y cómo volver al primer amor.',
@@ -45,6 +46,7 @@ const TALLERES = [
   {
     id: 'taller-2',
     nombre: 'Modo Automático',
+    facilitador: 'Ps. Pedro daCuhna',
     tema: 'Rutina y distracciones',
     pregunta: '¿Estoy siguiendo a Jesús o simplemente cumpliendo una rutina?',
     descripcion: 'Analizaremos cómo la vida cristiana puede volverse mecánica y sin propósito. Aprenderemos a distinguir la fe viva de la religiosidad vacía y a romper el ciclo de la rutina.',
@@ -55,6 +57,7 @@ const TALLERES = [
   {
     id: 'taller-3',
     nombre: '¿Y ahora qué hago?',
+    facilitador: 'Andy Tejeda',
     tema: 'Propósito y llamado',
     pregunta: '¿Qué está impidiendo que responda al llamado de Dios?',
     descripcion: 'Un taller práctico sobre cómo discernir y responder al llamado de Dios en tu vida. Abordaremos los miedos, excusas y obstáculos que nos impiden vivir en el propósito divino.',
@@ -196,6 +199,7 @@ const Registration = () => {
       church: finalChurch || 'Invitado',
       participaTalleres: formData.participaTalleres,
       tallerSeleccionado: tallerInfo?.nombre || null,
+      tallerFacilitador: tallerInfo?.facilitador || null,
       tallerColorClass: tallerInfo?.colorClass || null,
       tallerColorName: tallerInfo?.colorName || null,
       tallerTema: tallerInfo?.tema || null,
@@ -203,7 +207,7 @@ const Registration = () => {
       merchSummary: merchSummary,
       eventName: "Conferencia Despierta 2026 - Upper Room IBC",
       eventDate: "Sábado 31 de Octubre, 2026",
-      eventTime: "03:00 PM – 08:30 PM",
+      eventTime: "02:00 PM – 08:00 PM",
       location: "Auditorio IBC • C. Juan Luis Franco Bidó 25, Santo Domingo",
       createdAt: new Date().toISOString()
     };
@@ -333,7 +337,7 @@ const Registration = () => {
                 <div className="spec-divider"></div>
                 <div className="spec-block">
                   <span className="spec-label">HORARIO</span>
-                  <strong className="spec-val"><Clock size={14} /> 03:00 PM – 08:30 PM</strong>
+                  <strong className="spec-val"><Clock size={14} /> 02:00 PM – 08:00 PM</strong>
                 </div>
                 <div className="spec-divider"></div>
                 <div className="spec-block">
@@ -522,7 +526,7 @@ const Registration = () => {
                               <div className="taller-entry-header">
                                 <div className="taller-color-indicator"></div>
                                 <div className="taller-entry-title-wrap">
-                                  <span className="taller-session-code">SESIÓN PARALELA</span>
+                                  <span className="taller-session-code">SESIÓN PARALELA • EXPOSITOR: {taller.facilitador}</span>
                                   <strong className="taller-entry-name">{taller.nombre}</strong>
                                 </div>
                                 <span className={`taller-entry-tag tag-${taller.colorClass}`}>{taller.colorName}</span>
