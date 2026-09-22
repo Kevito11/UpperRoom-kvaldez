@@ -137,15 +137,15 @@ function enviarBoletoPorCorreo(data) {
       "Tu registro ha sido recibido exitosamente. 🎉 ¡Ya eres parte de lo que Dios hará en esta conferencia! 🔥\n\n" +
       "🎟️ TU CÓDIGO DE ENTRADA: " + data.ticketCode + "\n\n" +
       "📌 Información importante:\n" +
-      "• 📅 Fecha: 31 de Octubre, 2026\n" +
-      "• 📍 Lugar: Iglesia Bautista Cristiana (IBC)\n" +
-      "• ⏰ Hora de llegada: 2:30 PM - 3:00 PM\n" +
-      "• 🎟️ Actividad: Conferencia Upper Room 2026\n" +
+      "• 📅 Fecha: Sábado 31 de Octubre, 2026\n" +
+      "• 📍 Lugar: Auditorio Principal IBC (C. Juan Luis Franco Bidó 25, Santo Domingo)\n" +
+      "• ⏰ Horario: 2:00 PM – 8:00 PM (Apertura de puertas y registro desde las 2:00 PM)\n" +
+      "• 🎟️ Actividad: Conferencia Upper Room Despierta 2026\n" +
       "• ⛪ Tu Congregación: " + data.church + "\n" +
       (data.taller && data.taller !== 'Sin taller' ? "• 🎯 Taller asignado: " + data.taller + "\n" : "") +
       (data.merch && data.merch !== 'Ninguna' ? "• 🛍️ Merch pre-ordenada: " + data.merch + "\n" : "") + "\n" +
       "💡 ¿Qué debes saber?\n" +
-      "1. Llega a tiempo para el parqueo, registro y la bienvenida. 🚗💨\n" +
+      "1. Las puertas y el registro abren puntuales a las 2:00 PM. Llega temprano para el parqueo y acreditación sin filas. 🚗💨\n" +
       "2. Mantente atento a nuestras redes sociales para conocer las actualizaciones y detalles de la conferencia. 📱👀\n" +
       "3. Prepárate para recibir, aprender y servir a Dios junto a otros jóvenes. 🙏🔥\n\n" +
       "Esta conferencia ha sido preparada con el deseo de equiparnos como servidores de Cristo y crecer juntos en nuestra relación con Él. 📖🕊️\n\n" +
@@ -213,19 +213,23 @@ function enviarBoletoPorCorreo(data) {
           <table style="width: 100%; border-collapse: collapse; font-size: 14px; color: #e5e7eb;">
             <tr>
               <td style="padding: 7px 0; width: 44%; color: #9ca3af;">📅 Fecha:</td>
-              <td style="padding: 7px 0; font-weight: 700; color: #ffffff;">31 de Octubre, 2026</td>
+              <td style="padding: 7px 0; font-weight: 700; color: #ffffff;">Sábado 31 de Octubre, 2026</td>
             </tr>
             <tr>
               <td style="padding: 7px 0; color: #9ca3af;">📍 Lugar:</td>
-              <td style="padding: 7px 0; font-weight: 700; color: #ffffff;">Iglesia Bautista Cristiana (IBC)</td>
+              <td style="padding: 7px 0; font-weight: 700; color: #ffffff;">Auditorio Principal IBC</td>
             </tr>
             <tr>
-              <td style="padding: 7px 0; color: #9ca3af;">⏰ Hora de llegada:</td>
-              <td style="padding: 7px 0; font-weight: 700; color: #fbbf24;">2:30 PM - 3:00 PM</td>
+              <td style="padding: 7px 0; color: #9ca3af;">⏰ Horario del Evento:</td>
+              <td style="padding: 7px 0; font-weight: 700; color: #fbbf24;">2:00 PM – 8:00 PM</td>
             </tr>
             <tr>
-              <td style="padding: 7px 0; color: #9ca3af;">🎟️ Actividad:</td>
-              <td style="padding: 7px 0; font-weight: 700; color: #ffffff;">Conferencia Upper Room 2026</td>
+              <td style="padding: 7px 0; color: #9ca3af;">🎟️ Registro en Puerta:</td>
+              <td style="padding: 7px 0; font-weight: 600; color: #86efac;">Inicia 2:00 PM (Bienvenida 3:00 PM)</td>
+            </tr>
+            <tr>
+              <td style="padding: 7px 0; color: #9ca3af;">🔥 Actividad:</td>
+              <td style="padding: 7px 0; font-weight: 700; color: #ffffff;">Conferencia Upper Room Despierta 2026</td>
             </tr>
             <tr>
               <td style="padding: 7px 0; color: #9ca3af;">⛪ Tu Congregación:</td>
@@ -251,7 +255,7 @@ function enviarBoletoPorCorreo(data) {
           </h3>
           <ol style="margin: 0; padding-left: 20px; font-size: 14px; color: #d1d5db; line-height: 1.8;">
             <li style="margin-bottom: 6px;">
-              <strong>Llega a tiempo:</strong> Para el parqueo, registro y la bienvenida. 🚗💨
+              <strong>Llega desde las 2:00 PM:</strong> Las puertas y el registro con código QR inician a las 2:00 PM para asegurar tu lugar y evitar filas. 🚗💨
             </li>
             <li style="margin-bottom: 6px;">
               <strong>Mantente atento:</strong> A nuestras redes sociales para conocer las actualizaciones y detalles de la conferencia. 📱👀
@@ -316,8 +320,6 @@ function onOpen() {
   SpreadsheetApp.getUi()
     .createMenu('📧 Boletas Despierta')
     .addItem('📊 Ver cuota de correos restantes', 'checkRemainingEmailQuota')
-    .addSeparator()
-    .addItem('✉️ Enviar correo de prueba a mi email', 'sendTestEmail')
     .addToUi();
 }
 
@@ -348,42 +350,6 @@ function checkRemainingEmailQuota() {
 }
 
 /**
- * Envía un correo de prueba al email del propietario de la hoja para validar el funcionamiento.
- */
-function sendTestEmail() {
-  var ui = SpreadsheetApp.getUi();
-  var myEmail = Session.getActiveUser().getEmail();
-  
-  if (!myEmail) {
-    ui.alert("No se pudo detectar tu dirección de correo electrónico.");
-    return;
-  }
-  
-  var response = ui.alert(
-    "Enviar correo de prueba",
-    "¿Deseas enviar un correo de prueba a tu dirección (" + myEmail + ")?",
-    ui.ButtonSet.YES_NO
-  );
-  
-  if (response === ui.Button.YES) {
-    try {
-      enviarBoletoPorCorreo({
-        firstName: "Samuel",
-        lastName: "Castillo",
-        email: myEmail,
-        ticketCode: "UR26-DEMO",
-        church: "Iglesia Bautista Cristiana (IBC)",
-        taller: "¿Dónde quedó el fuego? (Rojo)",
-        merch: "Sudadera (M, Negro Obsidian)"
-      });
-      ui.alert("¡Éxito!", "Correo oficial de prueba enviado a " + myEmail + ".\nRevisa tu bandeja de entrada.", ui.ButtonSet.OK);
-    } catch (e) {
-      ui.alert("Error al enviar prueba: " + e.toString());
-    }
-  }
-}
-
-/**
  * Función especial para probar todo el flujo directamente desde el editor de Google Apps Script.
  * Selecciona "testDoPost" en el menú de funciones de arriba y pulsa "▷ Ejecutar".
  * Esto simulará un registro web real, insertará la fila en tu Google Sheet y te enviará el correo a ti.
@@ -406,7 +372,7 @@ function testDoPost() {
         taller: "¿Dónde quedó el fuego? (Rojo)",
         merch: "Hoodie (M - Negro Obsidian)",
         eventName: "Conferencia Despierta 2026 - Upper Room IBC",
-        eventDate: "Sábado 31 de Octubre, 2026 (03:00 PM - 08:30 PM)",
+        eventDate: "Sábado 31 de Octubre, 2026 (02:00 PM - 08:00 PM)",
         location: "Auditorio Principal IBC, C. Juan Luis Franco Bidó 25, Santo Domingo",
         createdAt: new Date().toISOString()
       })

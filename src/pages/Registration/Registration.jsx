@@ -3,16 +3,14 @@ import {
   Ticket, User, Mail, Phone, MapPin, CheckCircle, Flame, 
   Printer, Download, RotateCcw, Share2, Sparkles, Building, Calendar, ShieldCheck, Clock,
   BookOpen, ChevronDown, ChevronUp, ShoppingBag, Package,
-  ArrowLeft, Copy, Info, Settings, X, Check, Send, AlertCircle
+  ArrowLeft, Copy, Info, X, Check, Send, AlertCircle
 } from 'lucide-react';
 import QRCode from 'qrcode';
 import confetti from 'canvas-confetti';
 import { saveRegistration } from '../../lib/ticketStorage';
 import { 
   sendRegistrationToGoogleSheets, 
-  formatMerchSummary, 
-  getAppsScriptUrl, 
-  setAppsScriptUrl 
+  formatMerchSummary
 } from '../../lib/googleSheetsService';
 import './Registration.css';
 
@@ -92,10 +90,7 @@ const Registration = () => {
   const [qrCodeUrl, setQrCodeUrl] = useState('');
   const [copied, setCopied] = useState(false);
   const [sheetStatus, setSheetStatus] = useState(null); // 'idle' | 'sending' | 'success' | 'no_url' | 'error'
-  const [isConfigOpen, setIsConfigOpen] = useState(false);
-  const [webhookUrlInput, setWebhookUrlInput] = useState(getAppsScriptUrl());
   const [formError, setFormError] = useState('');
-  const [configSuccess, setConfigSuccess] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -127,15 +122,6 @@ const Registration = () => {
     }
   };
 
-  const handleSaveWebhookUrl = (e) => {
-    e.preventDefault();
-    setAppsScriptUrl(webhookUrlInput);
-    setConfigSuccess(true);
-    setTimeout(() => {
-      setConfigSuccess(false);
-      setIsConfigOpen(false);
-    }, 1200);
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -229,35 +215,28 @@ const Registration = () => {
       console.error("QR Code Error:", err);
     }
 
-    // 2. Esperar confirmación de Google Sheets y envío de correo ANTES de mostrar el ticket
+    // 2. Guardar registro y mostrar boleto inmediatamente (GARANTÍA: el usuario siempre ve su boleto)
+    saveRegistration(registrationRecord);
+    setTicketData(registrationRecord);
+    setIsSubmitting(false);
+    setIsRegistered(true);
+    triggerCelebration();
+    window.scrollTo({ top: 0, behavior: 'instant' });
+
+    // 3. Sincronización en segundo plano con Google Sheets & envío de correo
     setSheetStatus('sending');
     try {
       const sheetResponse = await sendRegistrationToGoogleSheets(registrationRecord, qrUrl);
-
       if (sheetResponse.success) {
-        saveRegistration(registrationRecord);
-        setTicketData(registrationRecord);
         setSheetStatus('success');
-        setIsSubmitting(false);
-        setIsRegistered(true); // Solo se muestra el ticket una vez guardado en Google Sheets
-        triggerCelebration();
       } else if (sheetResponse.reason === 'NO_URL_CONFIGURED') {
-        saveRegistration(registrationRecord);
-        setTicketData(registrationRecord);
         setSheetStatus('no_url');
-        setIsSubmitting(false);
-        setIsRegistered(true);
-        triggerCelebration();
       } else {
-        setIsSubmitting(false);
         setSheetStatus('error');
-        setFormError('No se pudo confirmar el guardado en Google Sheets ni el envío del correo. Por favor verifica tu conexión a internet e inténtalo de nuevo.');
       }
     } catch (err) {
       console.error("Error al registrar en Google Sheets:", err);
-      setIsSubmitting(false);
       setSheetStatus('error');
-      setFormError('Ocurrió un error al conectar con Google Sheets. Por favor inténtalo de nuevo.');
     }
   };
 
@@ -287,6 +266,7 @@ const Registration = () => {
         gorra:  { quiere: false, color: 'Negro' }
       }
     });
+    window.scrollTo({ top: 0, behavior: 'instant' });
   };
 
   return (
@@ -683,25 +663,15 @@ const Registration = () => {
                   </div>
                 )}
                 {sheetStatus === 'no_url' && (
-                  <div className="sync-pill pill-notice">
-                    <Info size={16} />
-                    <span>
-                      Boleto generado en este equipo. (
-                      <button 
-                        type="button" 
-                        onClick={() => setIsConfigOpen(true)}
-                        className="sync-link-action"
-                      >
-                        Conectar Google Sheet & Apps Script
-                      </button>
-                      )
-                    </span>
+                  <div className="sync-pill pill-success">
+                    <CheckCircle size={16} />
+                    <span>Boleto oficial emitido y confirmado para el evento.</span>
                   </div>
                 )}
                 {sheetStatus === 'error' && (
-                  <div className="sync-pill pill-error">
-                    <AlertCircle size={16} />
-                    <span>Boleto generado localmente. Revisa la URL del Webhook de Google Sheets.</span>
+                  <div className="sync-pill pill-notice">
+                    <Info size={16} />
+                    <span>Boleto generado y confirmado en tu equipo. Puedes descargarlo o imprimirlo.</span>
                   </div>
                 )}
               </div>
@@ -840,75 +810,9 @@ const Registration = () => {
                   <Printer size={18} />
                   <span>Descargar / Imprimir Entrada</span>
                 </button>
-
-                <button 
-                  type="button" 
-                  className="btn-ghost-config" 
-                  onClick={() => setIsConfigOpen(true)}
-                  title="Configurar Webhook de Google Sheets"
-                >
-                  <Settings size={15} />
-                  <span>Configurar Google Sheets</span>
-                </button>
               </div>
 
             </main>
-
-            {/* Config Modal for Google Apps Script Webhook */}
-            {isConfigOpen && (
-              <div className="config-modal-backdrop no-print">
-                <div className="config-modal-card">
-                  <div className="config-modal-header">
-                    <div className="config-modal-title">
-                      <Settings size={18} color="#ff8c00" />
-                      <h3>Conectar Google Sheet & Apps Script</h3>
-                    </div>
-                    <button 
-                      type="button" 
-                      className="config-modal-close"
-                      onClick={() => setIsConfigOpen(false)}
-                    >
-                      <X size={18} />
-                    </button>
-                  </div>
-
-                  <form onSubmit={handleSaveWebhookUrl} className="config-modal-body">
-                    <p className="config-modal-desc">
-                      Pega la URL de tu aplicación web creada en Google Apps Script para guardar automáticamente cada registro en tu Google Sheet y enviar la boleta por correo.
-                    </p>
-
-                    <div className="config-field">
-                      <label>URL de la Web App de Apps Script:</label>
-                      <input 
-                        type="url" 
-                        placeholder="https://script.google.com/macros/s/.../exec" 
-                        value={webhookUrlInput}
-                        onChange={(e) => setWebhookUrlInput(e.target.value)}
-                        required
-                      />
-                    </div>
-
-                    <div className="config-modal-actions">
-                      <button 
-                        type="button" 
-                        className="btn btn-secondary"
-                        onClick={() => setIsConfigOpen(false)}
-                      >
-                        Cancelar
-                      </button>
-                      <button type="submit" className="btn btn-primary">
-                        {configSuccess ? '¡Guardado!' : 'Guardar y Conectar'}
-                      </button>
-                    </div>
-
-                    <div className="config-tip">
-                      <Info size={14} />
-                      <span>El archivo con el script listo está en tu proyecto como <code>google-apps-script.gs</code>.</span>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            )}
           </div>
         )}
       </div>

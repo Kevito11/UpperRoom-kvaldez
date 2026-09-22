@@ -80,8 +80,8 @@ const Home = () => {
             {/* Hero CTAs */}
             <div className="hero-actions">
               <Link to="/registro" className="btn btn-primary hero-btn-main">
-                <Ticket size={18} />
-                <span>Emitir Mi Boleto Gratuito</span>
+                <Ticket size={16} />
+                <span>Registrarme</span>
               </Link>
               <button 
                 type="button" 
