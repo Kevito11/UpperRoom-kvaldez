@@ -176,28 +176,15 @@ const Registration = () => {
       return;
     }
 
-    // 3. Validar Merch Oficial
-    if (formData.participaMerch === null) {
-      setFormError('En el Módulo 03, por favor responde si deseas pre-ordenar merch oficial o marcar "No por el momento".');
-      document.getElementById('modulo-merch')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      return;
-    }
-
-    if (formData.participaMerch === true) {
-      const hasMerch = formData.merch.hoodie.quiere || formData.merch.tshirt.quiere || formData.merch.gorra.quiere;
-      if (!hasMerch) {
-        setFormError('En el Módulo 03, has elegido pre-ordenar merch. Por favor selecciona al menos una prenda o marca "No por el momento".');
-        document.getElementById('modulo-merch')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        return;
-      }
-    }
+    // 3. Merch Oficial (Disponible Próximamente)
+    // No bloquea el registro ya que las pre-órdenes se habilitarán más adelante.
 
     setIsSubmitting(true);
 
     const generatedCode = `IBC-UR-${Math.floor(100000 + Math.random() * 900000)}`;
     const finalChurch = formData.church === 'Otra Iglesia' ? formData.customChurch : formData.church;
     const tallerInfo = TALLERES.find(t => t.id === formData.tallerSeleccionado);
-    const merchSummary = formatMerchSummary(formData.merch);
+    const merchSummary = 'Disponible próximamente';
 
     const registrationRecord = {
       ticketCode: generatedCode,
@@ -222,7 +209,7 @@ const Registration = () => {
     };
 
     // 1. Generar código QR dinámico
-    const verificationUrl = `${window.location.origin}/ticket/${generatedCode}`;
+    const verificationUrl = `${window.location.origin}${import.meta.env.BASE_URL}ticket/${generatedCode}`;
     let qrUrl = '';
     try {
       qrUrl = await QRCode.toDataURL(verificationUrl, {
@@ -312,7 +299,7 @@ const Registration = () => {
               <div className="accreditation-top-meta">
                 <div className="accreditation-status-chip">
                   <span className="live-indicator-dot"></span>
-                  <span className="chip-code">// SISTEMA OFICIAL DE EMISIÓN DE BOLETOS</span>
+                  <span className="chip-code">SISTEMA OFICIAL DE EMISIÓN DE BOLETOS</span>
                 </div>
                 <div className="accreditation-edition">
                   <span>CONFERENCIA 2026</span>
@@ -322,7 +309,7 @@ const Registration = () => {
               <div className="accreditation-hero-banner">
                 <div className="accreditation-logo-wrap">
                   <img 
-                    src="/logos/logo-despierta-horizontal.png" 
+                    src={`${import.meta.env.BASE_URL}logos/logo-despierta-horizontal.png`} 
                     alt="Conferencia Despierta 2026 - Upper Room IBC" 
                     className="accreditation-logo-img" 
                   />
@@ -554,143 +541,34 @@ const Registration = () => {
                 </div>
 
                 {/* -------------------------------------------------------------
-                   MÓDULO 03: PRE-ORDEN DE MERCHANDISING
+                   MÓDULO 03: MERCHANDISING OFICIAL (DISPONIBLE PRÓXIMAMENTE)
                    ------------------------------------------------------------- */}
                 <div className="portal-module" id="modulo-merch">
                   <div className="module-legend">
                     <span className="legend-index">03</span>
                     <div className="legend-text">
                       <div className="legend-header-row">
-                        <h2>Pre-Orden de Merch Oficial</h2>
-                        <span className="tag-merch-badge"><ShoppingBag size={12} /> Colección 2026</span>
+                        <h2>Merch Oficial Despierta 2026</h2>
+                        <span className="tag-merch-badge tag-merch-soon">
+                          <Clock size={12} /> Disponible Próximamente
+                        </span>
                       </div>
-                      <p>Aparta tus artículos exclusivos de Upper Room IBC (pago directo en recepción)</p>
+                      <p>Colección oficial de prendas y accesorios exclusivos de Upper Room IBC</p>
                     </div>
                   </div>
 
                   <div className="module-body">
-                    <div className="portal-switch-row">
-                      <span className="switch-prompt">¿Deseas separar alguna prenda o accesorio oficial?</span>
-                      <div className="portal-segmented-control">
-                        <button
-                          type="button"
-                          className={`segmented-btn ${formData.participaMerch === true ? 'is-active' : ''}`}
-                          onClick={() => setFormData(prev => ({ ...prev, participaMerch: true }))}
-                        >
-                          Sí, pre-ordenar
-                        </button>
-                        <button
-                          type="button"
-                          className={`segmented-btn ${formData.participaMerch === false ? 'is-active' : ''}`}
-                          onClick={() => setFormData(prev => ({
-                            ...prev,
-                            participaMerch: false,
-                            merch: {
-                              hoodie: { quiere: false, talla: 'M', color: 'Negro Obsidian' },
-                              tshirt: { quiere: false, talla: 'M', color: 'Negro Obsidian' },
-                              gorra:  { quiere: false, color: 'Negro' }
-                            }
-                          }))}
-                        >
-                          No por el momento
-                        </button>
+                    <div className="merch-soon-banner">
+                      <div className="merch-soon-icon-wrap">
+                        <Clock size={22} />
+                      </div>
+                      <div className="merch-soon-text">
+                        <strong>¡La Colección Oficial de Merch estará disponible próximamente!</strong>
+                        <p>
+                          Estamos finalizando la confección de las piezas exclusivas de la conferencia. Las pre-órdenes se habilitarán muy pronto. Al completar tu registro hoy con tu correo, te avisaremos de primero cuando se abra la preventa oficial.
+                        </p>
                       </div>
                     </div>
-
-                    {formData.participaMerch === true && (
-                      <div className="merch-selection-zone">
-                        <div className="merch-modular-items">
-                          
-                          {/* HOODIE */}
-                          <div className={`merch-box ${formData.merch.hoodie.quiere ? 'merch-box-active' : ''}`}>
-                            <label className="merch-box-toggle">
-                              <input
-                                type="checkbox"
-                                checked={formData.merch.hoodie.quiere}
-                                onChange={e => setFormData(prev => ({ ...prev, merch: { ...prev.merch, hoodie: { ...prev.merch.hoodie, quiere: e.target.checked } } }))}
-                              />
-                              <div className="merch-box-info">
-                                <strong>Sudadera Oficial "Despierta" (Heavyweight Hoodie)</strong>
-                                <span className="merch-price-pill">RD$ 1,500</span>
-                              </div>
-                            </label>
-                            {formData.merch.hoodie.quiere && (
-                              <div className="merch-box-customizer">
-                                <div className="customizer-field">
-                                  <label>TALLA</label>
-                                  <select value={formData.merch.hoodie.talla} onChange={e => setFormData(prev => ({ ...prev, merch: { ...prev.merch, hoodie: { ...prev.merch.hoodie, talla: e.target.value } } }))}>
-                                    {['S', 'M', 'L', 'XL', 'XXL'].map(t => <option key={t}>{t}</option>)}
-                                  </select>
-                                </div>
-                                <div className="customizer-field">
-                                  <label>COLOR</label>
-                                  <select value={formData.merch.hoodie.color} onChange={e => setFormData(prev => ({ ...prev, merch: { ...prev.merch, hoodie: { ...prev.merch.hoodie, color: e.target.value } } }))}>
-                                    {['Negro Obsidian', 'Gris Grafito', 'Terracota / Fuego'].map(c => <option key={c}>{c}</option>)}
-                                  </select>
-                                </div>
-                              </div>
-                            )}
-                          </div>
-
-                          {/* T-SHIRT */}
-                          <div className={`merch-box ${formData.merch.tshirt.quiere ? 'merch-box-active' : ''}`}>
-                            <label className="merch-box-toggle">
-                              <input
-                                type="checkbox"
-                                checked={formData.merch.tshirt.quiere}
-                                onChange={e => setFormData(prev => ({ ...prev, merch: { ...prev.merch, tshirt: { ...prev.merch.tshirt, quiere: e.target.checked } } }))}
-                              />
-                              <div className="merch-box-info">
-                                <strong>Camiseta Oficial "Despierta" (Oversize Boxy Tee)</strong>
-                                <span className="merch-price-pill">RD$ 750</span>
-                              </div>
-                            </label>
-                            {formData.merch.tshirt.quiere && (
-                              <div className="merch-box-customizer">
-                                <div className="customizer-field">
-                                  <label>TALLA</label>
-                                  <select value={formData.merch.tshirt.talla} onChange={e => setFormData(prev => ({ ...prev, merch: { ...prev.merch, tshirt: { ...prev.merch.tshirt, talla: e.target.value } } }))}>
-                                    {['XS', 'S', 'M', 'L', 'XL'].map(t => <option key={t}>{t}</option>)}
-                                  </select>
-                                </div>
-                                <div className="customizer-field">
-                                  <label>COLOR</label>
-                                  <select value={formData.merch.tshirt.color} onChange={e => setFormData(prev => ({ ...prev, merch: { ...prev.merch, tshirt: { ...prev.merch.tshirt, color: e.target.value } } }))}>
-                                    {['Negro Obsidian', 'Blanco Puro', 'Terracota / Ámbar'].map(c => <option key={c}>{c}</option>)}
-                                  </select>
-                                </div>
-                              </div>
-                            )}
-                          </div>
-
-                          {/* GORRA */}
-                          <div className={`merch-box ${formData.merch.gorra.quiere ? 'merch-box-active' : ''}`}>
-                            <label className="merch-box-toggle">
-                              <input
-                                type="checkbox"
-                                checked={formData.merch.gorra.quiere}
-                                onChange={e => setFormData(prev => ({ ...prev, merch: { ...prev.merch, gorra: { ...prev.merch.gorra, quiere: e.target.checked } } }))}
-                              />
-                              <div className="merch-box-info">
-                                <strong>Gorra "Upper Room" Dad Cap</strong>
-                                <span className="merch-price-pill">RD$ 650</span>
-                              </div>
-                            </label>
-                            {formData.merch.gorra.quiere && (
-                              <div className="merch-box-customizer">
-                                <div className="customizer-field">
-                                  <label>COLOR</label>
-                                  <select value={formData.merch.gorra.color} onChange={e => setFormData(prev => ({ ...prev, merch: { ...prev.merch, gorra: { ...prev.merch.gorra, color: e.target.value } } }))}>
-                                    {['Negro', 'Beige Arena'].map(c => <option key={c}>{c}</option>)}
-                                  </select>
-                                </div>
-                              </div>
-                            )}
-                          </div>
-
-                        </div>
-                      </div>
-                    )}
                   </div>
                 </div>
 
@@ -838,10 +716,10 @@ const Registration = () => {
                   <div className="ticket-pass-header">
                     <div className="ticket-pass-brand">
                       <div className="ticket-pass-logo">
-                        <img src="/logos/logo-upperroom-negro.png" alt="Upper Room IBC" className="ticket-logo-img" />
+                        <img src={`${import.meta.env.BASE_URL}logos/logo-upperroom-negro.png`} alt="Upper Room IBC" className="ticket-logo-img" />
                       </div>
                       <div className="ticket-brand-meta">
-                        <span className="ticket-sub-brand">UPPER ROOM IBC • SANTO DOMINGO</span>
+                        <span className="ticket-sub-brand">UPPER ROOM • IGLESIA BAUTISTA CRISTIANA</span>
                         <h2 className="ticket-title-brand">CONFERENCIA DESPIERTA 2026</h2>
                         <span className="ticket-slogan">«LA LLAMA VUELVE A ENCENDERSE»</span>
                       </div>
@@ -909,7 +787,7 @@ const Registration = () => {
                       </div>
                     )}
 
-                    {ticketData.merchSummary && ticketData.merchSummary !== 'Ninguna' && (
+                    {ticketData.merchSummary && ticketData.merchSummary !== 'Ninguna' && ticketData.merchSummary !== 'Disponible próximamente' && (
                       <div className="ticket-detail-item ticket-merch-item">
                         <span className="ticket-detail-label">PRE-ORDEN DE MERCH</span>
                         <span className="ticket-merch-val">🛍️ {ticketData.merchSummary}</span>

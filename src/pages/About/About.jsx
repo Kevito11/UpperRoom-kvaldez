@@ -38,7 +38,7 @@ const About = () => {
           </div>
           <h2>Sobre <span className="text-fire">Upper Room IBC</span></h2>
           <p>
-            El ministerio de jóvenes de la Iglesia Bautista Cristiana de Santo Domingo, dedicados a exaltar la gloria de Dios a través de vidas transformadas por Su verdad.
+            El ministerio de jóvenes de la Iglesia Bautista Cristiana (IBC), dedicados a exaltar la gloria de Dios a través de vidas transformadas por Su verdad.
           </p>
         </div>
 
@@ -56,10 +56,10 @@ const About = () => {
           </div>
           <div className="concept-badge-box">
             <div className="flame-halo">
-              <img src="/logos/logo-upperroom-negro.png" alt="Upper Room Logo" className="concept-logo-img" />
+              <img src={`${import.meta.env.BASE_URL}logos/logo-upperroom-negro.png`} alt="Upper Room Logo" className="concept-logo-img" />
             </div>
             <div className="concept-church-tag">
-              <strong>Iglesia Bautista Cristiana</strong>
+              <strong>Iglesia Bautista Cristiana (IBC)</strong>
               <span>C. Juan Luis Franco Bidó 25, Santo Domingo</span>
             </div>
           </div>

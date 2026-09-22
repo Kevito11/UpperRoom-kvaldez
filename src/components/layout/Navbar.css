@@ -90,11 +90,12 @@
 }
 
 .brand-sub {
-  font-size: 0.68rem;
+  font-size: 0.62rem;
   font-weight: 700;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.05em;
   color: var(--accent-light);
-  opacity: 0.9;
+  opacity: 0.95;
+  white-space: nowrap;
 }
 
 /* Nav Links */
@@ -135,6 +136,20 @@
   background: var(--accent-gradient);
   border-radius: 2px;
   box-shadow: 0 0 10px var(--accent-color);
+}
+
+.nav-soon-pill {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #fbbf24;
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  padding: 0.1rem 0.45rem;
+  border-radius: 4px;
+  line-height: 1.2;
 }
 
 /* Nav Actions */
@@ -294,8 +309,9 @@
     font-size: 1.05rem;
   }
   .brand-sub {
-    font-size: 0.6rem;
-    letter-spacing: 0.1em;
+    font-size: 0.54rem;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
   }
   .instagram-nav-btn {
     width: 36px;

@@ -161,7 +161,7 @@ function enviarBoletoPorCorreo(data) {
         <!-- Header Oficial -->
         <div style="text-align: center; padding-bottom: 22px; border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
           <span style="color: #f59e0b; font-size: 11px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase;">
-            UPPER ROOM IBC • SANTO DOMINGO
+            UPPER ROOM • IGLESIA BAUTISTA CRISTIANA
           </span>
           <h1 style="margin: 10px 0 4px; font-size: 26px; color: #ffffff; font-weight: 900; letter-spacing: 0.5px;">
             DESPIERTA 2026
@@ -285,7 +285,7 @@ function enviarBoletoPorCorreo(data) {
             </a>
           </p>
           <p style="margin: 0; font-size: 11px; color: #4b5563;">
-            © 2026 Upper Room IBC • Iglesia Bautista Cristiana, Santo Domingo
+            © 2026 Upper Room IBC • Iglesia Bautista Cristiana (IBC)
           </p>
         </div>
 

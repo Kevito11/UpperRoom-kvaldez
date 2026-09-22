@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, ShoppingBag, Check, Send, Sparkles } from 'lucide-react';
+import { X, ShoppingBag, Check, Send, Sparkles, Clock } from 'lucide-react';
 import MerchVectorGraphic from './MerchVectorGraphic';
 import './MerchModal.css';
 
@@ -13,14 +13,12 @@ const MerchModal = ({ product, onClose }) => {
   const activeColorHex = product.colorHex?.[selectedColor] || '#0b0f17';
 
   const handleWhatsAppOrder = () => {
-    const total = (product.price * quantity).toLocaleString();
-    const message = `¡Hola Upper Room IBC! 👋 Deseo pre-ordenar la mercancía oficial de la Conferencia:\n\n` +
+    const message = `¡Hola Upper Room IBC! 👋 Quisiera información de la mercancía oficial de la Conferencia Despierta 2026:\n\n` +
       `📌 *Producto:* ${product.name}\n` +
       `🎨 *Color:* ${selectedColor}\n` +
-      `📏 *Talla:* ${selectedSize}\n` +
-      `🔢 *Cantidad:* ${quantity}\n` +
-      `💰 *Total:* RD$ ${total}\n\n` +
-      `¿Cuáles son los métodos de pago para completar mi orden? ¡Muchas gracias!`;
+      `📏 *Talla:* ${selectedSize || 'Ajustable'}\n` +
+      `🔢 *Cantidad:* ${quantity}\n\n` +
+      `¿Podrían notificarme cuando inicien formalmente las pre-órdenes? ¡Muchas gracias!`;
 
     const encoded = encodeURIComponent(message);
     const whatsappUrl = `https://wa.me/18095550199?text=${encoded}`;
@@ -50,15 +48,12 @@ const MerchModal = ({ product, onClose }) => {
 
           {/* Product Details & Form Right */}
           <div className="merch-modal-info">
-            <div className="product-category-badge">
-              <Sparkles size={13} />
-              <span>Colección Oficial Upper Room IBC</span>
+            <div className="product-category-badge badge-soon">
+              <Clock size={13} />
+              <span>Disponible Próximamente</span>
             </div>
 
             <h2 className="modal-product-title">{product.name}</h2>
-            <div className="modal-product-price">
-              RD$ {product.price.toLocaleString()}
-            </div>
             <p className="modal-product-desc">{product.description}</p>
 
             {/* Colors */}
@@ -116,14 +111,9 @@ const MerchModal = ({ product, onClose }) => {
 
             {/* Total calculation & WhatsApp Action */}
             <div className="modal-footer-action">
-              <div className="modal-total-box">
-                <span>Total a pagar:</span>
-                <strong>RD$ {(product.price * quantity).toLocaleString()}</strong>
-              </div>
-
               <button className="btn btn-primary order-btn" onClick={handleWhatsAppOrder}>
                 <Send size={18} />
-                <span>Pre-ordenar vía WhatsApp</span>
+                <span>Consultar Disponibilidad vía WhatsApp</span>
               </button>
             </div>
           </div>

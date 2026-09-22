@@ -32,7 +32,7 @@ const EventDetailsModal = ({ isOpen, onClose }) => {
         {/* Modal Header Banner */}
         <div className="modal-header-banner">
           <img 
-            src="/logos/logo-despierta-horizontal.png" 
+            src={`${import.meta.env.BASE_URL}logos/logo-despierta-horizontal.png`} 
             alt="Conferencia Despierta 2026 - Upper Room IBC" 
             className="modal-banner-img" 
           />

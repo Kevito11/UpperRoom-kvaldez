@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { 
   Flame, Ticket, 
   Sparkles, CheckCircle, Info,
-  BookOpen, Music, Users, MapPin, ShoppingBag
+  BookOpen, Music, Users, MapPin, ShoppingBag, Clock
 } from 'lucide-react';
 import CountdownTimer from '../../components/CountdownTimer';
 import EventDetailsModal from '../../components/EventDetailsModal';
@@ -26,7 +26,7 @@ const Home = () => {
 
           <div className="hero-content-col">
             <div className="hero-slogan-wrap">
-              <span className="hero-slogan">// CONFERENCIA 2026 • SANTO DOMINGO</span>
+              <span className="hero-slogan">CONFERENCIA 2026 • IGLESIA BAUTISTA CRISTIANA</span>
             </div>
 
             <h1 className="hero-title">
@@ -48,7 +48,7 @@ const Home = () => {
             >
               <div className="poster-glow-backdrop"></div>
               <img 
-                src="/logos/logo-despierta.png" 
+                src={`${import.meta.env.BASE_URL}logos/logo-despierta.png`} 
                 alt="Afiche Oficial Conferencia Despierta 2026 - Upper Room IBC" 
                 className="hero-poster-inline-img" 
               />
@@ -101,7 +101,7 @@ const Home = () => {
       <section className="pillars-section section-padding">
         <div className="container">
           <div className="section-header">
-            <span className="section-tag">// FUNDAMENTOS DEL ENCUENTRO</span>
+            <span className="section-tag">FUNDAMENTOS DEL ENCUENTRO</span>
             <h2>Pilares de la Conferencia</h2>
             <p>Una experiencia diseñada para edificar, avivar y unir a la juventud cristiana con solidez bíblica</p>
           </div>
@@ -151,38 +151,41 @@ const Home = () => {
         <div className="container">
           <div className="merch-promo-banner glass-panel">
             <div className="merch-promo-content">
-              <div className="badge badge-amber">EDICIÓN LIMITADA</div>
+              <div className="badge badge-amber">
+                <Clock size={13} />
+                <span>DISPONIBLE PRÓXIMAMENTE</span>
+              </div>
               <h2>Colección Oficial <span className="text-fire">Upper Room IBC</span></h2>
               <p>
-                Diseñada con materiales premium, corte oversize moderno y detalles exclusivos del ministerio. 
-                Pre-ordena tu sudadera, camiseta o gorra antes de que se agoten las existencias.
+                Próximamente disponible. Diseñada con materiales premium, corte oversize moderno y detalles exclusivos del ministerio. 
+                Explora los modelos y prepárate para la apertura de la preventa oficial.
               </p>
               <div className="merch-promo-features">
+                <div className="promo-pill"><Clock size={15} /> Lanzamiento Próximo</div>
                 <div className="promo-pill"><CheckCircle size={15} /> Algodón Pesado 100%</div>
                 <div className="promo-pill"><CheckCircle size={15} /> Tallas XS hasta XXL</div>
-                <div className="promo-pill"><CheckCircle size={15} /> Entrega directa en el evento</div>
               </div>
               <Link to="/merch" className="btn btn-primary">
                 <ShoppingBag size={18} />
-                <span>Explorar Tienda y Pre-ordenar</span>
+                <span>Ver Colección (Próximamente)</span>
               </Link>
             </div>
 
             <div className="merch-promo-visual">
               <div className="merch-badge-circle">
-                <span>NEW</span>
+                <span>PRÓX</span>
                 <strong>2026</strong>
               </div>
               <div className="merch-mockup-stack">
                 <div className="mockup-card card-hoodie">
                   <Flame size={44} className="mockup-icon" />
                   <span>Hoodie Obsidian</span>
-                  <strong>RD$ 1,500</strong>
+                  <strong>Próximamente</strong>
                 </div>
                 <div className="mockup-card card-tee">
                   <Sparkles size={36} className="mockup-icon" />
                   <span>T-Shirt Flame</span>
-                  <strong>RD$ 750</strong>
+                  <strong>Próximamente</strong>
                 </div>
               </div>
             </div>

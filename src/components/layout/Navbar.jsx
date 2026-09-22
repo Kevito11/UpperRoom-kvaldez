@@ -49,11 +49,11 @@ const Navbar = () => {
       <div className="nav-container">
         <Link to="/" className="brand-logo">
           <div className="logo-icon-wrap">
-            <img src="/logos/logo-upperroom-negro.png" alt="Upper Room IBC" className="brand-nav-img" />
+            <img src={`${import.meta.env.BASE_URL}logos/logo-upperroom-negro.png`} alt="Upper Room IBC" className="brand-nav-img" />
           </div>
           <div className="brand-text">
             <span className="brand-main">UPPER ROOM</span>
-            <span className="brand-sub">IBC • SANTO DOMINGO</span>
+            <span className="brand-sub">IGLESIA BAUTISTA CRISTIANA</span>
           </div>
         </Link>
 
@@ -68,7 +68,8 @@ const Navbar = () => {
           </Link>
           <Link to="/merch" className={`nav-item ${isActive('/merch') ? 'active' : ''}`}>
             <ShoppingBag size={16} />
-            Merch
+            <span>Merch</span>
+            <span className="nav-soon-pill">Próx.</span>
           </Link>
         </div>
 
@@ -112,7 +113,8 @@ const Navbar = () => {
           </Link>
           <Link to="/merch" className={`mobile-nav-item ${isActive('/merch') ? 'active' : ''}`}>
             <ShoppingBag size={18} />
-            Merch Oficial
+            <span>Merch Oficial</span>
+            <span className="nav-soon-pill">Próximamente</span>
           </Link>
           <div className="mobile-divider"></div>
           <Link to="/registro" className="btn btn-primary mobile-cta">

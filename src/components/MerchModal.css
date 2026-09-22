@@ -145,6 +145,16 @@
   letter-spacing: 0.08em;
 }
 
+.product-category-badge.badge-soon {
+  color: #fbbf24;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  padding: 0.3rem 0.7rem;
+  border-radius: var(--radius-full);
+  align-self: flex-start;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.2);
+}
+
 .modal-product-title {
   font-size: 1.75rem;
   color: #ffffff;

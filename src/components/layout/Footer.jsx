@@ -16,7 +16,7 @@ const Footer = () => {
           <div className="footer-brand">
             <div className="footer-logo">
               <div className="footer-logo-icon">
-                <img src="/logos/logo-upperroom-negro.png" alt="Upper Room IBC" className="footer-logo-img" />
+                <img src={`${import.meta.env.BASE_URL}logos/logo-upperroom-negro.png`} alt="Upper Room IBC" className="footer-logo-img" />
               </div>
               <div>
                 <h3>UPPER ROOM IBC</h3>
@@ -24,13 +24,13 @@ const Footer = () => {
               </div>
             </div>
             <p className="footer-desc">
-              Un ministerio de jóvenes comprometido con el evangelio de Jesucristo, la sana doctrina y el discipulado bíblico en la Iglesia Bautista Cristiana de Santo Domingo.
+              Un ministerio de jóvenes comprometido con el evangelio de Jesucristo, la sana doctrina y el discipulado bíblico en la Iglesia Bautista Cristiana (IBC).
             </p>
             <div className="footer-socials">
-              <a 
-                href="https://www.instagram.com/upperroomibcrd/" 
-                target="_blank" 
-                rel="noopener noreferrer" 
+              <a
+                href="https://www.instagram.com/upperroomibcrd/"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="social-icon-btn"
                 aria-label="Instagram de Upper Room IBC"
               >
@@ -45,7 +45,7 @@ const Footer = () => {
             <ul>
               <li><Link to="/">Inicio</Link></li>
               <li><Link to="/registro">Registro de Conferencia</Link></li>
-              <li><Link to="/merch">Merch Oficial</Link></li>
+              <li><Link to="/merch">Merch Oficial (Próximamente)</Link></li>
               <li><Link to="/nosotros">Sobre Upper Room</Link></li>
               <li><Link to="/confirmar-asistencia">Consultar Mi Entrada</Link></li>
             </ul>
@@ -59,9 +59,9 @@ const Footer = () => {
               <li>
                 <MapPin size={18} className="contact-icon" />
                 <div>
-                  <a 
-                    href="https://maps.app.goo.gl/YFgXjV3nBEFtdBpX7" 
-                    target="_blank" 
+                  <a
+                    href="https://maps.app.goo.gl/YFgXjV3nBEFtdBpX7"
+                    target="_blank"
                     rel="noopener noreferrer"
                     style={{ color: 'var(--text-secondary)' }}
                   >
@@ -76,7 +76,7 @@ const Footer = () => {
 
         {/* Footer Bottom */}
         <div className="footer-bottom">
-          <p>© {new Date().getFullYear()} Upper Room IBC. Iglesia Bautista Cristiana. Todos los derechos reservados • Hecho por <span className="dev-credit">kvaldez</span></p>
+          <p>© {new Date().getFullYear()} Upper Room IBC • Iglesia Bautista Cristiana (IBC). Todos los derechos reservados •</p>
           <button onClick={scrollToTop} className="scroll-top-btn" aria-label="Volver arriba">
             <span>Subir</span>
             <ArrowUp size={16} />
