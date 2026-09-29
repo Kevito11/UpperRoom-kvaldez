@@ -10,12 +10,15 @@ import Merch from './pages/Merch/Merch';
 import About from './pages/About/About';
 import TicketVerification from './pages/TicketVerification/TicketVerification';
 import ConfirmAttendance from './pages/ConfirmAttendance/ConfirmAttendance';
+import CheckIn from './pages/CheckIn/CheckIn';
 
 import './App.css';
 
 function AppContent() {
   const location = useLocation();
-  const isTicketVerification = location.pathname.startsWith('/ticket/');
+  const isTicketVerification = location.pathname.startsWith('/ticket');
+  const isCheckInPage = location.pathname.startsWith('/check-in') || location.pathname.startsWith('/checkin');
+  const isStandalonePage = isTicketVerification || isCheckInPage;
 
   return (
     <div className="app-container">
@@ -23,7 +26,7 @@ function AppContent() {
       <div className="bg-ambient-orb bg-orb-1"></div>
       <div className="bg-ambient-orb bg-orb-2"></div>
 
-      {!isTicketVerification && <Navbar />}
+      {!isStandalonePage && <Navbar />}
 
       <main className="main-content">
         <Routes>
@@ -33,11 +36,13 @@ function AppContent() {
           <Route path="/nosotros" element={<About />} />
           <Route path="/ticket/:code" element={<TicketVerification />} />
           <Route path="/confirmar-asistencia" element={<ConfirmAttendance />} />
+          <Route path="/check-in" element={<CheckIn />} />
+          <Route path="/checkin" element={<CheckIn />} />
           <Route path="*" element={<Home />} />
         </Routes>
       </main>
 
-      {!isTicketVerification && <Footer />}
+      {!isStandalonePage && <Footer />}
     </div>
   );
 }

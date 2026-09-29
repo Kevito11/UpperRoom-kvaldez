@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Flame, Menu, X, Ticket, ShoppingBag } from 'lucide-react';
+import { Flame, Menu, X, Ticket, ShoppingBag, CheckCircle } from 'lucide-react';
 import InstagramIcon from '../icons/InstagramIcon';
 import './Navbar.css';
 

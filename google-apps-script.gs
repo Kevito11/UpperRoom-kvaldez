@@ -49,33 +49,91 @@ function doPost(e) {
       sheet = ss.insertSheet("Registros Conferencia");
     }
     
-    // Si la hoja está vacía, agregamos los encabezados oficiales
-    if (sheet.getLastRow() === 0) {
-      var headers = [
-        "Fecha Registro", 
-        "Código Ticket", 
-        "Nombre", 
-        "Apellidos", 
-        "Correo Electrónico", 
-        "Teléfono", 
-        "Rango de Edad", 
-        "Iglesia / Procedencia", 
-        "Taller Asignado", 
-        "Pre-orden Merch", 
-        "Estado Ticket", 
-        "Asistencia en Puerta"
-      ];
-      sheet.appendRow(headers);
-      
-      // Dar formato elegante al encabezado
-      var headerRange = sheet.getRange(1, 1, 1, headers.length);
-      headerRange.setBackground("#0f0c0a");
-      headerRange.setFontColor("#ff8c00");
-      headerRange.setFontWeight("bold");
-      sheet.setFrozenRows(1);
+    inicializarEncabezadosSiEsNecesario(sheet);
+
+    // CASO A: Sincronización masiva de Check-Ins desde la web local
+    if (data.action === "syncAttendance" || data.action === "batchCheckIn") {
+      var checkIns = data.checkIns || [];
+      var lastRow = sheet.getLastRow();
+      var updatedCount = 0;
+
+      if (lastRow > 1 && checkIns.length > 0) {
+        // Obtenemos todos los datos para buscar eficientemente por ticketCode (Columna B / Índice 1)
+        var range = sheet.getRange(2, 1, lastRow - 1, 13);
+        var values = range.getValues();
+        
+        // Mapeo rápido de check-ins por código de ticket en mayúsculas
+        var checkInMap = {};
+        for (var c = 0; c < checkIns.length; c++) {
+          var item = checkIns[c];
+          var code = (typeof item === 'string' ? item : item.ticketCode || '').toUpperCase().trim();
+          if (code) {
+            checkInMap[code] = {
+              attended: item.attended !== false,
+              attendedAt: item.attendedAt || Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "dd/MM/yyyy HH:mm:ss")
+            };
+          }
+        }
+
+        // Actualizamos las columnas L (Asistencia en Puerta) y M (Fecha Check-In)
+        for (var i = 0; i < values.length; i++) {
+          var rowCode = (values[i][1] || "").toString().toUpperCase().trim();
+          if (checkInMap[rowCode]) {
+            var record = checkInMap[rowCode];
+            var newStatus = record.attended ? "ASISTIDO" : "NO ASISTIDO";
+            values[i][11] = newStatus; // Columna L (Índice 11)
+            values[i][12] = record.attended ? record.attendedAt : ""; // Columna M (Índice 12)
+            updatedCount++;
+          }
+        }
+
+        // Escribimos los valores actualizados de vuelta a la hoja
+        range.setValues(values);
+      }
+
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "success",
+        message: "Asistencias sincronizadas con éxito",
+        updatedCount: updatedCount,
+        totalCheckedInSent: checkIns.length
+      })).setMimeType(ContentService.MimeType.JSON);
     }
-    
-    // Formatear la fecha local
+
+    // CASO B: Registro Rápido en Puerta (Solo Nombre, Correo, Teléfono)
+    if (data.action === "quickRegister") {
+      var timestamp = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "dd/MM/yyyy HH:mm:ss");
+      var ticketCode = data.ticketCode || ("IBC-UR-" + Math.floor(100000 + Math.random() * 900000));
+      var isAttended = data.attended !== false;
+      var checkInTime = data.attendedAt || (isAttended ? timestamp : "");
+
+      sheet.appendRow([
+        timestamp,
+        ticketCode,
+        data.firstName || data.fullName || "Asistente",
+        data.lastName || "",
+        data.email || "",
+        data.phone || "",
+        data.ageGroup || "General",
+        data.church || "Invitado / IBC",
+        data.taller || "Plenaria General",
+        data.merch || "Ninguna",
+        "CONFIRMADO",
+        isAttended ? "ASISTIDO" : "NO ASISTIDO",
+        checkInTime
+      ]);
+
+      // En registro en puerta (Check in / quickRegister) NO se envía correo alguno,
+      // ya que la persona está ingresando físicamente al auditorio en ese instante.
+
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "success",
+        message: "Registro rápido completado con éxito",
+        ticketCode: ticketCode,
+        attended: isAttended
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // CASO C: Registro Regular Completo de la Conferencia (Comportamiento habitual)
     var timestamp = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "dd/MM/yyyy HH:mm:ss");
     
     // Insertar la fila de registro
@@ -91,7 +149,8 @@ function doPost(e) {
       data.taller || "Sin taller",
       data.merch || "Ninguna",
       "CONFIRMADO",
-      "NO ASISTIDO"
+      data.asistenciaEnPuerta || (data.attended ? "ASISTIDO" : "NO ASISTIDO"),
+      data.attendedAt || ""
     ]);
     
     // Enviar el correo con el boleto y el código QR
@@ -114,13 +173,223 @@ function doPost(e) {
   }
 }
 
-// 2. Respuesta para pruebas desde navegador (GET)
+// Inicializa las cabeceras de la hoja de cálculo si está vacía
+function inicializarEncabezadosSiEsNecesario(sheet) {
+  if (sheet.getLastRow() === 0) {
+    var headers = [
+      "Fecha Registro", 
+      "Código Ticket", 
+      "Nombre", 
+      "Apellidos", 
+      "Correo Electrónico", 
+      "Teléfono", 
+      "Rango de Edad", 
+      "Iglesia / Procedencia", 
+      "Taller Asignado", 
+      "Pre-orden Merch", 
+      "Estado Ticket", 
+      "Asistencia en Puerta",
+      "Fecha Check-In"
+    ];
+    sheet.appendRow(headers);
+    
+    var headerRange = sheet.getRange(1, 1, 1, headers.length);
+    headerRange.setBackground("#0f0c0a");
+    headerRange.setFontColor("#ff8c00");
+    headerRange.setFontWeight("bold");
+    sheet.setFrozenRows(1);
+  } else {
+    // Si ya existe cabecera pero no tiene la columna 13 ("Fecha Check-In"), la agregamos
+    if (sheet.getLastColumn() < 13) {
+      sheet.getRange(1, 13).setValue("Fecha Check-In")
+           .setBackground("#0f0c0a")
+           .setFontColor("#ff8c00")
+           .setFontWeight("bold");
+    }
+  }
+}
+
+// 2. Respuesta para consultas GET (permite a la web de check-in descargar los registros actualizados)
 function doGet(e) {
-  return ContentService.createTextOutput(JSON.stringify({
-    status: "active",
-    service: "Conferencia Despierta 2026 - Upper Room IBC",
-    message: "El Webhook de Google Apps Script está activo y listo para recibir registros."
-  })).setMimeType(ContentService.MimeType.JSON);
+  try {
+    var action = (e && e.parameter && e.parameter.action) ? e.parameter.action : "getRegistrations";
+    
+    // Si se consulta explícitamente el estado del webhook
+    if (action === "ping" || action === "status") {
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "active",
+        service: "Conferencia Despierta 2026 - Upper Room IBC",
+        message: "El Webhook de Google Apps Script está activo y listo para recibir y sincronizar registros."
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    
+    // 1. Buscar pestaña objetivo de forma inteligente
+    var sheet = ss.getSheetByName("Registros Conferencia");
+    if (!sheet) {
+      var allSheets = ss.getSheets();
+      for (var s = 0; s < allSheets.length; s++) {
+        var sName = allSheets[s].getName().toLowerCase();
+        if (sName.indexOf("registro") >= 0 || sName.indexOf("conferencia") >= 0 || sName.indexOf("respuestas") >= 0) {
+          sheet = allSheets[s];
+          break;
+        }
+      }
+      if (!sheet && allSheets.length > 0) {
+        sheet = allSheets[0];
+      }
+    }
+
+    if (!sheet || sheet.getLastRow() <= 1) {
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "success",
+        total: 0,
+        sheetName: sheet ? sheet.getName() : "Ninguna",
+        registrations: [],
+        message: "No hay registros disponibles aún."
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    var lastRow = sheet.getLastRow();
+    var lastCol = Math.max(sheet.getLastColumn(), 13);
+    var allValues = sheet.getRange(1, 1, lastRow, lastCol).getValues();
+    var headerRow = allValues[0];
+    var data = allValues.slice(1);
+
+    // 2. Mapear dinámicamente las columnas según los encabezados de la fila 1
+    var colMap = {
+      createdAt: 0,
+      ticketCode: 1,
+      firstName: 2,
+      lastName: 3,
+      email: 4,
+      phone: 5,
+      ageGroup: 6,
+      church: 7,
+      taller: 8,
+      merch: 9,
+      ticketStatus: 10,
+      puertaStatus: 11,
+      checkInTime: 12
+    };
+
+    for (var h = 0; h < headerRow.length; h++) {
+      var hName = (headerRow[h] || "").toString().toLowerCase().trim();
+      if (hName.indexOf("estado") >= 0) {
+        colMap.ticketStatus = h;
+      } else if (hName.indexOf("código") >= 0 || hName.indexOf("codigo") >= 0 || (hName.indexOf("ticket") >= 0 && hName.indexOf("estado") < 0)) {
+        colMap.ticketCode = h;
+      } else if (hName.indexOf("apellido") >= 0) {
+        colMap.lastName = h;
+      } else if (hName.indexOf("nombre") >= 0) {
+        colMap.firstName = h;
+      } else if (hName.indexOf("correo") >= 0 || hName.indexOf("email") >= 0) {
+        colMap.email = h;
+      } else if (hName.indexOf("tel") >= 0 || hName.indexOf("celular") >= 0 || hName.indexOf("whatsapp") >= 0) {
+        colMap.phone = h;
+      } else if (hName.indexOf("edad") >= 0) {
+        colMap.ageGroup = h;
+      } else if (hName.indexOf("iglesia") >= 0 || hName.indexOf("procedencia") >= 0) {
+        colMap.church = h;
+      } else if (hName.indexOf("taller") >= 0) {
+        colMap.taller = h;
+      } else if (hName.indexOf("merch") >= 0) {
+        colMap.merch = h;
+      } else if (hName.indexOf("puerta") >= 0 || hName.indexOf("asistencia") >= 0) {
+        colMap.puertaStatus = h;
+      } else if (hName.indexOf("check") >= 0 || (hName.indexOf("fecha") >= 0 && hName.indexOf("ingreso") >= 0)) {
+        colMap.checkInTime = h;
+      }
+    }
+
+    // Modo diagnóstico para ver exactamente qué lee la hoja
+    if (action === "debug") {
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "debug",
+        sheetName: sheet.getName(),
+        totalRows: lastRow,
+        totalCols: lastCol,
+        colMap: colMap,
+        headerRow: headerRow,
+        sampleLastRows: data.slice(-3)
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    var registrations = [];
+    for (var i = 0; i < data.length; i++) {
+      var row = data[i];
+      var rawCode = (row[colMap.ticketCode] || "").toString().trim();
+      var firstName = (row[colMap.firstName] || "").toString().trim();
+      var lastName = (row[colMap.lastName] || "").toString().trim();
+      var fullName = (firstName + " " + lastName).trim() || firstName || "Asistente";
+      var email = (row[colMap.email] || "").toString().trim();
+      var phone = (row[colMap.phone] || "").toString().trim();
+
+      // Si la fila no tiene datos de contacto ni nombre ni código, es una fila vacía
+      if (!rawCode && !firstName && !lastName && !email) continue;
+
+      var ticketCode = rawCode;
+      if (!ticketCode || ticketCode.toUpperCase() === "CONFIRMADO" || ticketCode.toUpperCase() === "CONFIRMED" || ticketCode.toUpperCase() === "ATTENDED" || ticketCode.toUpperCase() === "ASISTIDO") {
+        ticketCode = "IBC-UR-" + (100000 + i);
+      }
+      var ageGroup = (row[colMap.ageGroup] || "").toString().trim();
+      var church = (row[colMap.church] || "Invitado").toString().trim();
+      var taller = (row[colMap.taller] || "Sin taller").toString().trim();
+      var merch = (row[colMap.merch] || "Ninguna").toString().trim();
+      var ticketStatus = (row[colMap.ticketStatus] || "CONFIRMADO").toString().trim();
+      
+      var rawPuertaVal = row[colMap.puertaStatus];
+      var rawPuerta = (rawPuertaVal !== undefined && rawPuertaVal !== null) ? rawPuertaVal.toString().trim().toUpperCase() : "";
+      
+      // Soporte universal para checkbox (TRUE/true), ASISTIDO, ATTENDED, SI, SÍ
+      var isAttended = Boolean(
+        rawPuertaVal === true ||
+        rawPuerta === "TRUE" ||
+        rawPuerta === "ASISTIDO" || 
+        rawPuerta === "ATTENDED" || 
+        rawPuerta === "SI" ||
+        rawPuerta === "SÍ" ||
+        ticketStatus.toUpperCase() === "ATTENDED" ||
+        ticketStatus.toUpperCase() === "ASISTIDO"
+      );
+      var checkInTime = (row[colMap.checkInTime] || "").toString().trim();
+
+      registrations.push({
+        id: ticketCode,
+        ticketCode: ticketCode,
+        firstName: firstName,
+        lastName: lastName,
+        fullName: fullName,
+        email: email,
+        phone: phone,
+        ageGroup: ageGroup,
+        church: church,
+        taller: taller,
+        tallerSeleccionado: taller,
+        merch: merch,
+        status: isAttended ? "ATTENDED" : "CONFIRMED",
+        attended: isAttended,
+        attendedAt: checkInTime,
+        createdAt: (row[colMap.createdAt] || "").toString()
+      });
+    }
+
+    return ContentService.createTextOutput(JSON.stringify({
+      status: "success",
+      sheetName: sheet.getName(),
+      total: registrations.length,
+      registrations: registrations,
+      syncedAt: Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "dd/MM/yyyy HH:mm:ss")
+    })).setMimeType(ContentService.MimeType.JSON);
+
+  } catch (error) {
+    Logger.log("Error en doGet: " + error.toString());
+    return ContentService.createTextOutput(JSON.stringify({
+      status: "error",
+      message: error.toString()
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
 }
 
 // 3. Generación y envío del correo con diseño oficial de la conferencia

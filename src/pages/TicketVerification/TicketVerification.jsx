@@ -123,17 +123,12 @@ const TicketVerification = () => {
             </div>
           )}
 
-          {/* Actions for Door Staff */}
+          {/* Ticket Footer Actions */}
           <div className="verif-actions">
-            {!isCheckedIn ? (
-              <button className="btn btn-primary checkin-btn" onClick={handleCheckIn}>
-                <Check size={20} />
-                <span>Validar Ingreso en Puerta</span>
-              </button>
-            ) : (
+            {isCheckedIn && (
               <div className="already-checked-msg">
                 <CheckCircle2 size={18} />
-                <span>Asistencia confirmada a las {new Date().toLocaleTimeString()}</span>
+                <span>Asistencia confirmada {ticket?.attendedAt ? `a las ${new Date(ticket.attendedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : ''}</span>
               </div>
             )}
 
