@@ -1,13 +1,10 @@
 /* ==========================================================================
-   EVENT DETAILS MODAL • CRONOGRAMA DIRECTO & BARRA OCULTABLE AL SCROLLEAR
+   EVENT DETAILS MODAL • CRONOGRAMA DIRECTO & ELEGANTE
    ========================================================================== */
 
 .cronograma-modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background: rgba(3, 5, 10, 0.92);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
@@ -15,104 +12,108 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
+  padding: 1.5rem;
+  box-sizing: border-box;
+  overflow: hidden;
   animation: cFadeIn 0.2s ease-out;
 }
 
 .cronograma-modal-card {
   width: 100%;
-  max-width: 780px;
-  max-height: 90vh;
+  max-width: 880px;
+  height: min(88vh, 800px);
   display: flex;
   flex-direction: column;
   background: #090d16;
   border: 1px solid rgba(255, 106, 0, 0.38);
-  border-radius: 12px;
-  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.95), 0 0 40px rgba(255, 106, 0, 0.15);
+  border-radius: 16px;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.95), 0 0 50px rgba(255, 106, 0, 0.15);
   position: relative;
   overflow: hidden;
+  margin: 0 auto;
+  box-sizing: border-box;
   animation: cPopIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Botón flotante para cerrar: siempre visible y accesible en la esquina */
-.cronograma-floating-close-btn {
-  position: absolute;
-  top: 0.65rem;
-  right: 0.75rem;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: #cbd5e1;
+/* ==========================================================================
+   BARRA SUPERIOR ELEGANTE Y FIJA CON BOTÓN CERRAR INTEGRADO
+   ========================================================================== */
+.cronograma-modal-header {
+  padding: 1.15rem 1.5rem 1rem;
+  background: linear-gradient(180deg, #131a29 0%, #0c111d 100%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
   display: flex;
   align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 30;
-  transition: all 0.2s ease;
-}
-
-.cronograma-floating-close-btn:hover {
-  background: rgba(239, 68, 68, 0.85);
-  border-color: #ef4444;
-  color: #ffffff;
-  transform: rotate(90deg);
-}
-
-/* ==========================================================================
-   BARRA SUPERIOR LIMPIA: Se oculta completamente al bajar (scroll down)
-   ========================================================================== */
-.cronograma-dynamic-header {
-  padding: 1rem 1.5rem 0.85rem;
-  background: linear-gradient(180deg, #131a29 0%, #0c111d 100%);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  display: flex;
-  align-items: flex-end;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 1.25rem;
   flex-shrink: 0;
-  transition: max-height 0.28s cubic-bezier(0.16, 1, 0.3, 1), 
-              opacity 0.25s ease, 
-              padding 0.28s ease, 
-              border-color 0.2s ease;
-  max-height: 80px;
-  overflow: hidden;
-  opacity: 1;
+  position: relative;
+  z-index: 20;
 }
 
-.cronograma-dynamic-header.is-hidden {
-  max-height: 0;
-  padding-top: 0;
-  padding-bottom: 0;
-  opacity: 0;
-  pointer-events: none;
-  border-bottom-color: transparent;
-}
-
-.header-titles-box {
+.cronograma-header-titles {
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
-  padding-right: 2rem;
+  gap: 0.3rem;
+}
+
+.cronograma-header-tags {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
 }
 
 .header-badge-tag {
   font-family: var(--font-heading, sans-serif);
-  font-size: 0.65rem;
+  font-size: 0.68rem;
   font-weight: 800;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.12em;
   color: #fb923c;
   text-transform: uppercase;
 }
 
+.header-badge-date {
+  font-family: var(--font-heading, sans-serif);
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
 .header-main-title {
-  font-size: 1.35rem;
+  font-size: 1.45rem;
   font-weight: 900;
   color: #ffffff;
   margin: 0;
   line-height: 1.15;
   letter-spacing: -0.01em;
+}
+
+.cronograma-modal-close-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cronograma-modal-close-btn:hover {
+  background: rgba(239, 68, 68, 0.88);
+  border-color: #ef4444;
+  color: #ffffff;
+  transform: rotate(90deg);
 }
 
 /* ==========================================================================
@@ -121,15 +122,17 @@
 .cronograma-scroll-body {
   overflow-y: auto;
   flex: 1;
-  padding: 1rem 1.25rem;
+  padding: 1.25rem 1.5rem 2rem;
 }
 
 .cronograma-table-wrapper {
   width: 100%;
-  border-radius: 8px;
+  border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   overflow: hidden;
   background: rgba(13, 18, 31, 0.7);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  margin-bottom: 0.5rem;
 }
 
 .cronograma-table {
@@ -139,12 +142,16 @@
 }
 
 .cronograma-table thead {
-  background: rgba(255, 255, 255, 0.04);
-  border-bottom: 2px solid rgba(255, 255, 255, 0.08);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #0f1524;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
 }
 
 .cronograma-table th {
-  padding: 0.7rem 1.15rem;
+  padding: 0.8rem 1.25rem;
   font-family: var(--font-heading, sans-serif);
   font-size: 0.75rem;
   font-weight: 800;
@@ -154,11 +161,12 @@
 }
 
 .th-hora {
-  width: 175px;
+  width: 180px;
+  min-width: 160px;
 }
 
 .cronograma-table td {
-  padding: 0.7rem 1.15rem;
+  padding: 0.8rem 1.25rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
   vertical-align: top;
 }
@@ -252,18 +260,39 @@
 .talleres-sublist {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
-  margin-top: 0.4rem;
-  padding: 0.55rem 0.75rem;
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  gap: 0.55rem;
+  margin-top: 0.5rem;
+  padding: 0.65rem 0.85rem;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 6px;
 }
 
 .taller-subitem {
   display: flex;
   align-items: center;
-  gap: 0.45rem;
+  gap: 0.65rem;
+}
+
+.taller-mini-thumb {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  flex-shrink: 0;
+}
+
+.taller-subitem-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.taller-subitem-tema {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  font-style: italic;
 }
 
 .taller-dot {
@@ -295,6 +324,126 @@
 
 .taller-line-text strong {
   color: #ffffff;
+}
+
+/* Speaker Inline Badge in Cronograma */
+.is-clickable {
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.cronograma-speaker-inline {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-top: 0.4rem;
+  background: rgba(255, 106, 0, 0.08);
+  border: 1px solid rgba(255, 106, 0, 0.25);
+  border-radius: 6px;
+  padding: 0.35rem 0.65rem;
+  width: fit-content;
+}
+
+.cronograma-speaker-inline.is-clickable:hover {
+  border-color: #ff6a00;
+  background: rgba(255, 106, 0, 0.18);
+  box-shadow: 0 0 15px rgba(255, 106, 0, 0.3);
+  transform: translateX(3px);
+}
+
+.cronograma-speaker-thumb {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid #ff6a00;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.cronograma-speaker-inline.is-clickable:hover .cronograma-speaker-thumb {
+  transform: scale(1.1);
+}
+
+.cronograma-speaker-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.cronograma-speaker-name {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.cronograma-speaker-church {
+  font-size: 0.72rem;
+  color: #fdba74;
+}
+
+.taller-subitem.is-clickable {
+  padding: 0.25rem 0.45rem;
+  border-radius: 5px;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.taller-subitem.is-clickable:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateX(4px);
+}
+
+.taller-subitem.is-clickable:hover .taller-mini-thumb {
+  transform: scale(1.15);
+  border-color: #ffffff;
+}
+
+/* Worship Inline Card in Cronograma */
+.cronograma-worship-inline {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-top: 0.5rem;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(244, 63, 94, 0.35);
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+}
+
+.cronograma-worship-inline.is-clickable:hover {
+  border-color: #f43f5e;
+  background: rgba(244, 63, 94, 0.16);
+  box-shadow: 0 0 16px rgba(244, 63, 94, 0.35);
+  transform: translateX(3px);
+}
+
+.cronograma-worship-thumb {
+  width: 44px;
+  height: 52px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.cronograma-worship-inline.is-clickable:hover .cronograma-worship-thumb {
+  transform: scale(1.08);
+}
+
+.cronograma-worship-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.cronograma-worship-tag {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #fb7185;
+  letter-spacing: 0.08em;
 }
 
 .row-panel {
@@ -401,51 +550,166 @@
 
 /* Responsive */
 @media (max-width: 640px) {
-  .cronograma-modal-card {
-    max-height: 94vh;
+  .cronograma-modal-overlay {
+    padding: 0.65rem;
+    box-sizing: border-box;
   }
 
-  .cronograma-dynamic-header {
-    padding: 0.85rem 1rem 0.65rem;
-    max-height: 75px;
+  .cronograma-modal-card {
+    width: 100%;
+    height: 94vh;
+    max-height: 94vh;
+    border-radius: 14px;
+    margin: 0 auto;
+  }
+
+  .cronograma-modal-header {
+    padding: 0.85rem 1rem;
+    gap: 0.5rem;
   }
 
   .header-main-title {
-    font-size: 1.15rem;
+    font-size: 1.22rem;
   }
 
   .cronograma-scroll-body {
-    padding: 0.75rem 0.85rem;
+    padding: 0.75rem 0.75rem 1.5rem;
   }
 
-  .th-hora {
-    width: 115px;
+  .cronograma-table-wrapper {
+    background: transparent;
+    border: none;
+    box-shadow: none;
   }
 
-  .cronograma-table th,
+  .cronograma-table,
+  .cronograma-table tbody,
+  .cronograma-table tr,
   .cronograma-table td {
-    padding: 0.55rem 0.65rem;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .cronograma-table thead {
+    display: none;
+  }
+
+  .c-row {
+    padding: 0.85rem 0.95rem;
+    background: rgba(13, 18, 31, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    margin-bottom: 0.55rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .td-hora {
+    padding: 0;
+    width: 100%;
+    border-bottom: none;
   }
 
   .hora-text {
-    font-size: 0.76rem;
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.74rem;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+    color: #cbd5e1;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 0.2rem 0.55rem;
+    border-radius: 5px;
+  }
+
+  .row-predicacion .hora-text {
+    background: rgba(255, 106, 0, 0.15);
+    border-color: rgba(255, 106, 0, 0.35);
+    color: #fb923c;
+  }
+
+  .row-talleres .hora-text {
+    background: rgba(99, 102, 241, 0.15);
+    border-color: rgba(99, 102, 241, 0.35);
+    color: #a5b4fc;
+  }
+
+  .row-worship .hora-text {
+    background: rgba(244, 63, 94, 0.15);
+    border-color: rgba(244, 63, 94, 0.35);
+    color: #f472b6;
+  }
+
+  .td-actividad {
+    padding: 0;
+    width: 100%;
+    border-bottom: none;
+  }
+
+  .actividad-content {
+    width: 100%;
+    gap: 0.25rem;
   }
 
   .actividad-nombre {
-    font-size: 0.82rem;
+    font-size: 0.9rem;
+    line-height: 1.35;
+  }
+
+  .actividad-subdetalle {
+    font-size: 0.78rem;
+    line-height: 1.4;
+  }
+
+  .cronograma-speaker-inline {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.45rem 0.75rem;
+    margin-top: 0.35rem;
+  }
+
+  .talleres-sublist {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.65rem 0.75rem;
+    gap: 0.55rem;
+  }
+
+  .taller-subitem {
+    gap: 0.65rem;
+    width: 100%;
   }
 
   .taller-line-text {
-    font-size: 0.76rem;
+    font-size: 0.8rem;
+    line-height: 1.35;
+  }
+
+  .cronograma-worship-inline {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.6rem 0.75rem;
+    margin-top: 0.35rem;
   }
 
   .cronograma-modal-footer {
-    padding: 0.55rem 0.85rem;
+    padding: 0.75rem 1rem;
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 0.75rem;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .btn-modal-close,
   .btn-modal-register {
-    padding: 0.34rem 0.75rem;
-    font-size: 0.72rem;
+    width: 100%;
+    justify-content: center;
+    padding: 0.52rem 0.75rem;
+    font-size: 0.78rem;
+    box-sizing: border-box;
   }
 }

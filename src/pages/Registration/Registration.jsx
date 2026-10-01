@@ -1,18 +1,38 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { 
   Ticket, User, Mail, Phone, MapPin, CheckCircle, Flame, 
-  Printer, Download, RotateCcw, Share2, Sparkles, Building, Calendar, ShieldCheck, Clock,
-  BookOpen, ChevronDown, ChevronUp, ShoppingBag, Package,
-  ArrowLeft, Copy, Info, X, Check, Send, AlertCircle
+  Printer, RotateCcw, Sparkles, Building, Calendar, ShieldCheck, Clock,
+  ShoppingBag, ArrowLeft, Copy, Info, Check, AlertCircle
 } from 'lucide-react';
 import QRCode from 'qrcode';
 import confetti from 'canvas-confetti';
 import { saveRegistration } from '../../lib/ticketStorage';
-import { 
-  sendRegistrationToGoogleSheets, 
-  formatMerchSummary
-} from '../../lib/googleSheetsService';
+import { sendRegistrationToGoogleSheets } from '../../lib/googleSheetsService';
+import Lightbox from '../../components/Lightbox';
 import './Registration.css';
+
+const ALL_CONFERENCE_FLYERS = [
+  {
+    src: `${import.meta.env.BASE_URL}expositores/humberto-mendez.jpeg`,
+    caption: 'Expositor Plenarias: Humberto Méndez (Pastor Iglesia Cristiana Oasis) • Plenaria 1 y 2'
+  },
+  {
+    src: `${import.meta.env.BASE_URL}expositores/natali-ruiz.jpeg`,
+    caption: 'Taller 01: ¿Dónde quedó el fuego? • Natali de Ruiz (Estancamiento espiritual)'
+  },
+  {
+    src: `${import.meta.env.BASE_URL}expositores/pedro-dacuhna.jpeg`,
+    caption: 'Taller 02: Modo Automático • Ps. Pedro da Cuhna (Pastor IBC - Rutina y distracciones)'
+  },
+  {
+    src: `${import.meta.env.BASE_URL}expositores/andy-tejada.jpeg`,
+    caption: 'Taller 03: ¿Y ahora qué hago? • Andy Tejada (Propósito y llamado)'
+  },
+  {
+    src: `${import.meta.env.BASE_URL}worship/worship-night.jpeg`,
+    caption: 'Worship Night: Noche de Adoración y Acción de Gracias • Se celebrará al finalizar la conferencia'
+  }
+];
 
 const CHURCH_OPTIONS = [
   "Iglesia Bautista Cristiana (IBC)",
@@ -33,39 +53,44 @@ const TALLERES = [
   {
     id: 'taller-1',
     nombre: '¿Dónde quedó el fuego?',
-    facilitador: 'Natalie Ruiz',
+    facilitador: 'Natali de Ruiz',
     tema: 'Estancamiento espiritual',
     pregunta: '¿En qué momento dejé de buscar a Dios?',
     descripcion: 'Un espacio para identificar las raíces del enfriamiento espiritual y reavivar la pasión por Cristo. Exploraremos cómo el corazón se aleja de Dios y cómo volver al primer amor.',
     icon: '🔥',
     colorName: 'Rojo',
-    colorClass: 'ticket-rojo'
+    colorClass: 'ticket-rojo',
+    foto: `${import.meta.env.BASE_URL}expositores/natali-ruiz.jpeg`
   },
   {
     id: 'taller-2',
     nombre: 'Modo Automático',
-    facilitador: 'Ps. Pedro daCuhna',
+    facilitador: 'Ps. Pedro da Cuhna',
+    cargo: 'Pastor IBC',
     tema: 'Rutina y distracciones',
     pregunta: '¿Estoy siguiendo a Jesús o simplemente cumpliendo una rutina?',
     descripcion: 'Analizaremos cómo la vida cristiana puede volverse mecánica y sin propósito. Aprenderemos a distinguir la fe viva de la religiosidad vacía y a romper el ciclo de la rutina.',
     icon: '⚙️',
     colorName: 'Azul',
-    colorClass: 'ticket-azul'
+    colorClass: 'ticket-azul',
+    foto: `${import.meta.env.BASE_URL}expositores/pedro-dacuhna.jpeg`
   },
   {
     id: 'taller-3',
     nombre: '¿Y ahora qué hago?',
-    facilitador: 'Andy Tejeda',
+    facilitador: 'Andy Tejada',
     tema: 'Propósito y llamado',
     pregunta: '¿Qué está impidiendo que responda al llamado de Dios?',
     descripcion: 'Un taller práctico sobre cómo discernir y responder al llamado de Dios en tu vida. Abordaremos los miedos, excusas y obstáculos que nos impiden vivir en el propósito divino.',
     icon: '🎯',
     colorName: 'Verde',
-    colorClass: 'ticket-verde'
+    colorClass: 'ticket-verde',
+    foto: `${import.meta.env.BASE_URL}expositores/andy-tejada.jpeg`
   }
 ];
 
 const Registration = () => {
+  const [lightboxIndex, setLightboxIndex] = useState(null);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -504,6 +529,17 @@ const Registration = () => {
                                 style={{ display: 'none' }}
                               />
                               <div className="taller-entry-header">
+                                <img 
+                                  src={taller.foto} 
+                                  alt={taller.facilitador} 
+                                  className="taller-speaker-avatar is-clickable"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setLightboxIndex(taller.id === 'taller-1' ? 1 : taller.id === 'taller-2' ? 2 : 3);
+                                  }}
+                                  title={`Ver afiche: ${taller.nombre}`}
+                                />
                                 <div className="taller-color-indicator"></div>
                                 <div className="taller-entry-title-wrap">
                                   <span className="taller-session-code">SESIÓN PARALELA • EXPOSITOR: {taller.facilitador}</span>
@@ -519,40 +555,50 @@ const Registration = () => {
                             </label>
                           ))}
                         </div>
+
+                        {/* Aclaratoria de Worship Night tras los talleres (con clic para afiche) */}
+                        <div 
+                          className="registration-worship-notice is-clickable"
+                          onClick={() => setLightboxIndex(4)}
+                          role="button"
+                          tabIndex={0}
+                          title="Ver afiche oficial de Worship Night"
+                        >
+                          <img src={`${import.meta.env.BASE_URL}worship/worship-night.jpeg`} alt="Worship Night Flyer" className="reg-worship-thumb" />
+                          <div className="reg-worship-content">
+                            <div className="reg-worship-tag">
+                              <Sparkles size={12} />
+                              <span>CULMINACIÓN • TRAS LOS TALLERES</span>
+                            </div>
+                            <h4 className="reg-worship-title">Worship Night (Noche de Adoración)</h4>
+                            <p className="reg-worship-desc">
+                              Al concluir los talleres y el panel, nos uniremos todos en el auditorio para una noche de adoración y acción de gracias.
+                              <strong> No es una actividad aparte: ¡está 100% incluida con tu entrada!</strong>
+                            </p>
+                          </div>
+                        </div>
                       </div>
                     )}
                   </div>
                 </div>
 
                 {/* -------------------------------------------------------------
-                   MÓDULO 03: MERCHANDISING OFICIAL (DISPONIBLE PRÓXIMAMENTE)
+                   INFORMACIÓN DE MERCH (MINIMALISTA)
                    ------------------------------------------------------------- */}
-                <div className="portal-module" id="modulo-merch">
-                  <div className="module-legend">
-                    <span className="legend-index">03</span>
-                    <div className="legend-text">
-                      <div className="legend-header-row">
-                        <h2>Merch Oficial Despierta 2026</h2>
-                        <span className="tag-merch-badge tag-merch-soon">
-                          <Clock size={12} /> Disponible Próximamente
-                        </span>
+                <div className="registration-merch-minimal" id="modulo-merch">
+                  <div className="merch-min-content">
+                    <div className="merch-min-left">
+                      <div className="merch-min-badge">
+                        <ShoppingBag size={14} />
+                        <span>Colección Oficial Merch</span>
                       </div>
-                      <p>Colección oficial de prendas y accesorios exclusivos de Upper Room IBC</p>
+                      <p className="merch-min-text">
+                        Prendas exclusivas disponibles próximamente. Al registrarte te notificaremos la preventa oficial.
+                      </p>
                     </div>
-                  </div>
-
-                  <div className="module-body">
-                    <div className="merch-soon-banner">
-                      <div className="merch-soon-icon-wrap">
-                        <Clock size={22} />
-                      </div>
-                      <div className="merch-soon-text">
-                        <strong>¡La Colección Oficial de Merch estará disponible próximamente!</strong>
-                        <p>
-                          Estamos finalizando la confección de las piezas exclusivas de la conferencia. Las pre-órdenes se habilitarán muy pronto. Al completar tu registro hoy con tu correo, te avisaremos de primero cuando se abra la preventa oficial.
-                        </p>
-                      </div>
-                    </div>
+                    <span className="merch-min-tag">
+                      <Clock size={11} /> Próximamente
+                    </span>
                   </div>
                 </div>
 
@@ -816,6 +862,15 @@ const Registration = () => {
           </div>
         )}
       </div>
+
+      {/* Lightbox para afiches en alta resolución */}
+      <Lightbox
+        images={ALL_CONFERENCE_FLYERS}
+        activeIndex={lightboxIndex}
+        onClose={() => setLightboxIndex(null)}
+        onPrev={() => setLightboxIndex(prev => (prev === null ? 0 : (prev - 1 + ALL_CONFERENCE_FLYERS.length) % ALL_CONFERENCE_FLYERS.length))}
+        onNext={() => setLightboxIndex(prev => (prev === null ? 0 : (prev + 1) % ALL_CONFERENCE_FLYERS.length))}
+      />
     </div>
   );
 };

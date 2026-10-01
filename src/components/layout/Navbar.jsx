@@ -27,6 +27,20 @@ const Navbar = () => {
     setIsOpen(false);
   }, [location]);
 
+  // Close mobile menu on Escape key press
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setIsOpen(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen]);
+
   // Lock body scroll when mobile menu is open to prevent background glitching
   useEffect(() => {
     if (isOpen) {

@@ -2,15 +2,41 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Flame, Ticket, 
-  Sparkles, CheckCircle, Info,
-  BookOpen, Music, Users, MapPin, ShoppingBag, Clock
+  Sparkles, CheckCircle,
+  BookOpen, Music, Users, MapPin, ShoppingBag, Clock, Maximize2, ArrowRight
 } from 'lucide-react';
 import CountdownTimer from '../../components/CountdownTimer';
 import EventDetailsModal from '../../components/EventDetailsModal';
+import Lightbox from '../../components/Lightbox';
 import './Home.css';
+
+const ALL_CONFERENCE_FLYERS = [
+  {
+    src: `${import.meta.env.BASE_URL}expositores/humberto-mendez.jpeg`,
+    caption: 'Expositor Plenarias: Humberto Méndez (Pastor Iglesia Cristiana Oasis) • Plenaria 1 y 2'
+  },
+  {
+    src: `${import.meta.env.BASE_URL}expositores/natali-ruiz.jpeg`,
+    caption: 'Taller 01: ¿Dónde quedó el fuego? • Natali de Ruiz (Estancamiento espiritual)'
+  },
+  {
+    src: `${import.meta.env.BASE_URL}expositores/pedro-dacuhna.jpeg`,
+    caption: 'Taller 02: Modo Automático • Ps. Pedro da Cuhna (Pastor IBC - Rutina y distracciones)'
+  },
+  {
+    src: `${import.meta.env.BASE_URL}expositores/andy-tejada.jpeg`,
+    caption: 'Taller 03: ¿Y ahora qué hago? • Andy Tejada (Propósito y llamado)'
+  },
+  {
+    src: `${import.meta.env.BASE_URL}worship/worship-night.jpeg`,
+    caption: 'Worship Night: Noche de Adoración y Acción de Gracias • Se celebrará al finalizar la conferencia'
+  }
+];
 
 const Home = () => {
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(null);
+  const [activeFilter, setActiveFilter] = useState('todos');
 
   return (
     <div className="home-page">
@@ -146,6 +172,411 @@ const Home = () => {
         </div>
       </section>
 
+      {/* Expositores, Talleres & Worship Night Section */}
+      <section className="expositores-section section-padding" id="expositores">
+        <div className="container">
+          <div className="section-header">
+            <span className="section-tag">PALABRA Y ADORACIÓN</span>
+            <h2>Expositores y Programa</h2>
+            <p>Conoce a los siervos de Dios que estarán guiando las plenarias, talleres simultáneos y la noche de adoración</p>
+          </div>
+
+          {/* Selector Dinámico de Secciones */}
+          <div className="expositores-filter-nav">
+            <button 
+              type="button" 
+              className={`filter-nav-btn ${activeFilter === 'todos' ? 'is-active' : ''}`}
+              onClick={() => setActiveFilter('todos')}
+            >
+              <span>Todos los Bloques</span>
+            </button>
+            <button 
+              type="button" 
+              className={`filter-nav-btn ${activeFilter === 'plenarias' ? 'is-active' : ''}`}
+              onClick={() => setActiveFilter('plenarias')}
+            >
+              <Flame size={14} />
+              <span>Plenarias</span>
+            </button>
+            <button 
+              type="button" 
+              className={`filter-nav-btn ${activeFilter === 'talleres' ? 'is-active' : ''}`}
+              onClick={() => setActiveFilter('talleres')}
+            >
+              <BookOpen size={14} />
+              <span>3 Talleres</span>
+            </button>
+            <button 
+              type="button" 
+              className={`filter-nav-btn ${activeFilter === 'worship' ? 'is-active' : ''}`}
+              onClick={() => setActiveFilter('worship')}
+            >
+              <Sparkles size={14} />
+              <span>Worship Night</span>
+            </button>
+          </div>
+
+          {/* Bloque 1: Plenarias Generales */}
+          {(activeFilter === 'todos' || activeFilter === 'plenarias') && (
+            <div className="plenaria-feature-wrapper">
+              <div className="plenaria-feature-card glass-panel">
+                <div 
+                  className="plenaria-poster-side"
+                  onClick={() => setLightboxIndex(0)}
+                  role="button"
+                  tabIndex={0}
+                  title="Afiche Humberto Méndez"
+                >
+                  <div className="poster-zoom-hint" aria-hidden="true">
+                    <Maximize2 size={16} />
+                  </div>
+                  <img 
+                    src={`${import.meta.env.BASE_URL}expositores/humberto-mendez.jpeg`} 
+                    alt="Afiche Humberto Méndez - Expositor Plenarias" 
+                    className="plenaria-poster-img"
+                  />
+                </div>
+
+                <div className="plenaria-info-side">
+                  <div className="badge badge-amber badge-glow">
+                    <Flame size={14} />
+                    <span>EXPOSITOR DE PLENARIAS</span>
+                  </div>
+                  
+                  <h3 className="plenaria-speaker-name">Humberto Méndez</h3>
+                  <span className="plenaria-speaker-church">Pastor en Iglesia Cristiana Oasis</span>
+
+                  <p className="plenaria-desc">
+                    Nos acompañará en las dos plenarias centrales de la conferencia, llamándonos con fidelidad bíblica a despertar del letargo espiritual y reenfocar nuestras vidas en la supremacía y suficiencia de Jesucristo.
+                  </p>
+
+                  <div className="plenaria-sessions-box">
+                    <span className="sessions-box-title">SESIONES DE PLENARIA A SU CARGO:</span>
+                    <div className="plenaria-sessions-list">
+                      <div className="plenaria-session-item">
+                        <div className="session-dot"></div>
+                        <div className="session-content">
+                          <strong>Predicación 1: ¿Por qué te duermes?</strong>
+                          <span className="session-time"><Clock size={12} /> 03:30 PM – 04:00 PM</span>
+                        </div>
+                      </div>
+                      <div className="plenaria-session-item">
+                        <div className="session-dot"></div>
+                        <div className="session-content">
+                          <strong>Predicación 2: Dios te llama a despertar</strong>
+                          <span className="session-time"><Clock size={12} /> 04:30 PM – 05:00 PM</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="plenaria-actions">
+                    <button 
+                      type="button" 
+                      className="btn btn-primary btn-sm"
+                      onClick={() => setIsDetailsOpen(true)}
+                    >
+                      <Clock size={15} />
+                      <span>Ver en Cronograma</span>
+                    </button>
+                    <Link to="/registro" className="btn btn-secondary btn-sm">
+                      <Ticket size={15} />
+                      <span>Registrarme</span>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Bloque 2: Talleres Simultáneos */}
+          {(activeFilter === 'todos' || activeFilter === 'talleres') && (
+            <div className="talleres-block-wrapper">
+              <div className="talleres-block-header">
+                <div className="talleres-header-text">
+                  <div className="badge badge-blue">
+                    <BookOpen size={13} />
+                    <span>SESIONES PARALELAS • 05:20 PM</span>
+                  </div>
+                  <h3>3 Talleres Bíblicos y Prácticos</h3>
+                  <p>
+                    Espacios simultáneos donde abordamos las preguntas y luchas cotidianas del joven cristiano. 
+                    Selecciona tu taller preferido al momento de registrarte.
+                  </p>
+                </div>
+                <Link to="/registro" className="btn btn-secondary btn-sm link-to-reg">
+                  <Ticket size={14} />
+                  <span>Elegir Taller en Registro</span>
+                </Link>
+              </div>
+
+              <div className="talleres-cards-grid">
+                {/* Taller 1 */}
+                <div className="taller-card-item glass-panel card-rojo">
+                  <div 
+                    className="taller-card-poster"
+                    onClick={() => setLightboxIndex(1)}
+                    role="button"
+                    tabIndex={0}
+                    title="Afiche Natali de Ruiz"
+                  >
+                    <img 
+                      src={`${import.meta.env.BASE_URL}expositores/natali-ruiz.jpeg`} 
+                      alt="Afiche Natali de Ruiz - ¿Dónde quedó el fuego?" 
+                      className="taller-poster-img"
+                    />
+                    <div className="taller-poster-overlay">
+                      <Maximize2 size={18} />
+                    </div>
+                  </div>
+
+                  <div className="taller-card-body">
+                    <div className="taller-header-row">
+                      <span className="taller-tag-badge tag-rojo">TALLER 01 • ROJO</span>
+                      <span className="taller-time-chip"><Clock size={12} /> 5:20 PM</span>
+                    </div>
+
+                    <h4 className="taller-card-title">¿Dónde quedó el fuego?</h4>
+                    <div className="taller-speaker-row">
+                      <span className="taller-speaker-label">Expositora:</span>
+                      <strong className="taller-speaker-val">Natali de Ruiz</strong>
+                    </div>
+
+                    <div className="taller-focus-pill">
+                      <span>Enfoque: Estancamiento espiritual</span>
+                    </div>
+
+                    <p className="taller-card-question">"¿En qué momento dejé de buscar a Dios?"</p>
+                    <p className="taller-card-summary">
+                      Un espacio para identificar las causas del enfriamiento espiritual y reavivar la pasión por Cristo volviendo al primer amor.
+                    </p>
+
+                    <div className="taller-card-footer">
+                      <span className="taller-status-available">Sesión Paralela</span>
+                      <Link to="/registro" className="taller-btn-enroll">
+                        <span>Elegir Taller</span>
+                        <ArrowRight size={13} />
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Taller 2 */}
+                <div className="taller-card-item glass-panel card-azul">
+                  <div 
+                    className="taller-card-poster"
+                    onClick={() => setLightboxIndex(2)}
+                    role="button"
+                    tabIndex={0}
+                    title="Afiche Ps. Pedro da Cuhna"
+                  >
+                    <img 
+                      src={`${import.meta.env.BASE_URL}expositores/pedro-dacuhna.jpeg`} 
+                      alt="Afiche Ps. Pedro da Cuhna - Modo Automático" 
+                      className="taller-poster-img"
+                    />
+                    <div className="taller-poster-overlay">
+                      <Maximize2 size={18} />
+                    </div>
+                  </div>
+
+                  <div className="taller-card-body">
+                    <div className="taller-header-row">
+                      <span className="taller-tag-badge tag-azul">TALLER 02 • AZUL</span>
+                      <span className="taller-time-chip"><Clock size={12} /> 5:20 PM</span>
+                    </div>
+
+                    <h4 className="taller-card-title">Modo Automático</h4>
+                    <div className="taller-speaker-row">
+                      <span className="taller-speaker-label">Expositor:</span>
+                      <strong className="taller-speaker-val">Ps. Pedro da Cuhna</strong>
+                      <span className="taller-church-sub">Pastor IBC</span>
+                    </div>
+
+                    <div className="taller-focus-pill">
+                      <span>Enfoque: Rutina y distracciones</span>
+                    </div>
+
+                    <p className="taller-card-question">"¿Estoy siguiendo a Jesús o simplemente cumpliendo una rutina?"</p>
+                    <p className="taller-card-summary">
+                      Aprende a discernir la religiosidad mecánica de la verdadera devoción y rompe con la monotonía en tu caminar diario.
+                    </p>
+
+                    <div className="taller-card-footer">
+                      <span className="taller-status-available">Sesión Paralela</span>
+                      <Link to="/registro" className="taller-btn-enroll">
+                        <span>Elegir Taller</span>
+                        <ArrowRight size={13} />
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Taller 3 */}
+                <div className="taller-card-item glass-panel card-verde">
+                  <div 
+                    className="taller-card-poster"
+                    onClick={() => setLightboxIndex(3)}
+                    role="button"
+                    tabIndex={0}
+                    title="Afiche Andy Tejada"
+                  >
+                    <img 
+                      src={`${import.meta.env.BASE_URL}expositores/andy-tejada.jpeg`} 
+                      alt="Afiche Andy Tejada - ¿Y ahora qué hago?" 
+                      className="taller-poster-img"
+                    />
+                    <div className="taller-poster-overlay">
+                      <Maximize2 size={18} />
+                    </div>
+                  </div>
+
+                  <div className="taller-card-body">
+                    <div className="taller-header-row">
+                      <span className="taller-tag-badge tag-verde">TALLER 03 • VERDE</span>
+                      <span className="taller-time-chip"><Clock size={12} /> 5:20 PM</span>
+                    </div>
+
+                    <h4 className="taller-card-title">¿Y ahora qué hago?</h4>
+                    <div className="taller-speaker-row">
+                      <span className="taller-speaker-label">Expositor:</span>
+                      <strong className="taller-speaker-val">Andy Tejada</strong>
+                    </div>
+
+                    <div className="taller-focus-pill">
+                      <span>Enfoque: Propósito y llamado</span>
+                    </div>
+
+                    <p className="taller-card-question">"¿Qué está impidiendo que responda al llamado de Dios?"</p>
+                    <p className="taller-card-summary">
+                      Un taller práctico sobre cómo discernir y responder con convicción al propósito de Dios en tu vida venciendo miedos y dudas.
+                    </p>
+
+                    <div className="taller-card-footer">
+                      <span className="taller-status-available">Sesión Paralela</span>
+                      <Link to="/registro" className="taller-btn-enroll">
+                        <span>Elegir Taller</span>
+                        <ArrowRight size={13} />
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Indicador de Transición / Flujo hacia Worship Night */}
+          {activeFilter === 'todos' && (
+            <div className="conference-flow-connector">
+              <div className="flow-line"></div>
+              <div className="flow-badge">
+                <Sparkles size={14} />
+                <span>AL FINALIZAR LOS TALLERES Y EL PANEL PASTORAL</span>
+              </div>
+              <div className="flow-line"></div>
+            </div>
+          )}
+
+          {/* Bloque 3: Gran Cierre — Worship Night */}
+          {(activeFilter === 'todos' || activeFilter === 'worship') && (
+            <div className="worship-feature-wrapper">
+              <div className="worship-feature-card glass-panel">
+                <div 
+                  className="worship-poster-col"
+                  onClick={() => setLightboxIndex(4)}
+                  role="button"
+                  tabIndex={0}
+                  title="Afiche Oficial Worship Night"
+                >
+                  <div className="worship-poster-glow"></div>
+                  <div className="poster-zoom-hint" aria-hidden="true">
+                    <Maximize2 size={16} />
+                  </div>
+                  <img 
+                    src={`${import.meta.env.BASE_URL}worship/worship-night.jpeg`} 
+                    alt="Afiche Oficial Noche de Adoración - Worship Night Conferencia Despierta 2026" 
+                    className="worship-poster-img"
+                  />
+                </div>
+
+                <div className="worship-info-col">
+                  <div className="worship-highlight-tag">
+                    <Sparkles size={14} />
+                    <span>GRAN CIERRE • NOCHE DE ADORACIÓN</span>
+                  </div>
+
+                  <h3 className="worship-title">Worship Night</h3>
+                  <h4 className="worship-subtitle">Adoración y Acción de Gracias</h4>
+
+                  {/* Aclaratoria: actividad oficial de culminación */}
+                  <div className="worship-integration-notice">
+                    <div className="notice-icon-box">
+                      <CheckCircle size={18} />
+                    </div>
+                    <div className="notice-text">
+                      <strong>Actividad oficial de culminación</strong>
+                      <p>
+                        Worship Night se celebrará al finalizar la conferencia, reuniendo a todos los jóvenes en una sola voz de adoración y acción de gracias.
+                      </p>
+                    </div>
+                  </div>
+
+                  <p className="worship-description">
+                    Será el broche de oro de la Conferencia Despierta: un tiempo íntimo y conmovedor de adoración congregacional con alabanzas cristocéntricas, clamor e intercesión unánime por nuestra generación.
+                  </p>
+
+                  <div className="worship-specs-grid">
+                    <div className="worship-spec-item">
+                      <Clock size={16} className="spec-icon" />
+                      <div>
+                        <span className="spec-label">HORARIO</span>
+                        <strong>07:00 PM – 08:00 PM</strong>
+                      </div>
+                    </div>
+                    <div className="worship-spec-item">
+                      <MapPin size={16} className="spec-icon" />
+                      <div>
+                        <span className="spec-label">LUGAR</span>
+                        <strong>Auditorio IBC</strong>
+                      </div>
+                    </div>
+                    <div className="worship-spec-item">
+                      <Music size={16} className="spec-icon" />
+                      <div>
+                        <span className="spec-label">EXPERIENCIA</span>
+                        <strong>Alabanza & Gratitud</strong>
+                      </div>
+                    </div>
+                    <div className="worship-spec-item">
+                      <Sparkles size={16} className="spec-icon" />
+                      <div>
+                        <span className="spec-label">CULMINACIÓN</span>
+                        <strong>Al finalizar la conferencia</strong>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="worship-actions">
+                    <Link to="/registro" className="btn btn-primary">
+                      <Ticket size={16} />
+                      <span>Registrarme a la Conferencia</span>
+                    </Link>
+                    <button 
+                      type="button" 
+                      className="btn btn-secondary"
+                      onClick={() => setIsDetailsOpen(true)}
+                    >
+                      <Clock size={16} />
+                      <span>Ver Cronograma Oficial</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+
       {/* Merch Banner Promo */}
       <section className="merch-banner-section">
         <div className="container">
@@ -224,6 +655,14 @@ const Home = () => {
           </div>
         </div>
       </section>
+      {/* Lightbox para afiches en alta resolución */}
+      <Lightbox
+        images={ALL_CONFERENCE_FLYERS}
+        activeIndex={lightboxIndex}
+        onClose={() => setLightboxIndex(null)}
+        onPrev={() => setLightboxIndex(prev => (prev === null ? 0 : (prev - 1 + ALL_CONFERENCE_FLYERS.length) % ALL_CONFERENCE_FLYERS.length))}
+        onNext={() => setLightboxIndex(prev => (prev === null ? 0 : (prev + 1) % ALL_CONFERENCE_FLYERS.length))}
+      />
     </div>
   );
 };

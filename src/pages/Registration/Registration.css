@@ -498,6 +498,30 @@
   flex-shrink: 0;
 }
 
+.taller-speaker-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  flex-shrink: 0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.taller-speaker-avatar.is-clickable {
+  cursor: pointer;
+}
+
+.taller-speaker-avatar.is-clickable:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 12px rgba(255, 106, 0, 0.5);
+}
+
+.color-ticket-rojo .taller-speaker-avatar { border-color: #ef4444; }
+.color-ticket-azul .taller-speaker-avatar { border-color: #3b82f6; }
+.color-ticket-verde .taller-speaker-avatar { border-color: #22c55e; }
+
 .taller-entry-quote {
   font-size: 0.88rem;
   font-style: italic;
@@ -515,58 +539,156 @@
   margin: 0;
 }
 
-/* --- MÓDULO DE MERCH --- */
-.merch-soon-card {
-  display: flex;
-  flex-direction: column;
-  gap: 1.2rem;
-  background: rgba(13, 17, 26, 0.6);
-  border: 1px solid rgba(245, 158, 11, 0.25);
-  border-radius: var(--radius-md);
-  padding: 1.5rem;
-  animation: fadeInDown 0.3s ease;
-}
-
-.merch-soon-banner {
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(255, 106, 0, 0.05) 100%);
-  border: 1px solid rgba(245, 158, 11, 0.2);
-  border-radius: var(--radius-sm);
-  padding: 1.15rem 1.25rem;
-}
-
-.merch-soon-icon-wrap {
-  width: 42px;
-  height: 42px;
-  border-radius: 10px;
-  background: rgba(245, 158, 11, 0.15);
-  border: 1px solid rgba(245, 158, 11, 0.3);
+/* Notice de Worship Night en el Registro */
+.registration-worship-notice {
   display: flex;
   align-items: center;
-  justify-content: center;
-  color: #f59e0b;
-  flex-shrink: 0;
+  gap: 1.25rem;
+  margin-top: 1rem;
+  padding: 1rem 1.25rem;
+  background: linear-gradient(135deg, rgba(20, 10, 8, 0.85) 0%, rgba(13, 17, 26, 0.85) 100%);
+  border: 1px solid rgba(255, 136, 0, 0.35);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.merch-soon-text {
+.registration-worship-notice.is-clickable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.registration-worship-notice.is-clickable:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 136, 0, 0.65);
+  box-shadow: 0 8px 25px rgba(255, 106, 0, 0.25);
+}
+
+.reg-worship-thumb {
+  width: 60px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+  transition: transform 0.2s ease;
+}
+
+.registration-worship-notice.is-clickable:hover .reg-worship-thumb {
+  transform: scale(1.06);
+}
+
+.reg-worship-content {
   display: flex;
   flex-direction: column;
+  gap: 0.3rem;
+}
+
+.reg-worship-tag {
+  display: inline-flex;
+  align-items: center;
   gap: 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #ff8c00;
+  text-transform: uppercase;
 }
 
-.merch-soon-text strong {
-  font-size: 0.98rem;
+.reg-worship-title {
+  font-size: 1.05rem;
+  font-weight: 800;
   color: #ffffff;
-  font-weight: 700;
+  margin: 0;
+  line-height: 1.2;
 }
 
-.merch-soon-text p {
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-  line-height: 1.5;
+.reg-worship-desc {
+  font-size: 0.82rem;
+  color: #cbd5e1;
+  line-height: 1.45;
   margin: 0;
+}
+
+.reg-worship-desc strong {
+  color: #fbbf24;
+}
+
+@media (max-width: 600px) {
+  .registration-worship-notice {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.85rem;
+  }
+}
+
+/* --- INFORMACIÓN DE MERCH (MINIMALISTA) --- */
+.registration-merch-minimal {
+  margin-top: 1.25rem;
+  background: rgba(13, 17, 26, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: var(--radius-sm);
+  padding: 0.85rem 1.15rem;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.registration-merch-minimal:hover {
+  border-color: rgba(255, 106, 0, 0.35);
+  background: rgba(13, 17, 26, 0.75);
+}
+
+.merch-min-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.merch-min-left {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.merch-min-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #ff8c00;
+  background: rgba(255, 140, 0, 0.12);
+  border: 1px solid rgba(255, 140, 0, 0.3);
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.merch-min-text {
+  font-size: 0.82rem;
+  color: #cbd5e1;
+  margin: 0;
+  line-height: 1.45;
+}
+
+.merch-min-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.25rem 0.55rem;
+  border-radius: 4px;
+  white-space: nowrap;
 }
 
 .merch-soon-grid {

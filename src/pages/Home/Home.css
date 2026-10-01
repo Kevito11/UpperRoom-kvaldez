@@ -986,3 +986,754 @@
     width: 100%;
   }
 }
+
+/* ==========================================================================
+   EXPOSITORES, TALLERES & WORSHIP NIGHT SECTION
+   ========================================================================== */
+
+.expositores-section {
+  position: relative;
+  overflow: hidden;
+}
+
+/* --- Filtros Dinámicos de Bloques --- */
+.expositores-filter-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 0 auto 2.5rem auto;
+  padding: 0.35rem;
+  background: rgba(13, 17, 26, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-full);
+  width: fit-content;
+  max-width: 100%;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  flex-wrap: wrap;
+}
+
+.filter-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 0.55rem 1.25rem;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+
+.filter-nav-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.filter-nav-btn.active,
+.filter-nav-btn.is-active {
+  background: linear-gradient(135deg, #ff6a00 0%, #ea580c 100%);
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 4px 20px rgba(255, 106, 0, 0.4);
+}
+
+/* --- Bloque 1: Plenarias Generales --- */
+.plenaria-feature-wrapper {
+  margin-bottom: 3.5rem;
+}
+
+.plenaria-feature-card {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 2.5rem;
+  padding: 2rem;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, rgba(17, 24, 39, 0.85) 0%, rgba(10, 14, 23, 0.95) 100%);
+  border: 1px solid rgba(255, 106, 0, 0.3);
+  box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.8), 0 0 30px rgba(255, 106, 0, 0.1);
+  align-items: center;
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.plenaria-feature-card:hover {
+  border-color: rgba(255, 106, 0, 0.55);
+  box-shadow: 0 25px 60px -10px rgba(0, 0, 0, 0.9), 0 0 40px rgba(255, 106, 0, 0.2);
+}
+
+.plenaria-poster-side {
+  position: relative;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  cursor: pointer;
+  aspect-ratio: 4 / 5;
+  background: #000000;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+}
+
+.plenaria-poster-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.plenaria-poster-side:hover .plenaria-poster-img {
+  transform: scale(1.04);
+}
+
+.poster-zoom-hint {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.65rem;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-full);
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 600;
+  opacity: 0.85;
+  transition: all 0.2s ease;
+}
+
+.plenaria-poster-side:hover .poster-zoom-hint,
+.worship-poster-col:hover .poster-zoom-hint {
+  opacity: 1;
+  background: rgba(255, 106, 0, 0.85);
+  border-color: #ff6a00;
+  transform: scale(1.05);
+}
+
+.plenaria-info-side {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.plenaria-speaker-name {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+.plenaria-speaker-church {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--accent-light);
+}
+
+.plenaria-desc {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.plenaria-sessions-box {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  margin-top: 0.25rem;
+}
+
+.sessions-box-title {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  margin-bottom: 0.65rem;
+}
+
+.plenaria-sessions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.plenaria-session-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+}
+
+.session-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ff6a00;
+  margin-top: 5px;
+  flex-shrink: 0;
+  box-shadow: 0 0 8px rgba(255, 106, 0, 0.7);
+}
+
+.session-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.session-content strong {
+  font-size: 0.92rem;
+  color: #ffffff;
+}
+
+.session-time {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.plenaria-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-top: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* --- Bloque 2: Talleres Prácticos --- */
+.talleres-block-wrapper {
+  margin-bottom: 2.5rem;
+}
+
+.talleres-block-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 1.75rem;
+  flex-wrap: wrap;
+}
+
+.talleres-header-text {
+  max-width: 600px;
+}
+
+.talleres-header-text h3 {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0.4rem 0 0.35rem 0;
+}
+
+.talleres-header-text p {
+  font-size: 0.92rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  margin: 0;
+}
+
+.talleres-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.taller-card-item {
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+  background: rgba(13, 17, 26, 0.75);
+}
+
+.taller-card-item:hover {
+  transform: translateY(-5px);
+}
+
+.card-rojo {
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+.card-rojo:hover {
+  border-color: rgba(239, 68, 68, 0.65);
+  box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.8), 0 0 25px rgba(239, 68, 68, 0.2);
+}
+
+.card-azul {
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+.card-azul:hover {
+  border-color: rgba(59, 130, 246, 0.65);
+  box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.8), 0 0 25px rgba(59, 130, 246, 0.2);
+}
+
+.card-verde {
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+.card-verde:hover {
+  border-color: rgba(34, 197, 94, 0.65);
+  box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.8), 0 0 25px rgba(34, 197, 94, 0.2);
+}
+
+.taller-card-poster {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  cursor: pointer;
+  background: #000000;
+}
+
+.taller-poster-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.taller-card-poster:hover .taller-poster-img {
+  transform: scale(1.05);
+}
+
+.taller-poster-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  color: #ffffff;
+}
+
+.taller-card-poster:hover .taller-poster-overlay {
+  opacity: 1;
+}
+
+.taller-card-body {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  flex: 1;
+}
+
+.taller-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.taller-tag-badge {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.tag-rojo {
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+.tag-azul {
+  background: rgba(59, 130, 246, 0.15);
+  color: #93c5fd;
+  border: 1px solid rgba(59, 130, 246, 0.4);
+}
+
+.tag-verde {
+  background: rgba(34, 197, 94, 0.15);
+  color: #86efac;
+  border: 1px solid rgba(34, 197, 94, 0.4);
+}
+
+.taller-time-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.taller-card-title {
+  font-size: 1.22rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.taller-speaker-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.taller-speaker-label {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+}
+
+.taller-speaker-val {
+  font-size: 0.88rem;
+  color: #e2e8f0;
+}
+
+.taller-church-sub {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.taller-focus-pill {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--accent-light);
+  background: rgba(255, 106, 0, 0.08);
+  padding: 0.25rem 0.55rem;
+  border-radius: 4px;
+  width: fit-content;
+}
+
+.taller-card-question {
+  font-size: 0.84rem;
+  font-style: italic;
+  color: #f1f5f9;
+  border-left: 2px solid rgba(255, 255, 255, 0.25);
+  padding-left: 0.6rem;
+  margin: 0.2rem 0;
+  line-height: 1.4;
+}
+
+.taller-card-summary {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0;
+  flex: 1;
+}
+
+.taller-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.btn-link-action {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.2s ease;
+}
+
+.btn-link-action:hover {
+  color: #ffffff;
+}
+
+.taller-btn-enroll {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--accent-light);
+  text-decoration: none;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.taller-btn-enroll:hover {
+  color: #ffffff;
+  transform: translateX(3px);
+}
+
+/* --- Conector de Flujo hacia Worship Night --- */
+.conference-flow-connector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  margin: 3rem 0;
+}
+
+.flow-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 106, 0, 0.35), transparent);
+}
+
+.flow-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 1.1rem;
+  background: rgba(14, 11, 9, 0.9);
+  border: 1px solid rgba(255, 106, 0, 0.4);
+  border-radius: var(--radius-full);
+  color: #fbbf24;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  box-shadow: 0 0 20px rgba(255, 106, 0, 0.2);
+}
+
+/* --- Bloque 3: Gran Cierre — Worship Night --- */
+.worship-feature-wrapper {
+  margin-top: 1rem;
+}
+
+.worship-feature-card {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 3rem;
+  padding: 2.25rem;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, rgba(20, 10, 8, 0.95) 0%, rgba(13, 17, 26, 0.95) 100%);
+  border: 1px solid rgba(255, 136, 0, 0.4);
+  box-shadow: 0 25px 65px -15px rgba(0, 0, 0, 0.9), 0 0 45px rgba(255, 106, 0, 0.18);
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.worship-feature-card:hover {
+  border-color: rgba(255, 136, 0, 0.65);
+  box-shadow: 0 30px 75px -15px rgba(0, 0, 0, 0.95), 0 0 60px rgba(255, 106, 0, 0.28);
+}
+
+.worship-poster-col {
+  position: relative;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  cursor: pointer;
+  aspect-ratio: 4 / 5;
+  background: #000000;
+  border: 1px solid rgba(255, 136, 0, 0.3);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.85);
+}
+
+.worship-poster-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.45s ease;
+}
+
+.worship-poster-col:hover .worship-poster-img {
+  transform: scale(1.04);
+}
+
+.worship-poster-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 60%, rgba(255, 106, 0, 0.25) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.worship-info-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.worship-highlight-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  width: fit-content;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #ff8c00;
+  background: rgba(255, 140, 0, 0.12);
+  border: 1px solid rgba(255, 140, 0, 0.35);
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-full);
+}
+
+.worship-title {
+  font-size: 2.6rem;
+  font-weight: 900;
+  color: #ffffff;
+  margin: 0;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+.worship-subtitle {
+  font-size: 1.15rem;
+  font-weight: 700;
+  background: linear-gradient(90deg, #ff8c00 0%, #fbbf24 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: -0.4rem 0 0 0;
+}
+
+/* Notice de aclaratoria destacada */
+.worship-integration-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  background: rgba(255, 106, 0, 0.09);
+  border: 1px solid rgba(255, 106, 0, 0.3);
+  border-radius: var(--radius-sm);
+  padding: 0.85rem 1.1rem;
+}
+
+.notice-icon-box {
+  color: #fbbf24;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.notice-text strong {
+  display: block;
+  font-size: 0.88rem;
+  color: #ffffff;
+  margin-bottom: 0.2rem;
+}
+
+.notice-text p {
+  font-size: 0.82rem;
+  color: #cbd5e1;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.worship-description {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.worship-specs-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.85rem;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+}
+
+.worship-spec-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.worship-spec-item .spec-icon {
+  color: #ff8c00;
+  flex-shrink: 0;
+}
+
+.worship-spec-item .spec-label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+}
+
+.worship-spec-item strong {
+  font-size: 0.86rem;
+  color: #ffffff;
+}
+
+.worship-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+/* --- Media Queries Responsivas --- */
+@media (max-width: 992px) {
+  .plenaria-feature-card {
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+  }
+  
+  .plenaria-poster-side {
+    max-width: 320px;
+    margin: 0 auto;
+  }
+
+  .talleres-cards-grid {
+    grid-template-columns: 1fr;
+    max-width: 450px;
+    margin: 0 auto;
+  }
+
+  .worship-feature-card {
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+  }
+
+  .worship-poster-col {
+    max-width: 340px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .plenaria-speaker-name {
+    font-size: 1.75rem;
+  }
+
+  .worship-title {
+    font-size: 2rem;
+  }
+
+  .worship-specs-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .worship-actions, .plenaria-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .worship-actions .btn, .plenaria-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+

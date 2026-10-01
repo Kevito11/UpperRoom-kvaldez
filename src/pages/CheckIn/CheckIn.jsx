@@ -272,6 +272,20 @@ const CheckIn = () => {
     }
   }, []);
 
+  // Close quick modal on Escape key press
+  useEffect(() => {
+    if (!showQuickModal) return;
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setShowQuickModal(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showQuickModal]);
+
   // Lock body scroll when modal is open to prevent background movement
   useEffect(() => {
     if (showQuickModal) {
