@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Flame, MapPin, ArrowUp } from 'lucide-react';
 import InstagramIcon from '../icons/InstagramIcon';
+import SpotifyIcon from '../icons/SpotifyIcon';
 import './Footer.css';
 
 const Footer = () => {
@@ -31,10 +32,21 @@ const Footer = () => {
                 href="https://www.instagram.com/upperroomibcrd/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="social-icon-btn"
+                className="social-icon-btn instagram-btn"
                 aria-label="Instagram de Upper Room IBC"
+                title="Instagram @upperroomibcrd"
               >
                 <InstagramIcon size={18} />
+              </a>
+              <a
+                href="https://open.spotify.com/playlist/6BM0YYuAadGX4rxq8LUcjK?si=e02beb64e4b84927"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="social-icon-btn spotify-btn"
+                aria-label="Playlist oficial Conferencia Despierta en Spotify"
+                title="Playlist Oficial en Spotify"
+              >
+                <SpotifyIcon size={18} />
               </a>
             </div>
           </div>
@@ -48,6 +60,16 @@ const Footer = () => {
               <li><Link to="/merch">Merch Oficial (Próximamente)</Link></li>
               <li><Link to="/nosotros">Sobre Upper Room</Link></li>
               <li><Link to="/confirmar-asistencia">Consultar Mi Entrada</Link></li>
+              <li>
+                <a 
+                  href="https://open.spotify.com/playlist/6BM0YYuAadGX4rxq8LUcjK?si=e02beb64e4b84927" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="footer-spotify-link"
+                >
+                  Playlist Spotify ❤️‍🔥
+                </a>
+              </li>
             </ul>
           </div>
 

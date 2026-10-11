@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import Lightbox from './Lightbox';
 import { lockScroll, unlockScroll } from '../utils/scrollLock';
+import SpotifyIcon from './icons/SpotifyIcon';
 import './EventDetailsModal.css';
 
 const ALL_CONFERENCE_FLYERS = [
@@ -292,6 +293,17 @@ const EventDetailsModal = ({ isOpen, onClose }) => {
                               <div className="cronograma-worship-text">
                                 <span className="cronograma-worship-tag">GRAN CIERRE • AL FINALIZAR LA CONFERENCIA</span>
                                 <span className="actividad-subdetalle">{item.detalle}</span>
+                                <a
+                                  href="https://open.spotify.com/playlist/6BM0YYuAadGX4rxq8LUcjK?si=e02beb64e4b84927"
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="cronograma-spotify-btn"
+                                  onClick={(e) => e.stopPropagation()}
+                                  title="Escuchar canciones oficiales en Spotify"
+                                >
+                                  <SpotifyIcon size={14} />
+                                  <span>Escuchar Playlist Oficial en Spotify</span>
+                                </a>
                               </div>
                             </div>
                           )}

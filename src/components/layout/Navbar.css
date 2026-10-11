@@ -179,6 +179,27 @@
   transform: translateY(-2px);
 }
 
+.spotify-nav-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  transition: all 0.25s ease;
+}
+
+.spotify-nav-btn:hover {
+  color: #ffffff;
+  background: #1DB954;
+  border-color: transparent;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(29, 185, 84, 0.45);
+}
+
 .nav-cta {
   padding: 0.65rem 1.35rem;
   font-size: 0.88rem;
@@ -269,6 +290,27 @@
   justify-content: center;
 }
 
+.mobile-spotify-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.85rem;
+  margin-top: 0.75rem;
+  color: #1ed760;
+  font-weight: 600;
+  font-size: 0.92rem;
+  background: rgba(29, 185, 84, 0.08);
+  border: 1px solid rgba(29, 185, 84, 0.25);
+  border-radius: var(--radius-sm);
+  transition: all 0.25s ease;
+}
+
+.mobile-spotify-link:hover {
+  background: rgba(29, 185, 84, 0.18);
+  color: #ffffff;
+}
+
 .mobile-ig-link {
   display: flex;
   align-items: center;
@@ -292,7 +334,8 @@
   .nav-cta {
     display: none;
   }
-  .instagram-nav-btn {
+  .instagram-nav-btn,
+  .spotify-nav-btn {
     display: none;
   }
 }

@@ -186,6 +186,13 @@
   margin-top: 0.5rem;
 }
 
+.about-spotify-btn:hover {
+  background: #1DB954 !important;
+  color: #ffffff !important;
+  border-color: #1DB954 !important;
+  box-shadow: 0 4px 16px rgba(29, 185, 84, 0.45);
+}
+
 @media (max-width: 992px) {
   .about-concept-card {
     grid-template-columns: 1fr;

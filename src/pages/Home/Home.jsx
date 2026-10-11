@@ -8,6 +8,7 @@ import {
 import CountdownTimer from '../../components/CountdownTimer';
 import EventDetailsModal from '../../components/EventDetailsModal';
 import Lightbox from '../../components/Lightbox';
+import SpotifyIcon from '../../components/icons/SpotifyIcon';
 import './Home.css';
 
 const ALL_CONFERENCE_FLYERS = [
@@ -553,6 +554,47 @@ const Home = () => {
                         <span className="spec-label">CULMINACIÓN</span>
                         <strong>Al finalizar la conferencia</strong>
                       </div>
+                    </div>
+                  </div>
+
+                  {/* Playlist Oficial en Spotify */}
+                  <div className="worship-spotify-box">
+                    <div className="worship-spotify-header">
+                      <div className="worship-spotify-badge">
+                        <SpotifyIcon size={16} />
+                        <span>PLAYLIST OFICIAL • SPOTIFY</span>
+                      </div>
+                      <span className="worship-spotify-tagline">❤️‍🔥 DESPIERTA 2026 ❤️‍🔥</span>
+                    </div>
+
+                    <p className="worship-spotify-invitation">
+                      <strong>¡Aprende las canciones y adora con nosotros!</strong> Te invitamos a escuchar la selección de alabanzas congregacionales e himnos que entonaremos durante la conferencia y la Noche de Adoración.
+                    </p>
+
+                    <div className="worship-spotify-player-wrap">
+                      <iframe
+                        src="https://open.spotify.com/embed/playlist/6BM0YYuAadGX4rxq8LUcjK?utm_source=generator&theme=0"
+                        width="100%"
+                        height="152"
+                        frameBorder="0"
+                        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                        loading="lazy"
+                        className="worship-spotify-iframe"
+                        title="Playlist Oficial Conferencia Despierta Upper Room 2026 en Spotify"
+                      ></iframe>
+                    </div>
+
+                    <div className="worship-spotify-btn-row">
+                      <a
+                        href="https://open.spotify.com/playlist/6BM0YYuAadGX4rxq8LUcjK?si=e02beb64e4b84927"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn btn-spotify"
+                        title="Abrir la playlist en Spotify"
+                      >
+                        <SpotifyIcon size={18} />
+                        <span>Abrir Playlist en Spotify</span>
+                      </a>
                     </div>
                   </div>
 

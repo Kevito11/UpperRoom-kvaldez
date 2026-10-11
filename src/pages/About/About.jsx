@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Flame, Shield, Heart, Users, BookOpen, Compass, Calendar, ArrowRight, MapPin } from 'lucide-react';
 import InstagramIcon from '../../components/icons/InstagramIcon';
+import SpotifyIcon from '../../components/icons/SpotifyIcon';
 import './About.css';
 
 const About = () => {
@@ -126,6 +127,16 @@ const About = () => {
               >
                 <InstagramIcon size={18} />
                 <span>@upperroomibcrd</span>
+              </a>
+              <a 
+                href="https://open.spotify.com/playlist/6BM0YYuAadGX4rxq8LUcjK?si=e02beb64e4b84927" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="btn btn-secondary about-spotify-btn"
+                title="Playlist Oficial Conferencia Despierta en Spotify"
+              >
+                <SpotifyIcon size={18} />
+                <span>Playlist Spotify</span>
               </a>
             </div>
           </div>

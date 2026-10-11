@@ -446,6 +446,31 @@
   letter-spacing: 0.08em;
 }
 
+.cronograma-spotify-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(29, 185, 84, 0.15);
+  border: 1px solid rgba(29, 185, 84, 0.4);
+  color: #1ed760;
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 0.3rem 0.65rem;
+  border-radius: 6px;
+  margin-top: 0.35rem;
+  width: fit-content;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.cronograma-spotify-btn:hover {
+  background: #1DB954;
+  color: #ffffff;
+  border-color: #1DB954;
+  box-shadow: 0 0 12px rgba(29, 185, 84, 0.5);
+  transform: translateY(-1px);
+}
+
 .row-panel {
   background: rgba(14, 165, 233, 0.06);
 }

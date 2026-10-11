@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Flame, Menu, X, Ticket, ShoppingBag, CheckCircle } from 'lucide-react';
 import InstagramIcon from '../icons/InstagramIcon';
+import SpotifyIcon from '../icons/SpotifyIcon';
 import './Navbar.css';
 
 const Navbar = () => {
@@ -87,8 +88,18 @@ const Navbar = () => {
           </Link>
         </div>
 
-        {/* Action Button & Instagram */}
+        {/* Action Button & Socials */}
         <div className="nav-actions">
+          <a 
+            href="https://open.spotify.com/playlist/6BM0YYuAadGX4rxq8LUcjK?si=e02beb64e4b84927" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="spotify-nav-btn"
+            title="Playlist Oficial en Spotify"
+            aria-label="Playlist oficial de la conferencia en Spotify"
+          >
+            <SpotifyIcon size={19} />
+          </a>
           <a 
             href="https://www.instagram.com/upperroomibcrd/" 
             target="_blank" 
@@ -135,6 +146,15 @@ const Navbar = () => {
             <Ticket size={20} />
             Registrarme a la Conferencia
           </Link>
+          <a 
+            href="https://open.spotify.com/playlist/6BM0YYuAadGX4rxq8LUcjK?si=e02beb64e4b84927" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="mobile-spotify-link"
+          >
+            <SpotifyIcon size={18} />
+            <span>Playlist Oficial en Spotify</span>
+          </a>
           <a 
             href="https://www.instagram.com/upperroomibcrd/" 
             target="_blank" 
