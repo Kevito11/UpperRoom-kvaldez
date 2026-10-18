@@ -22,19 +22,31 @@ export const setAppsScriptUrl = (url) => {
   }
 };
 
+export const calculateMerchTotal = (merch) => {
+  if (!merch) return 0;
+  let total = 0;
+  if (merch.tshirt?.quiere) total += 1000;
+  if (merch.hoodie?.quiere) total += 1400;
+  return total;
+};
+
 export const formatMerchSummary = (merch) => {
   if (!merch) return 'Ninguna';
   const items = [];
-  if (merch.hoodie?.quiere) {
-    items.push(`Hoodie (${merch.hoodie.talla} - ${merch.hoodie.color})`);
-  }
   if (merch.tshirt?.quiere) {
-    items.push(`T-Shirt (${merch.tshirt.talla} - ${merch.tshirt.color})`);
+    const mod = merch.tshirt.modelo ? `"${merch.tshirt.modelo}" ` : '';
+    items.push(`T-Shirt Oversize ${mod}(${merch.tshirt.talla} - ${merch.tshirt.color}) [RD$ 1,000]`);
+  }
+  if (merch.hoodie?.quiere) {
+    const mod = merch.hoodie.modelo ? `"${merch.hoodie.modelo}" ` : '';
+    items.push(`Hoodie ${mod}(${merch.hoodie.talla} - ${merch.hoodie.color}) [RD$ 1,400]`);
   }
   if (merch.gorra?.quiere) {
     items.push(`Gorra (${merch.gorra.color})`);
   }
-  return items.length > 0 ? items.join(', ') : 'Ninguna';
+  if (items.length === 0) return 'Ninguna';
+  const total = calculateMerchTotal(merch);
+  return total > 0 ? `${items.join(' + ')} • Total: RD$ ${total.toLocaleString()}` : items.join(', ');
 };
 
 /**
@@ -45,6 +57,8 @@ export const sendRegistrationToGoogleSheets = async (registrationData, qrCodeUrl
   const url = getAppsScriptUrl();
   
   const merchSummary = formatMerchSummary(registrationData.merch);
+  const merchTotal = calculateMerchTotal(registrationData.merch);
+  const hasMerch = (registrationData.merch?.tshirt?.quiere || registrationData.merch?.hoodie?.quiere) || false;
 
   const payload = {
     action: 'register',
@@ -59,6 +73,13 @@ export const sendRegistrationToGoogleSheets = async (registrationData, qrCodeUrl
     taller: registrationData.tallerSeleccionado || 'Sin taller',
     tallerColor: registrationData.tallerColorName || 'N/A',
     merch: merchSummary,
+    hasMerch: hasMerch,
+    merchTotal: merchTotal,
+    merchDetails: {
+      tshirt: registrationData.merch?.tshirt || null,
+      hoodie: registrationData.merch?.hoodie || null,
+      total: merchTotal
+    },
     eventName: "Conferencia Despierta 2026 - Upper Room IBC",
     eventDate: "Sábado 31 de Octubre, 2026 (02:00 PM - 08:00 PM)",
     location: "Auditorio Principal IBC, C. Juan Luis Franco Bidó 25, Santo Domingo",
@@ -261,3 +282,51 @@ export const syncWithGoogleSheets = async () => {
 
 // Alias para compatibilidad
 export const syncAndDownloadCheckInData = syncWithGoogleSheets;
+
+/**
+ * Sends Merch add/update request for an existing ticket to Google Apps Script.
+ */
+export const addMerchToExistingTicket = async ({ ticketCode, merch, attendeeInfo }) => {
+  const url = getAppsScriptUrl();
+  const merchSummary = formatMerchSummary(merch);
+  const merchTotal = calculateMerchTotal(merch);
+
+  const payload = {
+    action: 'ADD_MERCH',
+    ticketCode: (ticketCode || '').trim().toUpperCase(),
+    merch: merchSummary,
+    hasMerch: true,
+    merchTotal: merchTotal,
+    merchDetails: {
+      tshirt: merch?.tshirt?.quiere ? merch.tshirt : null,
+      hoodie: merch?.hoodie?.quiere ? merch.hoodie : null,
+      total: merchTotal
+    },
+    email: attendeeInfo?.email || '',
+    firstName: attendeeInfo?.firstName || '',
+    lastName: attendeeInfo?.lastName || '',
+    fullName: attendeeInfo?.fullName || '',
+    updatedAt: new Date().toISOString()
+  };
+
+  if (!url) {
+    console.warn("⚠️ No se ha configurado la URL de Google Apps Script. Guardando solo localmente.");
+    return { success: false, reason: 'NO_URL_CONFIGURED', payload };
+  }
+
+  try {
+    await fetch(url, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    return { success: true, payload };
+  } catch (error) {
+    console.error("Error sending ADD_MERCH to Google Apps Script:", error);
+    return { success: false, reason: 'FETCH_ERROR', error, payload };
+  }
+};

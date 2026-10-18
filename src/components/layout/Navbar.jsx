@@ -84,7 +84,6 @@ const Navbar = () => {
           <Link to="/merch" className={`nav-item ${isActive('/merch') ? 'active' : ''}`}>
             <ShoppingBag size={16} />
             <span>Merch</span>
-            <span className="nav-soon-pill">Próx.</span>
           </Link>
         </div>
 
@@ -139,7 +138,6 @@ const Navbar = () => {
           <Link to="/merch" className={`mobile-nav-item ${isActive('/merch') ? 'active' : ''}`}>
             <ShoppingBag size={18} />
             <span>Merch Oficial</span>
-            <span className="nav-soon-pill">Próximamente</span>
           </Link>
           <div className="mobile-divider"></div>
           <Link to="/registro" className="btn btn-primary mobile-cta">

@@ -428,3 +428,38 @@ export const exportRegistrationsToCSV = (items = null) => {
 
   return true;
 };
+
+/**
+ * Updates an existing ticket's merch pre-order locally
+ */
+export const updateTicketMerch = (ticketCode, { merchSummary, merchTotal, merchDetails }) => {
+  try {
+    const registrations = getRegistrations();
+    let updatedRecord = null;
+    const cleanCode = (ticketCode || '').trim().toUpperCase();
+
+    const updated = registrations.map(r => {
+      if (r.ticketCode?.toUpperCase() === cleanCode) {
+        updatedRecord = {
+          ...r,
+          merch: merchSummary,
+          merchSummary: merchSummary,
+          merchTotal: merchTotal,
+          hasMerch: true,
+          merchDetails: merchDetails || r.merchDetails || null,
+          merchUpdatedAt: new Date().toISOString()
+        };
+        return updatedRecord;
+      }
+      return r;
+    });
+
+    if (updatedRecord) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    }
+    return updatedRecord;
+  } catch (error) {
+    console.error('Error updating ticket merch:', error);
+    return null;
+  }
+};

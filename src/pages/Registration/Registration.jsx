@@ -1,13 +1,16 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Ticket, User, Mail, Phone, MapPin, CheckCircle, Flame, 
   Printer, RotateCcw, Sparkles, Building, Calendar, ShieldCheck, Clock,
-  ShoppingBag, ArrowLeft, Copy, Info, Check, AlertCircle
+  ShoppingBag, ArrowLeft, Copy, Info, Check, AlertCircle, CreditCard, Tag,
+  ZoomIn, X
 } from 'lucide-react';
 import QRCode from 'qrcode';
 import confetti from 'canvas-confetti';
 import { saveRegistration } from '../../lib/ticketStorage';
-import { sendRegistrationToGoogleSheets } from '../../lib/googleSheetsService';
+import { sendRegistrationToGoogleSheets, formatMerchSummary, calculateMerchTotal } from '../../lib/googleSheetsService';
+import { MERCH_CATALOG } from '../../lib/merchData';
+import MerchCard from '../../components/MerchCard/MerchCard';
 import Lightbox from '../../components/Lightbox';
 import './Registration.css';
 
@@ -91,6 +94,29 @@ const TALLERES = [
 
 const Registration = () => {
   const [lightboxIndex, setLightboxIndex] = useState(null);
+  const [previewMerch, setPreviewMerch] = useState(null);
+
+  // Bloqueo de scroll en fondo cuando el modal de vista previa de Merch o afiche está activo
+  useEffect(() => {
+    const isModalActive = previewMerch !== null || lightboxIndex !== null;
+    if (!isModalActive) return;
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        if (previewMerch) setPreviewMerch(null);
+        if (lightboxIndex !== null) setLightboxIndex(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = originalOverflow || 'unset';
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [previewMerch, lightboxIndex]);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -103,9 +129,8 @@ const Registration = () => {
     tallerSeleccionado: '',
     participaMerch: null,
     merch: {
-      hoodie: { quiere: false, talla: 'M', color: 'Negro Obsidian' },
-      tshirt: { quiere: false, talla: 'M', color: 'Negro Obsidian' },
-      gorra:  { quiere: false, color: 'Negro' }
+      tshirt: { quiere: false, modelo: 'Cristo Vive en Mí', color: 'Blanco', talla: 'M' },
+      hoodie: { quiere: false, modelo: 'Chosen', color: 'Negro', talla: 'M' }
     }
   });
 
@@ -114,6 +139,8 @@ const Registration = () => {
   const [ticketData, setTicketData] = useState(null);
   const [qrCodeUrl, setQrCodeUrl] = useState('');
   const [copied, setCopied] = useState(false);
+  const [copiedBankKey, setCopiedBankKey] = useState(null);
+  const [copiedAllBank, setCopiedAllBank] = useState(false);
   const [sheetStatus, setSheetStatus] = useState(null); // 'idle' | 'sending' | 'success' | 'no_url' | 'error'
   const [formError, setFormError] = useState('');
 
@@ -147,6 +174,32 @@ const Registration = () => {
     }
   };
 
+  const handleCopyBankData = (text, key) => {
+    if (navigator?.clipboard) {
+      navigator.clipboard.writeText(text);
+      setCopiedBankKey(key);
+      setTimeout(() => setCopiedBankKey(null), 2000);
+    }
+  };
+
+  const handleCopyAllBankData = () => {
+    if (!navigator?.clipboard) return;
+    const total = ticketData?.merchTotal ? `RD$ ${ticketData.merchTotal.toLocaleString()}` : '';
+    const textToCopy = `DATOS DE TRANSFERENCIA • MERCH CONFERENCIA UPPER ROOM 2026
+Banco: Popular Dominicano
+Cuenta: Iglesia Bautista Cristiana
+Número de Cuenta: 001-18074-6 (Cuenta Corriente)
+RNC: 401507422
+Correo para comprobante: upperroomibc@gmail.com
+Tiempo de Validación: 32 horas
+Descripción obligatoria: COMPRA MERCH CONFERENCIA UPPER ROOM 2026
+Código de Boleto: ${ticketData?.ticketCode || ''}
+${total ? `Monto a transferir: ${total}` : ''}`;
+
+    navigator.clipboard.writeText(textToCopy);
+    setCopiedAllBank(true);
+    setTimeout(() => setCopiedAllBank(false), 2500);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -190,15 +243,28 @@ const Registration = () => {
       return;
     }
 
-    // 3. Merch Oficial (Disponible Próximamente)
-    // No bloquea el registro ya que las pre-órdenes se habilitarán más adelante.
+    // 3. Validar Selección Obligatoria de Merch Oficial
+    if (formData.participaMerch === null) {
+      setFormError('En el Módulo 03, debes seleccionar obligatoriamente si deseas adquirir Merch ("Sí" o "No") para poder completar tu registro.');
+      document.getElementById('modulo-merch')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+
+    if (formData.participaMerch === true && !formData.merch?.tshirt?.quiere && !formData.merch?.hoodie?.quiere) {
+      setFormError('Has indicado que deseas adquirir Merch oficial. Por favor selecciona al menos una prenda (T-Shirt o Hoodie) o marca la opción "No".');
+      document.getElementById('modulo-merch')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
 
     setIsSubmitting(true);
 
     const generatedCode = `IBC-UR-${Math.floor(100000 + Math.random() * 900000)}`;
     const finalChurch = formData.church === 'Otra Iglesia' ? formData.customChurch : formData.church;
     const tallerInfo = TALLERES.find(t => t.id === formData.tallerSeleccionado);
-    const merchSummary = 'Disponible próximamente';
+    
+    const isMerchSelected = formData.participaMerch === true && (formData.merch?.tshirt?.quiere || formData.merch?.hoodie?.quiere);
+    const merchSummary = isMerchSelected ? formatMerchSummary(formData.merch) : (formData.participaMerch === false ? 'No' : 'Ninguna');
+    const merchTotal = isMerchSelected ? calculateMerchTotal(formData.merch) : 0;
 
     const registrationRecord = {
       ticketCode: generatedCode,
@@ -214,8 +280,11 @@ const Registration = () => {
       tallerColorClass: tallerInfo?.colorClass || null,
       tallerColorName: tallerInfo?.colorName || null,
       tallerTema: tallerInfo?.tema || null,
+      participaMerch: formData.participaMerch,
+      hasMerch: isMerchSelected,
       merch: formData.merch,
       merchSummary: merchSummary,
+      merchTotal: merchTotal,
       eventName: "Conferencia Despierta 2026 - Upper Room IBC",
       eventDate: "Sábado 31 de Octubre, 2026",
       eventTime: "02:00 PM – 08:00 PM",
@@ -274,6 +343,8 @@ const Registration = () => {
     setTicketData(null);
     setQrCodeUrl('');
     setSheetStatus(null);
+    setCopiedBankKey(null);
+    setCopiedAllBank(false);
     setFormData({
       firstName: '',
       lastName: '',
@@ -286,9 +357,8 @@ const Registration = () => {
       tallerSeleccionado: '',
       participaMerch: null,
       merch: {
-        hoodie: { quiere: false, talla: 'M', color: 'Negro Obsidian' },
-        tshirt: { quiere: false, talla: 'M', color: 'Negro Obsidian' },
-        gorra:  { quiere: false, color: 'Negro' }
+        tshirt: { quiere: false, modelo: 'Cristo Vive en Mí', color: 'Blanco', talla: 'M' },
+        hoodie: { quiere: false, modelo: 'Chosen', color: 'Negro', talla: 'M' }
       }
     });
     window.scrollTo({ top: 0, behavior: 'instant' });
@@ -583,22 +653,144 @@ const Registration = () => {
                 </div>
 
                 {/* -------------------------------------------------------------
-                   INFORMACIÓN DE MERCH (MINIMALISTA)
+                   MÓDULO 03: MERCH OFICIAL UPPER ROOM CONFERENCIA 2026
                    ------------------------------------------------------------- */}
-                <div className="registration-merch-minimal" id="modulo-merch">
-                  <div className="merch-min-content">
-                    <div className="merch-min-left">
-                      <div className="merch-min-badge">
-                        <ShoppingBag size={14} />
-                        <span>Colección Oficial Merch</span>
+                <div className="portal-module" id="modulo-merch">
+                  <div className="module-legend">
+                    <span className="legend-index">03</span>
+                    <div className="legend-text">
+                      <div className="legend-header-row">
+                        <h2>Colección Oficial de Merch</h2>
+                        <span className="tag-merch-badge">
+                          <Sparkles size={12} /> EDICIÓN CONFERENCIA 2026
+                        </span>
                       </div>
-                      <p className="merch-min-text">
-                        Prendas exclusivas disponibles próximamente. Al registrarte te notificaremos la preventa oficial.
-                      </p>
+                      <p>Prendas exclusivas de alta calidad. Selección obligatoria para poder habilitar tu registro.</p>
                     </div>
-                    <span className="merch-min-tag">
-                      <Clock size={11} /> Próximamente
-                    </span>
+                  </div>
+
+                  <div className="module-body">
+                    {/* Pregunta Obligatoria de Merch */}
+                    <div className="portal-switch-row merch-required-switch">
+                      <div className="switch-prompt-wrap">
+                        <span className="switch-prompt">¿Deseas adquirir Merch oficial de la Conferencia? *</span>
+                        <span className="switch-subprompt">Selección obligatoria para habilitar el botón de registro</span>
+                      </div>
+                      <div className="portal-segmented-control">
+                        <button
+                          type="button"
+                          className={`segmented-btn ${formData.participaMerch === true ? 'is-active' : ''}`}
+                          onClick={() => {
+                            if (formError) setFormError('');
+                            setFormData(prev => ({
+                              ...prev,
+                              participaMerch: true,
+                              merch: {
+                                ...prev.merch,
+                                tshirt: prev.merch.tshirt.quiere ? prev.merch.tshirt : { ...prev.merch.tshirt, quiere: true }
+                              }
+                            }));
+                          }}
+                        >
+                          Sí, quiero comprar Merch
+                        </button>
+                        <button
+                          type="button"
+                          className={`segmented-btn ${formData.participaMerch === false ? 'is-active' : ''}`}
+                          onClick={() => {
+                            if (formError) setFormError('');
+                            setFormData(prev => ({
+                              ...prev,
+                              participaMerch: false,
+                              merch: {
+                                hoodie: { ...prev.merch.hoodie, quiere: false },
+                                tshirt: { ...prev.merch.tshirt, quiere: false },
+                                gorra:  { ...prev.merch.gorra, quiere: false }
+                              }
+                            }));
+                          }}
+                        >
+                          No, solo entrada gratuita
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Aviso si aún no ha seleccionado */}
+                    {formData.participaMerch === null && (
+                      <div className="merch-mandatory-reminder">
+                        <AlertCircle size={16} />
+                        <span>Por favor selecciona <strong>'Sí'</strong> o <strong>'No'</strong> para desbloquear la emisión de tu boleto.</span>
+                      </div>
+                    )}
+
+                    {/* Mensaje si seleccionó No */}
+                    {formData.participaMerch === false && (
+                      <div className="merch-declined-note">
+                        <CheckCircle size={16} color="#10b981" />
+                        <span>Has elegido no adquirir Merch. ¡Tu entrada a la conferencia y plenarias continúa siendo <strong>100% gratuita</strong>!</span>
+                      </div>
+                    )}
+
+                    {/* Catálogo de Tarjetas si seleccionó Sí */}
+                    {formData.participaMerch === true && (
+                      <div className="merch-catalog-zone">
+                        <div className="zone-hint-box">
+                          <Info size={15} />
+                          <span>Elige tus prendas, tallas y colores. El pago se realizará por transferencia bancaria en las siguientes <strong>32 horas</strong>.</span>
+                        </div>
+
+                        <div className="merch-cards-grid">
+                          <MerchCard
+                            product={MERCH_CATALOG.tshirt}
+                            selection={formData.merch.tshirt}
+                            onSelectionChange={(newVal) => {
+                              if (formError) setFormError('');
+                              setFormData(prev => ({
+                                ...prev,
+                                merch: { ...prev.merch, tshirt: newVal }
+                              }));
+                            }}
+                            mode="registration"
+                            onPreviewImage={setPreviewMerch}
+                          />
+
+                          <MerchCard
+                            product={MERCH_CATALOG.hoodie}
+                            selection={formData.merch.hoodie}
+                            onSelectionChange={(newVal) => {
+                              if (formError) setFormError('');
+                              setFormData(prev => ({
+                                ...prev,
+                                merch: { ...prev.merch, hoodie: newVal }
+                              }));
+                            }}
+                            mode="registration"
+                            onPreviewImage={setPreviewMerch}
+                          />
+                        </div>
+
+                        {/* Barra de Resumen y Total */}
+                        <div className="merch-order-total-bar">
+                          <div className="total-bar-left">
+                            <ShoppingBag size={20} className="total-bag-icon" />
+                            <div>
+                              <span className="total-bar-label">Resumen de tu selección de Merch:</span>
+                              <strong className="total-bar-summary">
+                                {(formData.merch.tshirt.quiere || formData.merch.hoodie.quiere) 
+                                  ? formatMerchSummary(formData.merch) 
+                                  : 'Ninguna prenda marcada aún (marca T-Shirt o Hoodie)'}
+                              </strong>
+                            </div>
+                          </div>
+                          <div className="total-bar-right">
+                            <span className="total-amount-label">Monto a Transferir:</span>
+                            <strong className="total-amount-val">
+                              RD$ {calculateMerchTotal(formData.merch).toLocaleString()}
+                            </strong>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -616,10 +808,18 @@ const Registration = () => {
                     </div>
                   )}
 
+                  {formData.participaMerch === null && (
+                    <div className="portal-required-step-hint">
+                      <AlertCircle size={16} />
+                      <span>Para habilitar el botón, debes responder si deseas adquirir Merch en el <strong>Módulo 03</strong>.</span>
+                    </div>
+                  )}
+
                   <button 
                     type="submit" 
                     className="btn btn-primary portal-submit-btn"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || formData.participaMerch === null}
+                    title={formData.participaMerch === null ? "Selecciona si deseas adquirir Merch en el Módulo 03 para habilitar el registro" : "Emitir Boleto Oficial"}
                   >
                     {isSubmitting ? (
                       <>
@@ -691,7 +891,7 @@ const Registration = () => {
               </div>
             </header>
 
-            {/* Stage: Exclusively The Ticket and its Related Data */}
+            {/* Stage: The Ticket, Merch Payment Instructions and Related Data */}
             <main className="ticket-fs-stage">
 
               {/* Real-time Google Sheet & Email Dispatch Status Pill */}
@@ -721,6 +921,155 @@ const Registration = () => {
                   </div>
                 )}
               </div>
+
+              {/* =========================================================
+                 RESUMEN DE PAGO DE MERCH (INSTRUCCIONES DE TRANSFERENCIA)
+                 ========================================================= */}
+              {ticketData.hasMerch && (
+                <section className="merch-payment-stage-box" aria-label="Instrucciones de Pago de Merch">
+                  <div className="payment-box-top">
+                    <div className="payment-box-headline">
+                      <div className="payment-headline-icon">
+                        <CreditCard size={26} />
+                      </div>
+                      <div>
+                        <span className="payment-eyebrow">PASO REQUERIDO PARA CONFIRMAR PRENDA</span>
+                        <h2 className="payment-box-title">Instrucciones de Pago • Merch Oficial</h2>
+                      </div>
+                    </div>
+                    <div className="payment-deadline-badge">
+                      <Clock size={16} />
+                      <span>Tiempo de Validación: 32 Horas</span>
+                    </div>
+                  </div>
+
+                  <p className="payment-box-intro">
+                    ¡Tu entrada a la conferencia está asegurada! Para confirmar la confección y entrega de tu Merch oficial, realiza tu transferencia bancaria y remite el comprobante dentro de las próximas <strong>32 horas</strong>:
+                  </p>
+
+                  {/* Resumen de las prendas pedidas */}
+                  <div className="payment-order-recap">
+                    <div className="order-recap-items">
+                      <span className="recap-label">Prendas seleccionadas:</span>
+                      <strong className="recap-text">{ticketData.merchSummary}</strong>
+                    </div>
+                    <div className="order-recap-total">
+                      <span className="recap-total-label">Total a transferir:</span>
+                      <strong className="recap-total-amount">RD$ {ticketData.merchTotal?.toLocaleString()}</strong>
+                    </div>
+                  </div>
+
+                  {/* Tarjetas de Datos Bancarios */}
+                  <div className="payment-bank-grid">
+                    <div className="bank-info-card">
+                      <span className="bank-field-label">BANCO</span>
+                      <strong className="bank-field-val">Popular Dominicano</strong>
+                    </div>
+
+                    <div className="bank-info-card">
+                      <span className="bank-field-label">BENEFICIARIO / CUENTA</span>
+                      <strong className="bank-field-val">Iglesia Bautista Cristiana</strong>
+                    </div>
+
+                    <div className="bank-info-card bank-card-highlight">
+                      <div className="bank-card-text">
+                        <span className="bank-field-label">NÚMERO DE CUENTA (CORRIENTE)</span>
+                        <strong className="bank-field-val mono">001-18074-6</strong>
+                      </div>
+                      <button 
+                        type="button" 
+                        className="bank-copy-btn" 
+                        onClick={() => handleCopyBankData('001-18074-6', 'account')}
+                        title="Copiar número de cuenta"
+                      >
+                        {copiedBankKey === 'account' ? <Check size={14} color="#10b981" /> : <Copy size={14} />}
+                        <span>{copiedBankKey === 'account' ? 'Copiado' : 'Copiar'}</span>
+                      </button>
+                    </div>
+
+                    <div className="bank-info-card">
+                      <div className="bank-card-text">
+                        <span className="bank-field-label">RNC</span>
+                        <strong className="bank-field-val mono">401507422</strong>
+                      </div>
+                      <button 
+                        type="button" 
+                        className="bank-copy-btn" 
+                        onClick={() => handleCopyBankData('401507422', 'rnc')}
+                        title="Copiar RNC"
+                      >
+                        {copiedBankKey === 'rnc' ? <Check size={14} color="#10b981" /> : <Copy size={14} />}
+                        <span>{copiedBankKey === 'rnc' ? 'Copiado' : 'Copiar'}</span>
+                      </button>
+                    </div>
+
+                    <div className="bank-info-card bank-card-full bank-card-concept">
+                      <div className="bank-card-text">
+                        <span className="bank-field-label">DESCRIPCIÓN OBLIGATORIA DE TRANSFERENCIA</span>
+                        <strong className="bank-field-val mono text-fire">COMPRA MERCH CONFERENCIA UPPER ROOM 2026</strong>
+                        <span className="bank-field-hint">Coloca este texto exacto en el campo de concepto / descripción de tu transferencia bancaria.</span>
+                      </div>
+                      <button 
+                        type="button" 
+                        className="bank-copy-btn" 
+                        onClick={() => handleCopyBankData('COMPRA MERCH CONFERENCIA UPPER ROOM 2026', 'desc')}
+                        title="Copiar descripción obligatoria"
+                      >
+                        {copiedBankKey === 'desc' ? <Check size={14} color="#10b981" /> : <Copy size={14} />}
+                        <span>{copiedBankKey === 'desc' ? 'Copiado' : 'Copiar'}</span>
+                      </button>
+                    </div>
+
+                    <div className="bank-info-card bank-card-full">
+                      <div className="bank-card-text">
+                        <span className="bank-field-label">CORREO PARA ENVÍO DE COMPROBANTE</span>
+                        <strong className="bank-field-val mono">upperroomibc@gmail.com</strong>
+                        <span className="bank-field-hint">Envía el comprobante indicando tu nombre y código de boleto: <strong>{ticketData.ticketCode}</strong></span>
+                      </div>
+                      <button 
+                        type="button" 
+                        className="bank-copy-btn" 
+                        onClick={() => handleCopyBankData('upperroomibc@gmail.com', 'email')}
+                        title="Copiar correo"
+                      >
+                        {copiedBankKey === 'email' ? <Check size={14} color="#10b981" /> : <Copy size={14} />}
+                        <span>{copiedBankKey === 'email' ? 'Copiado' : 'Copiar'}</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Alerta de Validación de 32 Horas */}
+                  <div className="payment-deadline-alert">
+                    <AlertCircle size={22} className="deadline-alert-icon" />
+                    <div className="deadline-alert-text">
+                      <strong>Tiempo Límite de Validación: 32 Horas</strong>
+                      <p>
+                        Tu reserva quedará confirmada una vez recibido y conciliado tu comprobante en <strong>upperroomibc@gmail.com</strong>. Pasadas 32 horas sin comprobante, la reserva de tus prendas será liberada automáticamente para otros asistentes.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Botones de Acción */}
+                  <div className="payment-actions-strip no-print">
+                    <button 
+                      type="button" 
+                      className="btn btn-secondary payment-action-btn"
+                      onClick={handleCopyAllBankData}
+                    >
+                      {copiedAllBank ? <Check size={16} color="#10b981" /> : <Copy size={16} />}
+                      <span>{copiedAllBank ? '¡Datos Bancarios Copiados!' : 'Copiar Todos los Datos de Pago'}</span>
+                    </button>
+
+                    <a 
+                      href={`mailto:upperroomibc@gmail.com?subject=COMPROBANTE%20MERCH%20-%20${ticketData.ticketCode}%20-%20${encodeURIComponent(ticketData.firstName + ' ' + ticketData.lastName)}&body=Hola%20Equipo%20Upper%20Room%20IBC%2C%0A%0AAdjunto%20mi%20comprobante%20de%20transferencia%20para%20la%20Merch%20de%20la%20Conferencia%20Despierta%202026.%0A%0A%E2%80%A2%20Asistente%3A%20${encodeURIComponent(ticketData.firstName + ' ' + ticketData.lastName)}%0A%E2%80%A2%20C%C3%B3digo%20de%20Boleto%3A%20${ticketData.ticketCode}%0A%E2%80%A2%20Prendas%3A%20${encodeURIComponent(ticketData.merchSummary)}%0A%E2%80%A2%20Monto%20transferido%3A%20RD%24%20${ticketData.merchTotal}%0A%0A%C2%A1Muchas%20gracias!`}
+                      className="btn btn-primary payment-action-btn"
+                    >
+                      <Mail size={16} />
+                      <span>Enviar Comprobante por Correo</span>
+                    </a>
+                  </div>
+                </section>
+              )}
 
               {/* THE OFFICIAL TICKET PASS */}
               <div className={`ticket-pass-card ${ticketData.tallerColorClass || ''}`} id="printable-ticket">
@@ -807,11 +1156,15 @@ const Registration = () => {
                       </div>
                     )}
 
-                    {ticketData.merchSummary && ticketData.merchSummary !== 'Ninguna' && ticketData.merchSummary !== 'Disponible próximamente' && (
+                    {ticketData.merchSummary && ticketData.merchSummary !== 'Ninguna' && ticketData.merchSummary !== 'No' && ticketData.merchSummary !== 'Disponible próximamente' && (
                       <div className="ticket-detail-item ticket-merch-item">
                         <span className="ticket-detail-label">PRE-ORDEN DE MERCH</span>
                         <span className="ticket-merch-val">🛍️ {ticketData.merchSummary}</span>
-                        <span className="ticket-detail-sub">Paga y retira en el stand de Upper Room en el evento</span>
+                        <span className="ticket-detail-sub">
+                          {ticketData.merchTotal > 0 
+                            ? `Total: RD$ ${ticketData.merchTotal.toLocaleString()} • En validación (Comprobante requerido en 32h)` 
+                            : 'Paga y retira en el stand de Upper Room en el evento'}
+                        </span>
                       </div>
                     )}
                   </div>
@@ -871,6 +1224,43 @@ const Registration = () => {
         onPrev={() => setLightboxIndex(prev => (prev === null ? 0 : (prev - 1 + ALL_CONFERENCE_FLYERS.length) % ALL_CONFERENCE_FLYERS.length))}
         onNext={() => setLightboxIndex(prev => (prev === null ? 0 : (prev + 1) % ALL_CONFERENCE_FLYERS.length))}
       />
+
+      {/* Modal de Vista Previa de Merch Oficial en Alta Resolución */}
+      {previewMerch && (
+        <div className="merch-modal-overlay" onClick={() => setPreviewMerch(null)}>
+          <div className="merch-modal-dialog" onClick={(e) => e.stopPropagation()}>
+            <button 
+              type="button" 
+              className="merch-modal-close"
+              onClick={() => setPreviewMerch(null)}
+              aria-label="Cerrar vista previa"
+            >
+              <X size={20} />
+            </button>
+            <div className="merch-modal-media">
+              <img 
+                src={previewMerch.image} 
+                alt={previewMerch.title} 
+                className="merch-modal-img" 
+              />
+            </div>
+            <div className="merch-modal-footer">
+              <div className="merch-modal-info">
+                <span className="merch-modal-tag">MERCH OFICIAL • DESPIERTA 2026</span>
+                <h4 className="merch-modal-title">{previewMerch.title}</h4>
+                <p className="merch-modal-sub">{previewMerch.subtitle}</p>
+              </div>
+              <button 
+                type="button" 
+                className="btn btn-secondary btn-sm"
+                onClick={() => setPreviewMerch(null)}
+              >
+                Cerrar Detalle
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

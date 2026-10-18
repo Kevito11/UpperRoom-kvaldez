@@ -57,7 +57,7 @@ const Footer = () => {
             <ul>
               <li><Link to="/">Inicio</Link></li>
               <li><Link to="/registro">Registro de Conferencia</Link></li>
-              <li><Link to="/merch">Merch Oficial (Próximamente)</Link></li>
+              <li><Link to="/merch">Merch Oficial</Link></li>
               <li><Link to="/nosotros">Sobre Upper Room</Link></li>
               <li><Link to="/confirmar-asistencia">Consultar Mi Entrada</Link></li>
               <li>

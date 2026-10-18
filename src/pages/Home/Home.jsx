@@ -625,40 +625,40 @@ const Home = () => {
           <div className="merch-promo-banner glass-panel">
             <div className="merch-promo-content">
               <div className="badge badge-amber">
-                <Clock size={13} />
-                <span>DISPONIBLE PRÓXIMAMENTE</span>
+                <Sparkles size={13} />
+                <span>COLECCIÓN DISPONIBLE</span>
               </div>
               <h2>Colección Oficial <span className="text-fire">Upper Room IBC</span></h2>
               <p>
-                Próximamente disponible. Diseñada con materiales premium, corte oversize moderno y detalles exclusivos del ministerio. 
-                Explora los modelos y prepárate para la apertura de la preventa oficial.
+                Ya disponible. Diseñada con materiales de alta calidad, corte oversize contemporáneo y detalles exclusivos del ministerio. 
+                Explora los modelos y asegura tu prenda oficial para la conferencia.
               </p>
               <div className="merch-promo-features">
-                <div className="promo-pill"><Clock size={15} /> Lanzamiento Próximo</div>
+                <div className="promo-pill"><Flame size={15} /> Edición Limitada</div>
                 <div className="promo-pill"><CheckCircle size={15} /> Algodón Pesado 100%</div>
                 <div className="promo-pill"><CheckCircle size={15} /> Tallas XS hasta XXL</div>
               </div>
               <Link to="/merch" className="btn btn-primary">
                 <ShoppingBag size={18} />
-                <span>Ver Colección (Próximamente)</span>
+                <span>Ver Colección Oficial</span>
               </Link>
             </div>
 
             <div className="merch-promo-visual">
               <div className="merch-badge-circle">
-                <span>PRÓX</span>
+                <span>NUEVO</span>
                 <strong>2026</strong>
               </div>
               <div className="merch-mockup-stack">
                 <div className="mockup-card card-hoodie">
                   <Flame size={44} className="mockup-icon" />
                   <span>Hoodie Obsidian</span>
-                  <strong>Próximamente</strong>
+                  <strong>Disponible</strong>
                 </div>
                 <div className="mockup-card card-tee">
                   <Sparkles size={36} className="mockup-icon" />
                   <span>T-Shirt Flame</span>
-                  <strong>Próximamente</strong>
+                  <strong>Disponible</strong>
                 </div>
               </div>
             </div>
