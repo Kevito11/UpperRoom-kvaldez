@@ -23,8 +23,6 @@ const Merch = () => {
   const [searchParams] = useSearchParams();
   const urlTicket = searchParams.get('ticket') || searchParams.get('ticketCode');
 
-  const [previewMerch, setPreviewMerch] = useState(null);
-
   // Flujo activo: 'store' (exploración / pedido general) o 'ticket_flow' (vincular a boleto existente)
   const [activeFlow, setActiveFlow] = useState('store');
   
@@ -36,8 +34,8 @@ const Merch = () => {
 
   // Estado de selección de Merch para el flujo de boleto existente
   const [merchSelection, setMerchSelection] = useState({
-    tshirt: { quiere: false, modelo: 'Cristo Vive en Mí', color: 'Blanco', talla: 'M' },
-    hoodie: { quiere: false, modelo: 'Chosen', color: 'Negro', talla: 'M' }
+    tshirt: { quiere: false, modelo: 'Cristo Vive en Mí', color: 'Blanco (Letras Gris)', talla: 'M' },
+    hoodie: { quiere: false, modelo: 'Chosen', color: 'Negro (Letras Blanco)', talla: 'M' }
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -60,24 +58,6 @@ const Merch = () => {
       }
     }
   }, [urlTicket]);
-
-  // Bloqueo de Scroll en Fondo cuando el Modal / Lightbox está activo
-  useEffect(() => {
-    if (!previewMerch) return;
-
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') setPreviewMerch(null);
-    };
-    window.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      document.body.style.overflow = originalOverflow || 'unset';
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [previewMerch]);
 
   // Validación Local-First y Remota del Código de Boleto
   const handleVerifyTicket = async (overrideCode) => {
@@ -209,8 +189,8 @@ const Merch = () => {
     setSubmitError('');
     setIsSuccess(false);
     setMerchSelection({
-      tshirt: { quiere: false, modelo: 'Cristo Vive en Mí', color: 'Blanco', talla: 'M' },
-      hoodie: { quiere: false, modelo: 'Chosen', color: 'Negro', talla: 'M' }
+      tshirt: { quiere: false, modelo: 'Cristo Vive en Mí', color: 'Blanco (Letras Gris)', talla: 'M' },
+      hoodie: { quiere: false, modelo: 'Chosen', color: 'Negro (Letras Blanco)', talla: 'M' }
     });
   };
 
@@ -452,27 +432,29 @@ const Merch = () => {
 
             {/* Cuadrícula de Tarjetas MerchCard en Modo Selección (Interactivo) */}
             <div className="merch-cards-grid merch-grid-interactive">
-              <MerchCard
-                product={MERCH_CATALOG.tshirt}
-                selection={merchSelection.tshirt}
-                onSelectionChange={(newVal) => {
-                  if (submitError) setSubmitError('');
-                  setMerchSelection(prev => ({ ...prev, tshirt: newVal }));
-                }}
-                mode="registration"
-                onPreviewImage={setPreviewMerch}
-              />
+              {MERCH_CATALOG?.tshirt && (
+                <MerchCard
+                  product={MERCH_CATALOG.tshirt}
+                  selection={merchSelection?.tshirt}
+                  onSelectionChange={(newVal) => {
+                    if (submitError) setSubmitError('');
+                    setMerchSelection(prev => ({ ...prev, tshirt: newVal }));
+                  }}
+                  mode="registration"
+                />
+              )}
 
-              <MerchCard
-                product={MERCH_CATALOG.hoodie}
-                selection={merchSelection.hoodie}
-                onSelectionChange={(newVal) => {
-                  if (submitError) setSubmitError('');
-                  setMerchSelection(prev => ({ ...prev, hoodie: newVal }));
-                }}
-                mode="registration"
-                onPreviewImage={setPreviewMerch}
-              />
+              {MERCH_CATALOG?.hoodie && (
+                <MerchCard
+                  product={MERCH_CATALOG.hoodie}
+                  selection={merchSelection?.hoodie}
+                  onSelectionChange={(newVal) => {
+                    if (submitError) setSubmitError('');
+                    setMerchSelection(prev => ({ ...prev, hoodie: newVal }));
+                  }}
+                  mode="registration"
+                />
+              )}
             </div>
 
             {/* Barra Fija / Resumen de Confirmación de Merch */}
@@ -648,17 +630,19 @@ const Merch = () => {
           <>
             <main className="merch-store-grid-wrap">
               <div className="merch-cards-grid">
-                <MerchCard
-                  product={MERCH_CATALOG.tshirt}
-                  mode="store"
-                  onPreviewImage={setPreviewMerch}
-                />
+                {MERCH_CATALOG?.tshirt && (
+                  <MerchCard
+                    product={MERCH_CATALOG.tshirt}
+                    mode="store"
+                  />
+                )}
 
-                <MerchCard
-                  product={MERCH_CATALOG.hoodie}
-                  mode="store"
-                  onPreviewImage={setPreviewMerch}
-                />
+                {MERCH_CATALOG?.hoodie && (
+                  <MerchCard
+                    product={MERCH_CATALOG.hoodie}
+                    mode="store"
+                  />
+                )}
               </div>
             </main>
 
@@ -687,45 +671,6 @@ const Merch = () => {
         )}
 
       </div>
-
-      {/* ================================================================= */}
-      {/* MODAL DE VISTA PREVIA EN ALTA RESOLUCIÓN */}
-      {/* ================================================================= */}
-      {previewMerch && (
-        <div className="merch-modal-overlay" onClick={() => setPreviewMerch(null)}>
-          <div className="merch-modal-dialog" onClick={(e) => e.stopPropagation()}>
-            <button 
-              type="button" 
-              className="merch-modal-close"
-              onClick={() => setPreviewMerch(null)}
-              aria-label="Cerrar vista previa"
-            >
-              <X size={20} />
-            </button>
-            <div className="merch-modal-media">
-              <img 
-                src={previewMerch.image} 
-                alt={previewMerch.title} 
-                className="merch-modal-img" 
-              />
-            </div>
-            <div className="merch-modal-footer">
-              <div className="merch-modal-info">
-                <span className="merch-modal-tag">MERCH OFICIAL • DESPIERTA 2026</span>
-                <h4 className="merch-modal-title">{previewMerch.title}</h4>
-                <p className="merch-modal-sub">{previewMerch.subtitle}</p>
-              </div>
-              <button 
-                type="button" 
-                className="btn btn-secondary btn-sm"
-                onClick={() => setPreviewMerch(null)}
-              >
-                Cerrar Detalle
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

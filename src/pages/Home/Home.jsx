@@ -636,7 +636,7 @@ const Home = () => {
               <div className="merch-promo-features">
                 <div className="promo-pill"><Flame size={15} /> Edición Limitada</div>
                 <div className="promo-pill"><CheckCircle size={15} /> Algodón Pesado 100%</div>
-                <div className="promo-pill"><CheckCircle size={15} /> Tallas XS hasta XXL</div>
+                <div className="promo-pill"><CheckCircle size={15} /> Tallas S hasta 2XL</div>
               </div>
               <Link to="/merch" className="btn btn-primary">
                 <ShoppingBag size={18} />

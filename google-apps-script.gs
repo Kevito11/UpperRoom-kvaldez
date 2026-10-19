@@ -936,8 +936,11 @@ function enviarCorreoInvitacionMerch(person) {
     "👉 ENLACE DIRECTO PARA ELEGIR TU MERCH (SIN ESCRIBIR TU CÓDIGO):\n" +
     magicLinkUrl + "\n\n" +
     "🛍️ COLECCIÓN DISPONIBLE:\n" +
-    "1. T-Shirt Despierta 2026 • RD$ 1,000 (100% algodón oversize, tallas XS a 2XL, Negro, Blanco, Crema, Verde, Rojo)\n" +
-    "2. Hoodie Despierta 2026 • RD$ 1,400 (Sudadera pesada con capucha, tallas S a 2XL, Negro, Blanco, Azul)\n\n" +
+    "1. T-Shirt Despierta 2026 • RD$ 1,000 (100% algodón oversize, tallas S a 2XL)\n" +
+    "   • Modelos: Cristo Vive en Mí, Con Amor Eterno, 3.16\n" +
+    "   • Colores Prenda/Letras: Blanco (Letras Gris), Crema (Letras Marrón), Negro (Letras Blanco), Verde (Letras Verde), Blanco (Letras Azul), Blanco (Letras Negro), Blanco (Letras Rojo)\n" +
+    "2. Hoodie Despierta 2026 • RD$ 1,400 (Sudadera pesada con capucha, tallas S a 2XL)\n" +
+    "   • Modelo: Chosen en Negro (Letras Blanco) y Blanco (Letras Gris)\n\n" +
     "💳 DATOS PARA TRANSFERENCIA BANCARIA:\n" +
     "• Banco: Popular Dominicano\n" +
     "• Cuenta: Iglesia Bautista Cristiana\n" +
@@ -1007,8 +1010,9 @@ function enviarCorreoInvitacionMerch(person) {
                   Corte oversize de alta calidad, cuello reforzado y serigrafía exclusiva.
                 </p>
                 <p style="margin: 0; font-size: 12px; color: #d1d5db;">
-                  <strong>Tallas:</strong> XS, S, M, L, XL, 2XL<br/>
-                  <strong>Modelos:</strong> Cristo Vive en Mí, Con Amor Eterno, 3.16
+                  <strong>Tallas:</strong> S, M, L, XL, 2XL<br/>
+                  <strong>Modelos:</strong> Cristo Vive en Mí, Con Amor Eterno, 3.16<br/>
+                  <span style="font-size: 11px; color: #fbbf24;">(El primer color indica la prenda y el segundo las letras)</span>
                 </p>
               </td>
               <td style="width: 110px; text-align: right; vertical-align: top;">
@@ -1036,7 +1040,7 @@ function enviarCorreoInvitacionMerch(person) {
                 </p>
                 <p style="margin: 0; font-size: 12px; color: #d1d5db;">
                   <strong>Tallas:</strong> S, M, L, XL, 2XL<br/>
-                  <strong>Modelos:</strong> Chosen, Con Amor Eterno
+                  <strong>Modelos:</strong> Chosen (Negro / Letras Blanco, Blanco / Letras Gris)
                 </p>
               </td>
               <td style="width: 110px; text-align: right; vertical-align: top;">
@@ -1174,7 +1178,7 @@ function probarCorreoRegistroBoleta() {
     taller: "¿Dónde quedó el fuego? (Rojo)",
     hasMerch: true,
     merchTotal: 2400,
-    merch: 'T-Shirt Oversize "Cristo Vive en Mí" (L - Blanco) [RD$ 1,000] + Hoodie "Chosen" (XL - Negro) [RD$ 1,400] • Total: RD$ 2,400',
+    merch: 'T-Shirt Oversize "Cristo Vive en Mí" (L - Blanco (Letras Gris)) [RD$ 1,000] + Hoodie "Chosen" (XL - Negro (Letras Blanco)) [RD$ 1,400] • Total: RD$ 2,400',
     eventName: "Conferencia Despierta 2026 - Upper Room IBC",
     eventDate: "Sábado 31 de Octubre, 2026 (02:00 PM - 08:00 PM)",
     location: "Auditorio Principal IBC, C. Juan Luis Franco Bidó 25, Santo Domingo"
@@ -1238,7 +1242,7 @@ function probarCorreoMerchAgregada() {
     email: testEmail,
     church: "Iglesia Bautista Cristiana (IBC)",
     taller: "¿Dónde quedó el fuego? (Rojo)",
-    merch: 'T-Shirt Oversize "Cristo Vive en Mí" (L - Blanco) [RD$ 1,000] + Hoodie "Chosen" (XL - Negro) [RD$ 1,400] • Total: RD$ 2,400',
+    merch: 'T-Shirt Oversize "Cristo Vive en Mí" (L - Blanco (Letras Gris)) [RD$ 1,000] + Hoodie "Chosen" (XL - Negro (Letras Blanco)) [RD$ 1,400] • Total: RD$ 2,400',
     merchTotal: 2400,
     timestamp: Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "dd/MM/yyyy HH:mm:ss")
   };

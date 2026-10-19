@@ -6,30 +6,94 @@ export const MERCH_CATALOG = {
     precio: 1000,
     badge: '100% ALGODÓN OVERSIZE',
     descripcion: 'Corte oversize contemporáneo de alta caída, tejido 100% algodón peinado y serigrafía exclusiva Upper Room.',
-    tallas: ['XS', 'S', 'M', 'L', 'XL', '2XL'],
+    tallas: ['S', 'M', 'L', 'XL', '2XL'],
     defaultModelo: 'Cristo Vive en Mí',
-    defaultColor: 'Blanco',
+    defaultColor: 'Blanco (Letras Gris)',
     defaultTalla: 'M',
     modelos: [
       {
         nombre: 'Cristo Vive en Mí',
         colores: [
-          { nombre: 'Blanco', file: 'T-Shirt - Cristo Vive en Mi - Blanco.png', hex: '#ffffff', border: 'rgba(255,255,255,0.45)' },
-          { nombre: 'Crema', file: 'T-Shirt - Cristo Vive en Mi - Crema.png', hex: '#ede6d6', border: 'rgba(255,255,255,0.2)' },
-          { nombre: 'Verde', file: 'T-Shirt - Cristo Vive en Mi - Verde.png', hex: '#1c4a27', border: 'rgba(255,255,255,0.1)' }
+          { 
+            nombre: 'Blanco (Letras Gris)', 
+            file: 'T-Shirt - Cristo Vive en Mi - Blanco-Gris.png', 
+            hex: '#ffffff', 
+            letterHex: '#64748b', 
+            border: 'rgba(255,255,255,0.45)' 
+          },
+          { 
+            nombre: 'Crema (Letras Marrón)', 
+            file: 'T-Shirt - Cristo Vive en Mi - Crema-Marron.png', 
+            hex: '#ede6d6', 
+            letterHex: '#5c3a21', 
+            border: 'rgba(255,255,255,0.2)' 
+          },
+          { 
+            nombre: 'Negro (Letras Blanco)', 
+            file: 'T-Shirt - Cristo Vive en Mi - Negro-Blanco.png', 
+            hex: '#121212', 
+            letterHex: '#ffffff', 
+            border: 'rgba(255,255,255,0.35)' 
+          },
+          { 
+            nombre: 'Verde (Letras Verde)', 
+            file: 'T-Shirt - Cristo Vive en Mi - Verde-Verde.png', 
+            hex: '#1c4a27', 
+            letterHex: '#4ade80', 
+            border: 'rgba(255,255,255,0.2)' 
+          }
         ]
       },
       {
         nombre: 'Con Amor Eterno',
         colores: [
-          { nombre: 'Negro', file: 'T-shirt - Con Amor Eterno - Negro.png', hex: '#121212', border: 'rgba(255,255,255,0.35)' },
-          { nombre: 'Rojo', file: 'T-shirt - Con Amor Eterno - Rojo.png', hex: '#881313', border: 'rgba(255,255,255,0.15)' }
+          { 
+            nombre: 'Blanco (Letras Azul)', 
+            file: 'T-shirt - Con Amor Eterno - Blanco-Azul.png', 
+            hex: '#ffffff', 
+            letterHex: '#1d3557', 
+            border: 'rgba(255,255,255,0.45)' 
+          },
+          { 
+            nombre: 'Blanco (Letras Negro)', 
+            file: 'T-shirt - Con Amor Eterno - Blanco-Negro.png', 
+            hex: '#ffffff', 
+            letterHex: '#121212', 
+            border: 'rgba(255,255,255,0.45)' 
+          },
+          { 
+            nombre: 'Blanco (Letras Rojo)', 
+            file: 'T-shirt - Con Amor Eterno - Blanco-Rojo.png', 
+            hex: '#ffffff', 
+            letterHex: '#dc2626', 
+            border: 'rgba(255,255,255,0.45)' 
+          },
+          { 
+            nombre: 'Negro (Letras Blanco)', 
+            file: 'T-shirt - Con Amor Eterno - Negro-Blanco.png', 
+            hex: '#121212', 
+            letterHex: '#ffffff', 
+            border: 'rgba(255,255,255,0.35)' 
+          }
         ]
       },
       {
         nombre: '3.16',
         colores: [
-          { nombre: 'Blanco', file: 'T-Shirt - 3.16 Blanco.png', hex: '#ffffff', border: 'rgba(255,255,255,0.45)' }
+          { 
+            nombre: 'Blanco (Letras Rojo)', 
+            file: 'T-Shirt - 3.16 Blanco-Rojo.png', 
+            hex: '#ffffff', 
+            letterHex: '#dc2626', 
+            border: 'rgba(255,255,255,0.45)' 
+          },
+          { 
+            nombre: 'Negro (Letras Blanco)', 
+            file: 'T-Shirt - 3.16 Negro-Blanco.png', 
+            hex: '#121212', 
+            letterHex: '#ffffff', 
+            border: 'rgba(255,255,255,0.35)' 
+          }
         ]
       }
     ]
@@ -42,20 +106,26 @@ export const MERCH_CATALOG = {
     descripcion: 'Sudadera con capucha ajustable, forro térmico suave, bolsillo canguro y acabados elásticos en puños y pretina.',
     tallas: ['S', 'M', 'L', 'XL', '2XL'],
     defaultModelo: 'Chosen',
-    defaultColor: 'Negro',
+    defaultColor: 'Negro (Letras Blanco)',
     defaultTalla: 'M',
     modelos: [
       {
         nombre: 'Chosen',
         colores: [
-          { nombre: 'Negro', file: 'Hoddie - Chosen Negro.png', hex: '#121212', border: 'rgba(255,255,255,0.35)' },
-          { nombre: 'Blanco', file: 'Hoodie - Chosen Blanco.png', hex: '#ffffff', border: 'rgba(255,255,255,0.45)' }
-        ]
-      },
-      {
-        nombre: 'Con Amor Eterno',
-        colores: [
-          { nombre: 'Azul', file: 'Hoddie - Con Amor Eterno - Azul.png', hex: '#1d3557', border: 'rgba(255,255,255,0.2)' }
+          { 
+            nombre: 'Negro (Letras Blanco)', 
+            file: 'Hoddie - Chosen Negro-Blanco.png', 
+            hex: '#121212', 
+            letterHex: '#ffffff', 
+            border: 'rgba(255,255,255,0.35)' 
+          },
+          { 
+            nombre: 'Blanco (Letras Gris)', 
+            file: 'Hoodie - Chosen Blanco-Gris.png', 
+            hex: '#ffffff', 
+            letterHex: '#64748b', 
+            border: 'rgba(255,255,255,0.45)' 
+          }
         ]
       }
     ]
@@ -82,7 +152,7 @@ export const getMerchWhatsAppUrl = ({ product, modelo, color, talla, phone = '18
     `Deseo ordenar la siguiente prenda oficial de la *Conferencia Despierta 2026*:\n\n` +
     `🏷️ *Prenda:* ${product.nombre}\n` +
     `✨ *Diseño / Modelo:* ${modelo}\n` +
-    `🎨 *Color:* ${color}\n` +
+    `🎨 *Color / Letras:* ${color}\n` +
     `📏 *Talla:* ${talla}\n` +
     `💰 *Precio:* RD$ ${product.precio.toLocaleString()}\n\n` +
     `¿Podrían indicarme los pasos para confirmar mi pedido y realizar el pago? ¡Gracias!`;

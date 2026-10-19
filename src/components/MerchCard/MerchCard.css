@@ -1,6 +1,7 @@
 /* ==========================================================================
-   MERCH CARD COMPONENT - OBSIDIAN FIRE PALETTE (ULTRA-COMPACT ZERO-SCROLL)
-   Design System: React 19 + Vanilla CSS Puro (Cero Tailwind)
+   MERCH CARD COMPONENT - OBSIDIAN FIRE PALETTE
+   Fluid Touch Carousel (Scroll Snap) + Full-Screen Pinch-Zoom Lightbox
+   Design System: React 19 + Vanilla CSS Puro (Cero Tailwind CSS)
    ========================================================================== */
 
 /* Cuadrícula Responsiva de Tarjetas */
@@ -19,7 +20,7 @@
 }
 
 /* ==========================================================================
-   TARJETA PRINCIPAL (CARD CONTAINER)
+   1. TARJETA PRINCIPAL (CARD CONTAINER)
    ========================================================================== */
 .merch-card-item {
   position: relative;
@@ -43,7 +44,6 @@
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6), 0 0 16px rgba(234, 88, 12, 0.12);
 }
 
-/* Estado Seleccionado (Modo Registro) */
 .merch-card-item.is-selected {
   border-color: #ea580c;
   background: linear-gradient(180deg, #181514 0%, #100e0d 100%);
@@ -53,21 +53,49 @@
 }
 
 /* ==========================================================================
-   1. ÁREA DE IMAGEN & ZOOM (OPTIMIZADA PARA ALTURA COMPACTA)
+   2. CARRUSEL TÁCTIL ULTRAMOVIL (SWIPE & SCROLL SNAP)
    ========================================================================== */
 .merch-card-media {
   position: relative;
   width: 100%;
   aspect-ratio: 16 / 10;
   max-height: 220px;
-  background: radial-gradient(circle at center, rgba(38, 28, 22, 0.92) 0%, rgba(10, 8, 8, 0.98) 100%);
+  background: radial-gradient(circle at center, rgba(38, 28, 22, 0.94) 0%, rgba(10, 8, 8, 0.98) 100%);
   overflow: hidden;
   border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  user-select: none;
+}
+
+/* Track Horizontal con Scroll Snap Nativo */
+.merch-carousel-track {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.merch-carousel-track::-webkit-scrollbar {
+  display: none;
+}
+
+/* Slide Individual de Prenda */
+.merch-carousel-slide {
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  user-select: none;
+  position: relative;
 }
 
 .merch-card-img {
@@ -75,11 +103,11 @@
   height: 100%;
   object-fit: contain;
   padding: 8px 12px;
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), filter 0.25s ease;
-  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.6));
+  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), filter 0.25s ease;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.65));
 }
 
-.merch-card-media:hover .merch-card-img {
+.merch-carousel-slide:hover .merch-card-img {
   transform: scale(1.04);
 }
 
@@ -87,6 +115,94 @@
   width: 45%;
   height: auto;
   opacity: 0.6;
+}
+
+/* Flechas de Navegación del Carrusel (Desktop / Hover) */
+.merch-carousel-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(10, 8, 8, 0.82);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 3;
+  opacity: 0;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+.merch-card-media:hover .merch-carousel-nav-btn {
+  opacity: 0.9;
+}
+
+.merch-carousel-nav-btn:hover {
+  background: #ea580c;
+  border-color: #ea580c;
+  opacity: 1;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.merch-carousel-nav-btn.btn-prev {
+  left: 8px;
+}
+
+.merch-carousel-nav-btn.btn-next {
+  right: 8px;
+}
+
+@media (max-width: 768px) {
+  /* En móviles se ocultan las flechas para priorizar el gesto táctil swipe natural */
+  .merch-carousel-nav-btn {
+    display: none;
+  }
+}
+
+/* Dots de Paginación Sutiles y Elegantes */
+.merch-carousel-dots {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.22rem 0.55rem;
+  background: rgba(10, 8, 8, 0.75);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 9999px;
+  z-index: 3;
+}
+
+.merch-dot-item {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.3);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.merch-dot-item:hover {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.merch-dot-item.is-active {
+  width: 18px;
+  background: linear-gradient(135deg, #ea580c 0%, #fbbf24 100%);
+  box-shadow: 0 0 8px rgba(234, 88, 12, 0.6);
 }
 
 /* Badge Flotante Superior Izquierdo */
@@ -110,7 +226,7 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
-  z-index: 2;
+  z-index: 3;
   pointer-events: none;
 }
 
@@ -119,7 +235,7 @@
   flex-shrink: 0;
 }
 
-/* Botón Flotante Discreto para Ampliar Foto */
+/* Botón Flotante Discreto para Pantalla Completa / Zoom */
 .merch-zoom-trigger {
   position: absolute;
   bottom: 8px;
@@ -128,7 +244,7 @@
   align-items: center;
   gap: 0.28rem;
   padding: 0.25rem 0.55rem;
-  background: rgba(13, 10, 8, 0.82);
+  background: rgba(13, 10, 8, 0.85);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.16);
@@ -141,7 +257,7 @@
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.6);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   cursor: pointer;
-  z-index: 2;
+  z-index: 3;
 }
 
 .merch-zoom-trigger .zoom-icon {
@@ -155,15 +271,10 @@
   border-color: rgba(234, 88, 12, 0.65);
   color: #ffffff;
   transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(234, 88, 12, 0.3);
-}
-
-.merch-zoom-trigger:hover .zoom-icon {
-  transform: scale(1.15);
 }
 
 /* ==========================================================================
-   2. CUERPO DE LA TARJETA (ULTRA-COMPACTO)
+   3. CUERPO DE LA TARJETA (ZERO-SCROLL UI)
    ========================================================================== */
 .merch-card-body {
   padding: 0.95rem 1.05rem;
@@ -173,7 +284,6 @@
   flex: 1;
 }
 
-/* Cabecera: Título y Precio */
 .merch-card-header {
   display: flex;
   align-items: flex-start;
@@ -205,7 +315,6 @@
   text-transform: uppercase;
 }
 
-/* Pill del Precio: Fuera de la imagen, 100% Legible */
 .merch-price-pill {
   display: inline-flex;
   align-items: baseline;
@@ -221,7 +330,6 @@
 .merch-card-item:hover .merch-price-pill {
   border-color: #ea580c;
   background: rgba(234, 88, 12, 0.22);
-  box-shadow: 0 0 10px rgba(234, 88, 12, 0.3);
 }
 
 .merch-price-pill .price-currency {
@@ -229,7 +337,6 @@
   font-size: 0.64rem;
   font-weight: 700;
   color: #ea580c;
-  letter-spacing: 0.03em;
 }
 
 .merch-price-pill .price-amount {
@@ -237,7 +344,6 @@
   font-size: 0.84rem;
   font-weight: 800;
   color: #ffffff;
-  letter-spacing: 0.02em;
 }
 
 .merch-title {
@@ -245,11 +351,9 @@
   font-weight: 800;
   color: #ffffff;
   margin: 0;
-  letter-spacing: 0.01em;
   line-height: 1.22;
 }
 
-/* Badge de Selección en Cabecera */
 .merch-selected-badge {
   display: inline-flex;
   align-items: center;
@@ -262,7 +366,6 @@
   font-family: var(--font-mono, monospace);
   font-size: 0.64rem;
   font-weight: 800;
-  letter-spacing: 0.04em;
   flex-shrink: 0;
 }
 
@@ -271,7 +374,6 @@
   color: #ea580c;
 }
 
-/* Descripción Compacta con elipsis de 2 líneas */
 .merch-description {
   font-size: 0.76rem;
   color: #94a3b8;
@@ -284,9 +386,7 @@
   text-overflow: ellipsis;
 }
 
-/* ==========================================================================
-   3. GRID COMPACTO DE SELECTORES (ZERO-SCROLL UX)
-   ========================================================================== */
+/* 4. Grid de Selectores (Zero-Scroll: Modelo 100%, Talla 50% | Color 50%) */
 .merch-selectors-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -303,17 +403,14 @@
   min-width: 0;
 }
 
-/* Diseño / Modelo ocupa el 100% de la fila 1 */
 .merch-cell-model {
   grid-column: 1 / -1;
 }
 
-/* Talla (50%) en columna 1 */
 .merch-cell-size {
   grid-column: 1;
 }
 
-/* Color (50%) en columna 2 */
 .merch-cell-color {
   grid-column: 2;
 }
@@ -332,7 +429,6 @@
   width: 100%;
 }
 
-/* Selects Compactos y Nítidos */
 .merch-dark-select {
   width: 100%;
   height: 33px;
@@ -346,8 +442,7 @@
   outline: none;
   cursor: pointer;
   transition: border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1), 
-              box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-              background-color 0.2s ease;
+              box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -362,9 +457,20 @@
   border-color: rgba(255, 255, 255, 0.3);
 }
 
-/* ==========================================================================
-   4. SELECTOR DE COLOR CON PUNTOS VISUALES COMPACTOS
-   ========================================================================== */
+.merch-dark-select option {
+  background-color: #121216;
+  color: #ffffff;
+}
+
+.merch-dark-select option:disabled,
+.merch-dark-select option.option-disabled-stock {
+  color: #64748b !important;
+  background-color: #0a0a0c !important;
+  font-style: italic;
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 .merch-color-headline {
   display: flex;
   align-items: center;
@@ -383,7 +489,6 @@
   text-overflow: ellipsis;
 }
 
-/* Fila de Puntos de Color a la misma altura del select de Talla */
 .merch-color-dots-row {
   display: flex;
   align-items: center;
@@ -392,7 +497,6 @@
   flex-wrap: wrap;
 }
 
-/* Botón Circular de Color */
 .merch-color-dot-btn {
   width: 20px;
   height: 20px;
@@ -426,15 +530,11 @@
   stroke-width: 3.5;
 }
 
-/* ==========================================================================
-   5. BOTÓN DE LLAMADA A LA ACCIÓN (CTA CERCANO)
-   ========================================================================== */
 .merch-card-footer {
   margin-top: 0.25rem;
   width: 100%;
 }
 
-/* Botón Pedir Ahora (Modo Tienda / WhatsApp) */
 .btn-order-store {
   width: 100%;
   height: 36px;
@@ -463,7 +563,6 @@
   transform: translateY(-1px);
 }
 
-/* Botón Agregar / Seleccionar (Modo Registro) */
 .merch-toggle-cta-btn {
   width: 100%;
   height: 36px;
@@ -499,105 +598,288 @@
   box-shadow: 0 0 14px rgba(234, 88, 12, 0.35);
 }
 
-.toggle-check-icon {
-  stroke-width: 3;
-}
-
 /* ==========================================================================
-   6. MODAL LIGHTBOX DE VISTA PREVIA
+   5. MODAL DE PANTALLA COMPLETA (FULL-SCREEN LIGHTBOX + ZOOM TÁCTIL)
    ========================================================================== */
-.merch-modal-overlay {
+.merch-fullscreen-lightbox {
   position: fixed;
   inset: 0;
-  z-index: 10000;
-  background: rgba(0, 0, 0, 0.88);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1.25rem;
-  animation: merchOverlayFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-@keyframes merchOverlayFadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-.merch-modal-dialog {
-  position: relative;
-  width: 100%;
-  max-width: 640px;
-  max-height: 90vh;
-  background: #0d0a08;
-  border: 1px solid rgba(234, 88, 12, 0.45);
-  border-radius: 16px;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), 0 0 35px rgba(234, 88, 12, 0.25);
-  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+  z-index: 99999;
+  background: rgba(10, 10, 12, 0.96);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
   display: flex;
   flex-direction: column;
-  animation: merchModalScaleIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  transform-origin: center center;
+  justify-content: space-between;
+  overflow: hidden;
+  animation: merchLightboxFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: opacity, transform;
 }
 
-@keyframes merchModalScaleIn {
+@keyframes merchLightboxFadeIn {
   from {
     opacity: 0;
-    transform: scale(0.96) translateY(8px);
+    transform: scale(0.96);
   }
   to {
     opacity: 1;
-    transform: scale(1) translateY(0);
+    transform: scale(1);
   }
 }
 
-.merch-modal-close {
+/* Fondo Translúcido Obsidian Fire con Cierre al Tocar */
+.lightbox-backdrop {
   position: absolute;
-  top: 12px;
-  right: 12px;
-  z-index: 10;
-  width: 34px;
-  height: 34px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0, 0, 0, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-  color: #ffffff;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.merch-modal-close:hover {
-  background: #ea580c;
-  color: #ffffff;
-  border-color: #ea580c;
-  transform: rotate(90deg) scale(1.08);
-}
-
-.merch-modal-media {
+  inset: 0;
   width: 100%;
-  height: 380px;
-  background: radial-gradient(circle at center, #241914 0%, #080605 100%);
+  height: 100%;
+  z-index: 1;
+  background: radial-gradient(circle at center, rgba(30, 20, 15, 0.4) 0%, rgba(10, 10, 12, 0.95) 100%);
+  cursor: pointer;
+}
+
+/* Transiciones Suaves para Elementos de la Interfaz (Hide UI en Modo Inmersivo) */
+.lightbox-top-bar,
+.lightbox-bottom-bar,
+.lightbox-nav-btn {
+  transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+  will-change: opacity, transform;
+}
+
+/* ==========================================================================
+   MODO INMERSIVO REAL (SCALE > 1 O TAP MANUAL)
+   Oculta título, precio, selector de colores, botón X y flechas de navegación
+   ========================================================================== */
+.merch-fullscreen-lightbox.is-immersive .lightbox-top-bar,
+.merch-fullscreen-lightbox.is-zoomed .lightbox-top-bar {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: translateY(-20px);
+  visibility: hidden;
+}
+
+.merch-fullscreen-lightbox.is-immersive .lightbox-bottom-bar,
+.merch-fullscreen-lightbox.is-zoomed .lightbox-bottom-bar {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: translateY(20px);
+  visibility: hidden;
+}
+
+.merch-fullscreen-lightbox.is-immersive .lightbox-nav-btn,
+.merch-fullscreen-lightbox.is-zoomed .lightbox-nav-btn {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden;
+  transform: translateY(-50%) scale(0.85);
+}
+
+/* Barra Superior */
+.lightbox-top-bar {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.1rem 1.4rem;
+  background: linear-gradient(180deg, rgba(14, 10, 8, 0.95) 0%, rgba(14, 10, 8, 0) 100%);
+  pointer-events: auto;
+}
+
+.lightbox-top-left {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.lightbox-tag-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.28rem 0.65rem;
+  background: rgba(234, 88, 12, 0.12);
+  border: 1px solid rgba(234, 88, 12, 0.4);
+  border-radius: 9999px;
+  color: #fbbf24;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.lightbox-slide-counter {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  padding: 0.2rem 0.55rem;
+  border-radius: 9999px;
+  letter-spacing: 0.05em;
+}
+
+.lightbox-top-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+/* Flechas de Navegación Lateral en Pantalla Completa */
+.lightbox-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 12;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(18, 18, 22, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #f8fafc;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1.25rem;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  pointer-events: auto;
 }
 
-.merch-modal-img {
-  max-width: 100%;
-  max-height: 100%;
+.lightbox-nav-btn:hover {
+  background: #ea580c;
+  border-color: #ea580c;
+  color: #ffffff;
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 0 20px rgba(234, 88, 12, 0.6);
+}
+
+.lightbox-nav-btn:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.lightbox-nav-prev {
+  left: 1.25rem;
+}
+
+.lightbox-nav-next {
+  right: 1.25rem;
+}
+
+@media (max-width: 768px) {
+  .lightbox-nav-btn {
+    width: 36px;
+    height: 36px;
+    background: rgba(10, 10, 12, 0.75);
+  }
+  .lightbox-nav-prev {
+    left: 0.5rem;
+  }
+  .lightbox-nav-next {
+    right: 0.5rem;
+  }
+}
+
+/* Botón Circular de Cierre (X) */
+.lightbox-close-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(24, 18, 14, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.65);
+}
+
+.lightbox-close-btn:hover {
+  background: #ea580c;
+  border-color: #ea580c;
+  color: #ffffff;
+  transform: rotate(90deg) scale(1.08);
+  box-shadow: 0 0 18px rgba(234, 88, 12, 0.6);
+}
+
+/* Canvas Interactivo del Lightbox con react-zoom-pan-pinch */
+.lightbox-viewport {
+  position: absolute;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  touch-action: none;
+}
+
+.lightbox-transform-wrapper {
+  width: 100vw !important;
+  height: 100vh !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer;
+}
+
+.merch-fullscreen-lightbox.is-zoomed .lightbox-transform-wrapper {
+  cursor: grab;
+}
+
+.merch-fullscreen-lightbox.is-zoomed .lightbox-transform-wrapper:active {
+  cursor: grabbing;
+}
+
+.lightbox-transform-content {
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.lightbox-hero-img {
+  max-width: 90vw;
+  max-height: 70vh;
   object-fit: contain;
-  filter: drop-shadow(0 12px 26px rgba(0, 0, 0, 0.7));
+  filter: drop-shadow(0 20px 48px rgba(0, 0, 0, 0.88));
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: auto;
+  cursor: zoom-in;
+  transition: opacity 0.25s ease-out, filter 0.25s ease-out;
 }
 
-.merch-modal-footer {
-  padding: 1rem 1.25rem;
-  background: rgba(15, 11, 9, 0.98);
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+.merch-fullscreen-lightbox.is-zoomed .lightbox-hero-img {
+  cursor: grab;
+}
+
+.merch-fullscreen-lightbox.is-zoomed .lightbox-hero-img:active {
+  cursor: grabbing;
+}
+
+
+/* Barra Inferior con Detalles y Selector de Color */
+.lightbox-bottom-bar {
+  position: relative;
+  z-index: 10;
+  padding: 1.15rem 1.4rem;
+  background: linear-gradient(0deg, rgba(14, 10, 8, 0.98) 0%, rgba(14, 10, 8, 0.8) 75%, rgba(14, 10, 8, 0) 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  pointer-events: auto;
+}
+
+.lightbox-details-col {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -605,44 +887,109 @@
   flex-wrap: wrap;
 }
 
-.merch-modal-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
+.lightbox-garment-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.01em;
 }
 
-.merch-modal-tag {
+.lightbox-badges-row {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.lightbox-pill {
   font-family: var(--font-mono, monospace);
-  font-size: 0.62rem;
-  font-weight: 800;
-  color: #ea580c;
-  letter-spacing: 0.08em;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.22rem 0.6rem;
+  border-radius: 9999px;
+}
+
+.lightbox-pill.price {
+  background: rgba(234, 88, 12, 0.2);
+  border: 1px solid rgba(234, 88, 12, 0.6);
+  color: #fbbf24;
+}
+
+.lightbox-pill.size {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #e2e8f0;
+}
+
+.lightbox-pill.color {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #cbd5e1;
+}
+
+/* Selector rápido de colores dentro de pantalla completa */
+.lightbox-colors-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+}
+
+.lightbox-colors-label {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.64rem;
+  font-weight: 700;
+  color: #94a3b8;
   text-transform: uppercase;
 }
 
-.merch-modal-title {
-  font-size: 1.1rem;
-  font-weight: 800;
-  color: #ffffff;
-  margin: 0;
+.lightbox-color-chips {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
 }
 
-.merch-modal-sub {
-  font-size: 0.76rem;
-  color: #cbd5e1;
-  margin: 0;
-  font-family: var(--font-mono, monospace);
+.lightbox-color-chip {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1.5px solid transparent;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  outline: 2px solid transparent;
+  outline-offset: 1px;
+}
+
+.lightbox-color-chip:hover {
+  transform: scale(1.15);
+}
+
+.lightbox-color-chip.is-active {
+  transform: scale(1.15);
+  outline-color: #ea580c;
+  box-shadow: 0 0 10px rgba(234, 88, 12, 0.7);
+}
+
+.lightbox-gestures-hint {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  text-align: center;
+  opacity: 0.85;
 }
 
 /* ==========================================================================
-   7. MEDIA QUERIES PARA CELULARES (REDUCCIÓN VERTICAL & ZERO-SCROLL)
+   6. MEDIA QUERIES PARA CELULARES (REDUCCIÓN VERTICAL & ZERO-SCROLL)
    ========================================================================== */
 @media (max-width: 768px) {
   .merch-card-item {
     border-radius: 12px;
   }
 
-  /* 1. Reducción vertical drástica del contenedor de imagen */
+  /* 1. Reducción vertical del carrusel en móvil */
   .merch-card-media {
     aspect-ratio: 16 / 9;
     max-height: 195px;
@@ -652,7 +999,6 @@
     padding: 6px 10px;
   }
 
-  /* Botón de ampliar foto más discreto y pequeño */
   .merch-zoom-trigger {
     bottom: 6px;
     right: 6px;
@@ -672,6 +1018,20 @@
     left: 8px;
     padding: 0.2rem 0.45rem;
     font-size: 0.56rem;
+  }
+
+  .merch-carousel-dots {
+    bottom: 6px;
+    padding: 0.18rem 0.45rem;
+  }
+
+  .merch-dot-item {
+    width: 5px;
+    height: 5px;
+  }
+
+  .merch-dot-item.is-active {
+    width: 14px;
   }
 
   /* 2. Minimización de márgenes y paddings internos */
@@ -719,7 +1079,6 @@
     border-radius: 6px;
   }
 
-  /* Selector de color a la par del dropdown de talla */
   .merch-color-dots-row {
     height: 31px;
     gap: 0.3rem;
@@ -746,27 +1105,37 @@
     border-radius: 7px;
   }
 
-  /* Modal en móvil */
-  .merch-modal-media {
-    height: 260px;
-    padding: 0.75rem;
+  /* Ajustes del Lightbox en Celular */
+  .lightbox-top-bar {
+    padding: 0.75rem 1rem;
   }
 
-  .merch-modal-footer {
-    padding: 0.8rem 1rem;
+  .lightbox-tag-pill {
+    display: none;
   }
 
-  .merch-modal-title {
-    font-size: 0.98rem;
+  .lightbox-hero-img {
+    max-width: 95vw;
+    max-height: 60vh;
   }
 
-  .merch-modal-sub {
-    font-size: 0.7rem;
+  .lightbox-bottom-bar {
+    padding: 0.85rem 1rem;
+    gap: 0.45rem;
+  }
+
+  .lightbox-garment-title {
+    font-size: 1rem;
+  }
+
+  .lightbox-floating-controls {
+    bottom: 140px;
+    right: 14px;
+    padding: 0.2rem 0.4rem;
   }
 }
 
 @media (max-width: 480px) {
-  /* En celulares más estrechos (ej. iPhone SE / Android compactos) */
   .merch-card-media {
     aspect-ratio: 16 / 9;
     max-height: 175px;

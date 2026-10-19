@@ -94,20 +94,17 @@ const TALLERES = [
 
 const Registration = () => {
   const [lightboxIndex, setLightboxIndex] = useState(null);
-  const [previewMerch, setPreviewMerch] = useState(null);
 
-  // Bloqueo de scroll en fondo cuando el modal de vista previa de Merch o afiche está activo
+  // Bloqueo de scroll en fondo cuando el modal de afiche está activo
   useEffect(() => {
-    const isModalActive = previewMerch !== null || lightboxIndex !== null;
-    if (!isModalActive) return;
+    if (lightboxIndex === null) return;
 
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
 
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
-        if (previewMerch) setPreviewMerch(null);
-        if (lightboxIndex !== null) setLightboxIndex(null);
+        setLightboxIndex(null);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -116,7 +113,7 @@ const Registration = () => {
       document.body.style.overflow = originalOverflow || 'unset';
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [previewMerch, lightboxIndex]);
+  }, [lightboxIndex]);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -129,8 +126,8 @@ const Registration = () => {
     tallerSeleccionado: '',
     participaMerch: null,
     merch: {
-      tshirt: { quiere: false, modelo: 'Cristo Vive en Mí', color: 'Blanco', talla: 'M' },
-      hoodie: { quiere: false, modelo: 'Chosen', color: 'Negro', talla: 'M' }
+      tshirt: { quiere: false, modelo: 'Cristo Vive en Mí', color: 'Blanco (Letras Gris)', talla: 'M' },
+      hoodie: { quiere: false, modelo: 'Chosen', color: 'Negro (Letras Blanco)', talla: 'M' }
     }
   });
 
@@ -357,8 +354,8 @@ ${total ? `Monto a transferir: ${total}` : ''}`;
       tallerSeleccionado: '',
       participaMerch: null,
       merch: {
-        tshirt: { quiere: false, modelo: 'Cristo Vive en Mí', color: 'Blanco', talla: 'M' },
-        hoodie: { quiere: false, modelo: 'Chosen', color: 'Negro', talla: 'M' }
+        tshirt: { quiere: false, modelo: 'Cristo Vive en Mí', color: 'Blanco (Letras Gris)', talla: 'M' },
+        hoodie: { quiere: false, modelo: 'Chosen', color: 'Negro (Letras Blanco)', talla: 'M' }
       }
     });
     window.scrollTo({ top: 0, behavior: 'instant' });
@@ -751,7 +748,6 @@ ${total ? `Monto a transferir: ${total}` : ''}`;
                               }));
                             }}
                             mode="registration"
-                            onPreviewImage={setPreviewMerch}
                           />
 
                           <MerchCard
@@ -765,7 +761,6 @@ ${total ? `Monto a transferir: ${total}` : ''}`;
                               }));
                             }}
                             mode="registration"
-                            onPreviewImage={setPreviewMerch}
                           />
                         </div>
 
@@ -1225,42 +1220,6 @@ ${total ? `Monto a transferir: ${total}` : ''}`;
         onNext={() => setLightboxIndex(prev => (prev === null ? 0 : (prev + 1) % ALL_CONFERENCE_FLYERS.length))}
       />
 
-      {/* Modal de Vista Previa de Merch Oficial en Alta Resolución */}
-      {previewMerch && (
-        <div className="merch-modal-overlay" onClick={() => setPreviewMerch(null)}>
-          <div className="merch-modal-dialog" onClick={(e) => e.stopPropagation()}>
-            <button 
-              type="button" 
-              className="merch-modal-close"
-              onClick={() => setPreviewMerch(null)}
-              aria-label="Cerrar vista previa"
-            >
-              <X size={20} />
-            </button>
-            <div className="merch-modal-media">
-              <img 
-                src={previewMerch.image} 
-                alt={previewMerch.title} 
-                className="merch-modal-img" 
-              />
-            </div>
-            <div className="merch-modal-footer">
-              <div className="merch-modal-info">
-                <span className="merch-modal-tag">MERCH OFICIAL • DESPIERTA 2026</span>
-                <h4 className="merch-modal-title">{previewMerch.title}</h4>
-                <p className="merch-modal-sub">{previewMerch.subtitle}</p>
-              </div>
-              <button 
-                type="button" 
-                className="btn btn-secondary btn-sm"
-                onClick={() => setPreviewMerch(null)}
-              >
-                Cerrar Detalle
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

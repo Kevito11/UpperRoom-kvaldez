@@ -1,0 +1,995 @@
+/* =========================================================
+   INSTAGRAM HIGHLIGHTS (IMAGEN NATIVA Y CARRUSEL LIMPIO)
+   Vanilla CSS Puro - Sin marcos externos, responsivo y compacto
+   ========================================================= */
+
+.ig-native-section {
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto 3rem auto;
+  padding: 0 1rem;
+  box-sizing: border-box;
+  animation: igNativeFadeIn 0.35s ease-out;
+}
+
+@keyframes igNativeFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Cabecera compacta */
+.ig-native-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.ig-native-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent-color, #f59e0b);
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  margin-bottom: 0.4rem;
+}
+
+.ig-native-section-title {
+  font-size: clamp(1.4rem, 3vw, 1.9rem);
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+/* Grilla Responsiva: 2 columnas centradas en escritorio, 1 en móviles */
+.ig-native-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 440px));
+  justify-content: center;
+  align-items: start;
+  gap: 1.5rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Si una expira y queda 1 sola, se centra con un ancho máximo armónico */
+.ig-native-grid.ig-grid-count-1 {
+  grid-template-columns: minmax(0, 480px);
+}
+
+/* Tarjeta individual limpia con Glassmorphism */
+.ig-native-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: rgba(18, 18, 18, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 14px;
+  padding: 0.85rem;
+  box-sizing: border-box;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+  overflow: hidden;
+}
+
+.ig-native-card:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+}
+
+/* Cabecera interna de la tarjeta */
+.ig-native-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.65rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  gap: 0.5rem;
+}
+
+.ig-native-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--accent-blue, #0ea5e9);
+  background: rgba(14, 165, 233, 0.12);
+  border: 1px solid rgba(14, 165, 233, 0.28);
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.ig-native-ministerio {
+  font-size: 0.76rem;
+  color: var(--text-secondary, #94a3b8);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Contenedor del visor de imagen / carrusel */
+.ig-native-image-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: #09090b;
+  border-radius: 10px;
+  overflow: hidden;
+  user-select: none;
+  display: block;
+}
+
+/* Track de carrusel con CSS Scroll Snap nativo (Mobile y Desktop) */
+.ig-carousel-track {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE / Edge */
+}
+
+/* Ocultar barra de desplazamiento manteniendo scroll táctil activo */
+.ig-carousel-track::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
+}
+
+/* Diapositivas individuales del carrusel */
+.ig-carousel-slide {
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+  position: relative;
+  overflow: hidden;
+}
+
+.ig-native-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
+  transition: transform 0.3s ease;
+}
+
+.ig-native-card:hover .ig-native-image {
+  transform: scale(1.018);
+}
+
+/* =========================================================
+   INDICADOR DISTINTIVO DE EVENTO ACTIVO ('EN CURSO' / 'HOY')
+   Badge flotante en esquina superior izquierda con animación
+   ========================================================= */
+
+.ig-native-live-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.38rem;
+  padding: 0.28rem 0.65rem;
+  border-radius: 9999px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  z-index: 5;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  pointer-events: none;
+}
+
+/* Variante Rojo Brillante: 🔴 EN CURSO / EN VIVO */
+.ig-badge-live {
+  background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.6), 0 2px 6px rgba(0, 0, 0, 0.4);
+  animation: igPulseLive 2s infinite ease-in-out;
+}
+
+/* Variante Ámbar / Dorado Brillante: ⚡ HOY */
+.ig-badge-today {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: #000000;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 14px rgba(245, 158, 11, 0.65), 0 2px 6px rgba(0, 0, 0, 0.4);
+  animation: igPulseToday 2s infinite ease-in-out;
+}
+
+.ig-native-live-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: currentColor;
+  box-shadow: 0 0 6px currentColor;
+  animation: igBlinkDot 1s infinite alternate ease-in-out;
+}
+
+@keyframes igPulseLive {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.5), 0 2px 6px rgba(0, 0, 0, 0.4);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 18px rgba(239, 68, 68, 0.85), 0 2px 8px rgba(0, 0, 0, 0.5);
+  }
+}
+
+@keyframes igPulseToday {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.5), 0 2px 6px rgba(0, 0, 0, 0.4);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 18px rgba(245, 158, 11, 0.85), 0 2px 8px rgba(0, 0, 0, 0.5);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.5), 0 2px 6px rgba(0, 0, 0, 0.4);
+  }
+  50% {
+    transform: scale(1.06);
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.85), 0 2px 8px rgba(0, 0, 0, 0.5);
+  }
+}
+
+.ig-native-live-badge.is-pulsing {
+  animation: pulse 1.8s infinite ease-in-out;
+}
+
+@keyframes igBlinkDot {
+  0% {
+    opacity: 0.35;
+    transform: scale(0.85);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+
+/* Indicador de número de fotos (1/2) */
+.ig-native-counter-pill {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(0, 0, 0, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-radius: 9999px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 3;
+}
+
+/* Flechas de navegación interactiva */
+.ig-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 4;
+  transition: background 0.2s ease, transform 0.15s ease, opacity 0.2s ease;
+  padding: 0;
+  outline: none;
+}
+
+.ig-nav-prev {
+  left: 8px;
+}
+
+.ig-nav-next {
+  right: 8px;
+}
+
+.ig-nav-btn:hover {
+  background: rgba(0, 0, 0, 0.85);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-50%) scale(1.08);
+}
+
+.ig-nav-btn:active {
+  transform: translateY(-50%) scale(0.96);
+}
+
+/* Puntos indicadores (Dots) */
+.ig-dots-row {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.55);
+  padding: 4px 8px;
+  border-radius: 9999px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 3;
+}
+
+.ig-dot-indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.2s ease;
+}
+
+.ig-dot-indicator.active {
+  background: var(--accent-blue, #0ea5e9);
+  width: 14px;
+  border-radius: 9999px;
+}
+
+.ig-native-image-container {
+  cursor: pointer;
+}
+
+.ig-native-image-container:hover .ig-native-image {
+  transform: scale(1.02);
+}
+
+/* Hint sutil para primer clic sobre la imagen */
+.ig-tap-hint {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(0, 0, 0, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #f1f5f9;
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  pointer-events: none;
+  z-index: 4;
+  white-space: nowrap;
+  animation: igHintPulse 2.5s infinite ease-in-out;
+}
+
+.ig-tap-hint.with-dots {
+  bottom: 28px;
+}
+
+@keyframes igHintPulse {
+  0%, 100% {
+    opacity: 0.85;
+    transform: translateX(-50%) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.03);
+  }
+}
+
+/* =========================================================
+   LIGHTBOX DE PANTALLA COMPLETA CON ZOOM TÁCTIL E INMERSIVO
+   Modo Inmersivo (scale > 1): desvanece suavemente la UI
+   Cero botones estáticos: zoom orgánico por pellizco y doble toque
+   Carrusel con CSS Scroll Snap y bloqueo estricto anti-conflicto
+   ========================================================= */
+
+.ig-lightbox-modal {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: pan-y;
+  animation: igLightboxFadeIn 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes igLightboxFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Fondo Oscuro de Alta Gama con Desenfoque */
+.ig-lightbox-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(4, 4, 6, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* =========================================================
+   MODO INMERSIVO: OCULTAMIENTO DINÁMICO DE TODA LA UI
+   Al superar escala 1 (zoom > 1), la barra superior (con X),
+   la barra inferior (título, horarios, ubicación, botón Instagram)
+   y las flechas se ocultan con fade-out fluido.
+   ========================================================= */
+
+.ig-lightbox-modal.is-immersive .ig-lightbox-top-bar,
+.ig-lightbox-modal.is-zoomed .ig-lightbox-top-bar {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: translateY(-24px);
+  visibility: hidden;
+}
+
+.ig-lightbox-modal.is-immersive .ig-lightbox-bottom-bar,
+.ig-lightbox-modal.is-zoomed .ig-lightbox-bottom-bar {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: translateY(24px);
+  visibility: hidden;
+}
+
+.ig-lightbox-modal.is-immersive .ig-lightbox-nav-btn,
+.ig-lightbox-modal.is-zoomed .ig-lightbox-nav-btn {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: translateY(-50%) scale(0.8);
+  visibility: hidden;
+}
+
+/* 1. Barra Superior Flotante */
+.ig-lightbox-top-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.82) 0%, rgba(0, 0, 0, 0.35) 65%, transparent 100%);
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.3s ease;
+  pointer-events: auto;
+}
+
+.ig-lightbox-top-left {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.ig-lightbox-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--accent-color, #f59e0b);
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.ig-lightbox-counter {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #e2e8f0;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 0.22rem 0.6rem;
+  border-radius: 9999px;
+  letter-spacing: 0.03em;
+}
+
+/* Botón de Cierre 'X' */
+.ig-lightbox-close-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+}
+
+.ig-lightbox-close-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.45);
+  transform: scale(1.08);
+}
+
+.ig-lightbox-close-btn:active {
+  transform: scale(0.95);
+}
+
+/* 2. Flechas de Navegación Lateral */
+.ig-lightbox-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 25;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: rgba(18, 18, 22, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+  pointer-events: auto;
+}
+
+.ig-lightbox-nav-btn.prev {
+  left: 1.25rem;
+}
+
+.ig-lightbox-nav-btn.next {
+  right: 1.25rem;
+}
+
+.ig-lightbox-nav-btn:hover {
+  background: rgba(245, 158, 11, 0.2);
+  border-color: var(--accent-color, #f59e0b);
+  color: var(--accent-color, #f59e0b);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.ig-lightbox-nav-btn:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+/* 3. Viewport Principal */
+.ig-lightbox-viewport {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Carrusel Táctil Fluido (CSS Scroll Snap) */
+.ig-lightbox-carousel-track {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  touch-action: pan-x pan-y;
+}
+
+.ig-lightbox-carousel-track::-webkit-scrollbar {
+  display: none;
+}
+
+/* CONDICIÓN ESTRICTA ANTI-CONFLICTO:
+   Si hay zoom activo (scale > 1), se bloquea el scroll y snap del carrusel.
+   El movimiento táctil se entrega exclusivamente a react-zoom-pan-pinch para pan multi-direccional. */
+.ig-lightbox-carousel-track.is-zoom-locked {
+  overflow-x: hidden !important;
+  overflow-y: hidden !important;
+  scroll-snap-type: none !important;
+  touch-action: none !important;
+}
+
+.ig-lightbox-slide {
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.ig-lightbox-transform-wrapper {
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: grab;
+}
+
+.ig-lightbox-transform-wrapper:active {
+  cursor: grabbing;
+}
+
+.ig-lightbox-transform-content {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.ig-lightbox-hero-img {
+  max-width: 90vw;
+  max-height: 76vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 14px;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.7);
+  user-select: none;
+  -webkit-user-drag: none;
+  transition: box-shadow 0.25s ease;
+  pointer-events: auto;
+}
+
+.ig-lightbox-modal.is-zoomed .ig-lightbox-hero-img {
+  max-width: none;
+  max-height: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* 4. Barra Inferior Flotante */
+.ig-lightbox-bottom-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1.5rem 1.25rem 1.25rem 1.25rem;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.65) 60%, transparent 100%);
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.3s ease;
+  gap: 0.75rem;
+  pointer-events: auto;
+}
+
+.ig-lightbox-info-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  max-width: 520px;
+}
+
+.ig-lightbox-title {
+  font-size: clamp(1.05rem, 2.5vw, 1.28rem);
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.ig-lightbox-subtext {
+  font-size: 0.78rem;
+  color: #94a3b8;
+  margin: 0;
+}
+
+/* Pastillas de Horario y Ubicación */
+.ig-lightbox-pills-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-top: 0.45rem;
+}
+
+.ig-lightbox-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 0.35rem 0.8rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  color: #f1f5f9;
+  font-weight: 600;
+}
+
+.ig-lightbox-pill-icon {
+  color: var(--accent-color, #f59e0b);
+  flex-shrink: 0;
+}
+
+/* Botón CTA hacia Instagram */
+.ig-lightbox-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #e1306c 0%, #c13584 50%, #833ab4 100%);
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0.55rem 1.25rem;
+  border-radius: 9999px;
+  text-decoration: none;
+  box-shadow: 0 4px 18px rgba(225, 48, 108, 0.45);
+  transition: all 0.22s ease;
+  margin-top: 0.2rem;
+}
+
+.ig-lightbox-cta-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(225, 48, 108, 0.65);
+  filter: brightness(1.08);
+}
+
+.ig-lightbox-cta-btn:active {
+  transform: translateY(0);
+}
+
+/* Puntos de paginación (Dots) para Carrusel JOPECE */
+.ig-lightbox-dots-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+}
+
+.ig-lightbox-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ig-lightbox-dot.active {
+  background: var(--accent-color, #f59e0b);
+  width: 18px;
+  border-radius: 9999px;
+}
+
+/* Hint de Gestos */
+.ig-lightbox-gestures-hint {
+  font-size: 0.68rem;
+  color: #64748b;
+  letter-spacing: 0.01em;
+}
+
+/* Adaptación Responsiva para Móviles */
+@media (max-width: 768px) {
+  .ig-lightbox-top-bar {
+    padding: 0.9rem 1rem;
+  }
+
+  .ig-lightbox-nav-btn {
+    display: none; /* En móvil prima el gesto táctil swipe */
+  }
+
+  .ig-lightbox-hero-img {
+    max-width: 96vw;
+    max-height: 70vh;
+    border-radius: 10px;
+  }
+
+  .ig-lightbox-bottom-bar {
+    padding: 1.2rem 1rem 1rem 1rem;
+    gap: 0.6rem;
+  }
+
+  .ig-lightbox-pills-row {
+    gap: 0.4rem;
+  }
+
+  .ig-lightbox-pill {
+    font-size: 0.72rem;
+    padding: 0.3rem 0.65rem;
+  }
+
+  .ig-lightbox-gestures-hint {
+    font-size: 0.64rem;
+  }
+}
+
+/* Botón de acceso a detalles en el footer de la tarjeta */
+.ig-native-details-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.ig-native-details-btn:hover {
+  background: var(--accent-color, #f59e0b);
+  border-color: var(--accent-color, #f59e0b);
+  color: #000000;
+  transform: translateY(-1px);
+}
+
+.ig-native-title-link {
+  text-decoration: none;
+  color: inherit;
+  display: inline-block;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.ig-native-title-link:hover .ig-native-tema {
+  color: var(--accent-color, #f59e0b);
+}
+
+/* Pie de la tarjeta */
+.ig-native-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.85rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.ig-native-title-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.ig-native-tema {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ig-native-subtext {
+  font-size: 0.73rem;
+  color: #94a3b8;
+}
+
+.ig-native-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.ig-native-link-btn:hover {
+  background: var(--accent-color, #f59e0b);
+  border-color: var(--accent-color, #f59e0b);
+  color: #000000;
+  transform: translateY(-1px);
+}
+
+/* =========================================================
+   ADAPTACIÓN RESPONSIVA (MÓVILES)
+   ========================================================= */
+
+@media (max-width: 768px) {
+  .ig-native-grid {
+    grid-template-columns: 1fr;
+    max-width: 440px;
+    gap: 1.25rem;
+  }
+
+  .ig-native-section {
+    margin-bottom: 2.25rem;
+    padding: 0 0.75rem;
+  }
+
+  .ig-native-card {
+    padding: 0.75rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .ig-native-section {
+    padding: 0 0.5rem;
+  }
+
+  .ig-native-card {
+    border-radius: 12px;
+  }
+
+  .ig-native-card-header {
+    flex-wrap: wrap;
+  }
+}
