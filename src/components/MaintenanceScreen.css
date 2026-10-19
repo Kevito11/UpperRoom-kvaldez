@@ -1,0 +1,329 @@
+/* ==========================================================================
+   MaintenanceScreen.css - Obsidian Fire Aesthetic (Vanilla CSS)
+   UPPER ROOM IBC - Conferencia Despierta 2026
+   ========================================================================== */
+
+/* Contenedor Overlay Fullscreen Puro */
+.maintenance-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 99999;
+  background-color: #0a0a0c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  box-sizing: border-box;
+  overflow: hidden;
+  user-select: none;
+  font-family: var(--font-body, 'Inter', -apple-system, BlinkMacSystemFont, sans-serif);
+  color: #ffffff;
+}
+
+/* Fondo dinámico y Resplandor Obsidian Fire (#ea580c) */
+.maintenance-glow-backdrop {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 75vw;
+  max-width: 800px;
+  height: 75vw;
+  max-height: 800px;
+  background: radial-gradient(
+    circle at center,
+    rgba(234, 88, 12, 0.22) 0%,
+    rgba(255, 106, 0, 0.12) 35%,
+    rgba(10, 10, 12, 0) 70%
+  );
+  filter: blur(60px);
+  pointer-events: none;
+  animation: maintenancePulseGlow 8s ease-in-out infinite alternate;
+}
+
+/* Efecto de orbe secundario inferior */
+.maintenance-glow-orb-subtle {
+  position: absolute;
+  bottom: -15%;
+  right: 10%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(220, 38, 38, 0.15) 0%, transparent 70%);
+  filter: blur(80px);
+  pointer-events: none;
+}
+
+/* Patrón sutil de malla obsidian */
+.maintenance-grid-texture {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+/* Tarjeta Central Glassmorphism */
+.maintenance-card {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 760px;
+  background: rgba(14, 12, 14, 0.82);
+  border: 1px solid rgba(234, 88, 12, 0.28);
+  box-shadow: 
+    0 25px 60px -15px rgba(0, 0, 0, 0.9),
+    0 0 40px -10px rgba(234, 88, 12, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 3rem 2.5rem;
+  text-align: center;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: maintenanceCardFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Spinner & Resplandor Obsidian Flame */
+.maintenance-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.45rem 1rem;
+  background: rgba(234, 88, 12, 0.1);
+  border: 1px solid rgba(234, 88, 12, 0.35);
+  border-radius: 9999px;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #ff8c00;
+  margin-bottom: 1.75rem;
+}
+
+/* Elegante Spinner Radiante */
+.maintenance-spinner {
+  position: relative;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid rgba(234, 88, 12, 0.25);
+  border-top-color: #ea580c;
+  border-right-color: #ff8c00;
+  animation: maintenanceSpin 1s linear infinite;
+  display: inline-block;
+}
+
+.maintenance-spinner-glow {
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(234, 88, 12, 0.6) 0%, transparent 70%);
+  filter: blur(4px);
+  animation: maintenanceSpinGlow 2s ease-in-out infinite alternate;
+}
+
+/* Brand / Upper Room Subtitle */
+.maintenance-brand-tag {
+  font-family: var(--font-heading, 'Outfit', sans-serif);
+  font-size: 0.85rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: #ea580c;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  text-shadow: 0 0 16px rgba(234, 88, 12, 0.4);
+}
+
+/* Mensaje Principal */
+.maintenance-title {
+  font-family: var(--font-heading, 'Outfit', sans-serif);
+  font-size: clamp(1.65rem, 3.8vw, 2.35rem);
+  font-weight: 800;
+  line-height: 1.25;
+  color: #ffffff;
+  margin-bottom: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.maintenance-title-highlight {
+  background: linear-gradient(135deg, #fff7ed 0%, #ff8c00 50%, #ea580c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
+
+/* Descripción */
+.maintenance-description {
+  font-size: 0.98rem;
+  color: #a8a096;
+  max-width: 580px;
+  line-height: 1.6;
+  margin-bottom: 2.5rem;
+}
+
+/* ==========================================================================
+   Contenedor de Cuenta Regresiva (Grande y Destacado)
+   ========================================================================== */
+.maintenance-countdown-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+  width: 100%;
+  max-width: 620px;
+  margin-bottom: 2rem;
+}
+
+.maintenance-timer-slot {
+  position: relative;
+  background: rgba(22, 18, 20, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 1.25rem 0.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  overflow: hidden;
+}
+
+.maintenance-timer-slot::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 15%;
+  right: 15%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(234, 88, 12, 0.5), transparent);
+}
+
+.maintenance-timer-slot:hover {
+  transform: translateY(-2px);
+  border-color: rgba(234, 88, 12, 0.4);
+  box-shadow: 0 10px 24px -6px rgba(0, 0, 0, 0.6), 0 0 15px rgba(234, 88, 12, 0.2);
+}
+
+.maintenance-digit {
+  font-family: var(--font-heading, 'Outfit', sans-serif);
+  font-size: clamp(2.2rem, 5.5vw, 3.4rem);
+  font-weight: 800;
+  line-height: 1;
+  color: #ffffff;
+  letter-spacing: -0.03em;
+  margin-bottom: 0.45rem;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  font-variant-numeric: tabular-nums;
+}
+
+.maintenance-unit {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #ea580c;
+}
+
+/* Pie de pantalla / Información de Zona Horaria */
+.maintenance-footer-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: #78716c;
+  letter-spacing: 0.02em;
+}
+
+.maintenance-dot-separator {
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: #ea580c;
+  opacity: 0.7;
+}
+
+/* ==========================================================================
+   Animaciones
+   ========================================================================== */
+@keyframes maintenanceSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes maintenanceSpinGlow {
+  0% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 0.9;
+  }
+}
+
+@keyframes maintenancePulseGlow {
+  0% {
+    opacity: 0.6;
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+  100% {
+    opacity: 0.95;
+    transform: translate(-50%, -50%) scale(1.05);
+  }
+}
+
+@keyframes maintenanceCardFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ==========================================================================
+   Responsive Adaptability
+   ========================================================================== */
+@media (max-width: 640px) {
+  .maintenance-card {
+    padding: 2.25rem 1.25rem;
+  }
+
+  .maintenance-countdown-grid {
+    gap: 0.65rem;
+  }
+
+  .maintenance-timer-slot {
+    padding: 1rem 0.25rem 0.75rem;
+    border-radius: 8px;
+  }
+
+  .maintenance-digit {
+    font-size: 1.85rem;
+  }
+
+  .maintenance-unit {
+    font-size: 0.62rem;
+    letter-spacing: 0.06em;
+  }
+
+  .maintenance-footer-info {
+    font-size: 0.72rem;
+    flex-wrap: wrap;
+  }
+}

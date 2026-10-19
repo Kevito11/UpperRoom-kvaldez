@@ -12,6 +12,7 @@ import TicketVerification from './pages/TicketVerification/TicketVerification';
 import ConfirmAttendance from './pages/ConfirmAttendance/ConfirmAttendance';
 import CheckIn from './pages/CheckIn/CheckIn';
 
+import MaintenanceScreen from './components/MaintenanceScreen';
 import './App.css';
 
 function AppContent() {
@@ -50,6 +51,8 @@ function AppContent() {
 function App() {
   return (
     <Router basename={import.meta.env.BASE_URL}>
+      {/* Pantalla de Mantenimiento / Overlay Global con Cuenta Regresiva */}
+      <MaintenanceScreen />
       <ScrollToTop />
       <AppContent />
     </Router>
@@ -57,3 +60,4 @@ function App() {
 }
 
 export default App;
+
