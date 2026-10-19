@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
+import { useNavigate } from 'react-router-dom';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import { 
   Check, X, ShoppingBag, 
-  Sparkles, ChevronLeft, ChevronRight, ZoomIn 
+  Sparkles, ChevronLeft, ChevronRight, ZoomIn, Ticket, Minus, Plus 
 } from 'lucide-react';
 import { getMerchImagePath, getMerchWhatsAppUrl } from '../../lib/merchData';
 import './MerchCard.css';
@@ -24,6 +25,8 @@ const MerchCard = ({
   onSelectionChange,
   mode = 'registration'
 }) => {
+  const navigate = useNavigate();
+
   // 1. BLINDAJE INICIAL: Si no hay producto válido, no renderizar para evitar crashes
   if (!product || typeof product !== 'object' || !product.id) {
     return null;
@@ -51,7 +54,8 @@ const MerchCard = ({
     quiere: false,
     modelo: defaultModeloSafe,
     color: defaultColorSafe,
-    talla: defaultTallaSafe
+    talla: defaultTallaSafe,
+    cantidad: 1
   });
 
   const activeSelection = selection !== undefined ? selection : internalSelection;
@@ -63,6 +67,7 @@ const MerchCard = ({
 
   const currentColor = activeSelection?.color || availableColors[0]?.nombre || defaultColorSafe;
   const currentTalla = (activeSelection?.talla && activeSelection.talla !== 'XS') ? activeSelection.talla : defaultTallaSafe;
+  const currentCantidad = Math.max(1, Number(activeSelection?.cantidad) || 1);
 
   // ---------------------------------------------------------------------------
   // 2. REGLA DE NEGOCIO: TALLA 'S' AGOTADA EN T-SHIRTS PARA NEGRO Y CREMA
@@ -272,6 +277,20 @@ const MerchCard = ({
   const handleTallaChange = (e) => {
     const val = e?.target?.value || 'M';
     updateState({ talla: val === 'XS' ? 'M' : val });
+  };
+
+  const handleIncreaseQty = (e) => {
+    e?.stopPropagation();
+    const nextQty = currentCantidad + 1;
+    updateState({ cantidad: nextQty });
+  };
+
+  const handleDecreaseQty = (e) => {
+    e?.stopPropagation();
+    if (currentCantidad > 1) {
+      const nextQty = currentCantidad - 1;
+      updateState({ cantidad: nextQty });
+    }
   };
 
   const handleWhatsAppOrder = () => {
@@ -689,36 +708,63 @@ const MerchCard = ({
             </div>
           </div>
 
-          {/* 4. Botón de Llamada a la Acción (CTA) Inmediato */}
+          {/* 4. Selector de Cantidad y Botón de Llamada a la Acción (CTA) */}
           <div className="merch-card-footer">
-            {mode === 'store' ? (
-              <button 
-                type="button" 
-                className="btn-order-store"
-                onClick={handleWhatsAppOrder}
-              >
-                <ShoppingBag size={15} />
-                <span>PEDIR AHORA • RD$ {safePrecio.toLocaleString()}</span>
-              </button>
-            ) : (
-              <button
-                type="button"
-                className={`merch-toggle-cta-btn ${isSelected ? 'is-selected' : ''}`}
-                onClick={handleToggleSelection}
-                aria-pressed={isSelected}
-              >
-                {isSelected ? (
-                  <>
-                    <Check size={14} className="toggle-check-icon" />
-                    <span>Prenda Seleccionada (Quitar)</span>
-                  </>
-                ) : (
-                  <>
-                    <span>+ Agregar Prenda</span>
-                  </>
-                )}
-              </button>
-            )}
+            <div className="merch-footer-controls-row">
+              {/* Selector de Cantidad Obsidian Fire */}
+              <div className="merch-qty-selector" aria-label="Cantidad de prendas">
+                <button
+                  type="button"
+                  className="qty-btn qty-btn-minus"
+                  onClick={handleDecreaseQty}
+                  disabled={currentCantidad <= 1}
+                  aria-label="Disminuir cantidad"
+                  title="Restar una prenda"
+                >
+                  <Minus size={13} />
+                </button>
+                <span className="qty-value" title={`Cantidad: ${currentCantidad}`}>{currentCantidad}</span>
+                <button
+                  type="button"
+                  className="qty-btn qty-btn-plus"
+                  onClick={handleIncreaseQty}
+                  aria-label="Aumentar cantidad"
+                  title="Sumar una prenda"
+                >
+                  <Plus size={13} />
+                </button>
+              </div>
+
+              {mode === 'store' ? (
+                <button 
+                  type="button" 
+                  className="btn-order-store"
+                  onClick={() => navigate('/registro')}
+                  title="Regístrate a la conferencia para adquirir esta prenda oficial"
+                >
+                  <Ticket size={15} />
+                  <span>REGÍSTRATE PARA COMPRAR • RD$ {(safePrecio * currentCantidad).toLocaleString()}</span>
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className={`merch-toggle-cta-btn ${isSelected ? 'is-selected' : ''}`}
+                  onClick={handleToggleSelection}
+                  aria-pressed={isSelected}
+                >
+                  {isSelected ? (
+                    <>
+                      <Check size={14} className="toggle-check-icon" />
+                      <span>{currentCantidad > 1 ? `${currentCantidad}x ` : ''}Seleccionada (Quitar)</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>{mode === 'ticket' ? `+ Agregar a mi Ticket (${currentCantidad})` : `+ Agregar Prenda (${currentCantidad})`}</span>
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </article>

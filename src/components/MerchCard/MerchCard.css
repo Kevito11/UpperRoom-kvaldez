@@ -535,26 +535,105 @@
   width: 100%;
 }
 
-.btn-order-store {
+.merch-footer-controls-row {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
   width: 100%;
+}
+
+/* Selector de Cantidad Obsidian Fire */
+.merch-qty-selector {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 36px;
+  padding: 2px 4px;
+  background: rgba(18, 14, 12, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5), 0 1px 4px rgba(0, 0, 0, 0.25);
+  flex-shrink: 0;
+  min-width: 88px;
+  user-select: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.merch-qty-selector:hover {
+  border-color: rgba(234, 88, 12, 0.45);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5), 0 0 8px rgba(234, 88, 12, 0.2);
+}
+
+.qty-btn {
+  width: 25px;
+  height: 25px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.05);
+  color: #e2e8f0;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.qty-btn:hover:not(:disabled) {
+  background: rgba(234, 88, 12, 0.25);
+  border-color: rgba(234, 88, 12, 0.6);
+  color: #ffedd5;
+  transform: scale(1.06);
+}
+
+.qty-btn:active:not(:disabled) {
+  transform: scale(0.92);
+}
+
+.qty-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  color: #64748b;
+  background: transparent;
+}
+
+.qty-value {
+  min-width: 20px;
+  text-align: center;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.84rem;
+  font-weight: 800;
+  color: #fbbf24;
+  user-select: none;
+  padding: 0 3px;
+  text-shadow: 0 0 8px rgba(251, 191, 36, 0.35);
+}
+
+.btn-order-store {
+  flex: 1;
+  min-width: 0;
   height: 36px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.45rem;
-  padding: 0 0.85rem;
+  padding: 0 0.75rem;
   background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
   border: 1px solid #ea580c;
   border-radius: 8px;
   color: #ffffff;
   font-family: var(--font-mono, monospace);
-  font-size: 0.76rem;
+  font-size: 0.74rem;
   font-weight: 800;
   letter-spacing: 0.03em;
   text-transform: uppercase;
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: 0 3px 12px rgba(234, 88, 12, 0.32);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .btn-order-store:hover {
@@ -564,24 +643,28 @@
 }
 
 .merch-toggle-cta-btn {
-  width: 100%;
+  flex: 1;
+  min-width: 0;
   height: 36px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.45rem;
-  padding: 0 0.85rem;
+  padding: 0 0.75rem;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 8px;
   color: #cbd5e1;
   font-family: var(--font-mono, monospace);
-  font-size: 0.74rem;
+  font-size: 0.73rem;
   font-weight: 700;
   letter-spacing: 0.03em;
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   user-select: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .merch-toggle-cta-btn:hover {
@@ -1098,6 +1181,21 @@
     margin-top: 0.15rem;
   }
 
+  .merch-qty-selector {
+    height: 33px;
+    min-width: 80px;
+    padding: 1px 3px;
+  }
+
+  .qty-btn {
+    width: 23px;
+    height: 23px;
+  }
+
+  .qty-value {
+    font-size: 0.78rem;
+  }
+
   .btn-order-store,
   .merch-toggle-cta-btn {
     height: 33px;
@@ -1170,9 +1268,25 @@
     height: 16px;
   }
 
+  .merch-qty-selector {
+    height: 32px;
+    min-width: 74px;
+    padding: 1px 2px;
+  }
+
+  .qty-btn {
+    width: 22px;
+    height: 22px;
+  }
+
+  .qty-value {
+    font-size: 0.74rem;
+  }
+
   .btn-order-store,
   .merch-toggle-cta-btn {
     height: 32px;
-    font-size: 0.7rem;
+    font-size: 0.69rem;
+    padding: 0 0.5rem;
   }
 }

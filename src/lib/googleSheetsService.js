@@ -24,29 +24,56 @@ export const setAppsScriptUrl = (url) => {
 
 export const calculateMerchTotal = (merch) => {
   if (!merch) return 0;
+  if (Array.isArray(merch)) {
+    return merch.reduce((sum, item) => {
+      const precio = Number(item?.precio) || 0;
+      const cant = Number(item?.cantidad) || 1;
+      return sum + (precio * cant);
+    }, 0);
+  }
   let total = 0;
-  if (merch.tshirt?.quiere) total += 1000;
-  if (merch.hoodie?.quiere) total += 1400;
+  if (merch.tshirt?.quiere) {
+    const cant = Number(merch.tshirt.cantidad) || 1;
+    total += (Number(merch.tshirt.precio) || 1000) * cant;
+  }
+  if (merch.hoodie?.quiere) {
+    const cant = Number(merch.hoodie.cantidad) || 1;
+    total += (Number(merch.hoodie.precio) || 1400) * cant;
+  }
   return total;
 };
 
 export const formatMerchSummary = (merch) => {
   if (!merch) return 'Ninguna';
+  if (Array.isArray(merch)) {
+    if (merch.length === 0) return 'Ninguna';
+    return merch.map(item => {
+      const cant = Number(item?.cantidad) || 1;
+      const precio = Number(item?.precio) || 0;
+      const subtotal = precio * cant;
+      const mod = item?.modelo ? `"${item.modelo}" ` : '';
+      const priceStr = subtotal > 0 ? ` [RD$ ${subtotal.toLocaleString()}]` : '';
+      return `${cant}x ${item?.nombre || item?.productId || 'Prenda'} ${mod}(${item?.talla || 'M'} - ${item?.color || 'Color'})${priceStr}`;
+    }).join(' + ');
+  }
   const items = [];
   if (merch.tshirt?.quiere) {
+    const cant = Number(merch.tshirt.cantidad) || 1;
+    const subtotal = 1000 * cant;
     const mod = merch.tshirt.modelo ? `"${merch.tshirt.modelo}" ` : '';
-    items.push(`T-Shirt Oversize ${mod}(${merch.tshirt.talla} - ${merch.tshirt.color}) [RD$ 1,000]`);
+    items.push(`${cant}x T-Shirt Oversize ${mod}(${merch.tshirt.talla} - ${merch.tshirt.color}) [RD$ ${subtotal.toLocaleString()}]`);
   }
   if (merch.hoodie?.quiere) {
+    const cant = Number(merch.hoodie.cantidad) || 1;
+    const subtotal = 1400 * cant;
     const mod = merch.hoodie.modelo ? `"${merch.hoodie.modelo}" ` : '';
-    items.push(`Hoodie ${mod}(${merch.hoodie.talla} - ${merch.hoodie.color}) [RD$ 1,400]`);
+    items.push(`${cant}x Hoodie ${mod}(${merch.hoodie.talla} - ${merch.hoodie.color}) [RD$ ${subtotal.toLocaleString()}]`);
   }
   if (merch.gorra?.quiere) {
     items.push(`Gorra (${merch.gorra.color})`);
   }
   if (items.length === 0) return 'Ninguna';
-  const total = calculateMerchTotal(merch);
-  return total > 0 ? `${items.join(' + ')} • Total: RD$ ${total.toLocaleString()}` : items.join(', ');
+  return items.join(' + ');
 };
 
 /**
@@ -56,9 +83,19 @@ export const formatMerchSummary = (merch) => {
 export const sendRegistrationToGoogleSheets = async (registrationData, qrCodeUrl) => {
   const url = getAppsScriptUrl();
   
-  const merchSummary = formatMerchSummary(registrationData.merch);
-  const merchTotal = calculateMerchTotal(registrationData.merch);
-  const hasMerch = (registrationData.merch?.tshirt?.quiere || registrationData.merch?.hoodie?.quiere) || false;
+  const merchSummary = typeof registrationData.merchSummary === 'string' && registrationData.merchSummary
+    ? registrationData.merchSummary
+    : formatMerchSummary(registrationData.merch);
+
+  const merchTotal = typeof registrationData.merchTotal === 'number'
+    ? registrationData.merchTotal
+    : calculateMerchTotal(registrationData.merch);
+
+  const hasMerch = registrationData.hasMerch !== undefined
+    ? Boolean(registrationData.hasMerch)
+    : (Array.isArray(registrationData.merch) 
+        ? registrationData.merch.length > 0 
+        : Boolean(registrationData.merch?.tshirt?.quiere || registrationData.merch?.hoodie?.quiere));
 
   const payload = {
     action: 'register',
@@ -76,8 +113,13 @@ export const sendRegistrationToGoogleSheets = async (registrationData, qrCodeUrl
     hasMerch: hasMerch,
     merchTotal: merchTotal,
     merchDetails: {
-      tshirt: registrationData.merch?.tshirt || null,
-      hoodie: registrationData.merch?.hoodie || null,
+      items: Array.isArray(registrationData.merch) ? registrationData.merch : null,
+      tshirt: Array.isArray(registrationData.merch)
+        ? registrationData.merch.find(i => i.productId === 'tshirt' || i.id === 'tshirt') || null
+        : (registrationData.merch?.tshirt || null),
+      hoodie: Array.isArray(registrationData.merch)
+        ? registrationData.merch.find(i => i.productId === 'hoodie' || i.id === 'hoodie') || null
+        : (registrationData.merch?.hoodie || null),
       total: merchTotal
     },
     eventName: "Conferencia Despierta 2026 - Upper Room IBC",
@@ -290,16 +332,24 @@ export const addMerchToExistingTicket = async ({ ticketCode, merch, attendeeInfo
   const url = getAppsScriptUrl();
   const merchSummary = formatMerchSummary(merch);
   const merchTotal = calculateMerchTotal(merch);
+  const hasMerch = Array.isArray(merch) 
+    ? merch.length > 0 
+    : Boolean(merch?.tshirt?.quiere || merch?.hoodie?.quiere);
 
   const payload = {
     action: 'ADD_MERCH',
     ticketCode: (ticketCode || '').trim().toUpperCase(),
     merch: merchSummary,
-    hasMerch: true,
+    hasMerch: hasMerch,
     merchTotal: merchTotal,
     merchDetails: {
-      tshirt: merch?.tshirt?.quiere ? merch.tshirt : null,
-      hoodie: merch?.hoodie?.quiere ? merch.hoodie : null,
+      items: Array.isArray(merch) ? merch : null,
+      tshirt: Array.isArray(merch)
+        ? merch.find(i => i.productId === 'tshirt' || i.id === 'tshirt') || null
+        : (merch?.tshirt?.quiere ? merch.tshirt : null),
+      hoodie: Array.isArray(merch)
+        ? merch.find(i => i.productId === 'hoodie' || i.id === 'hoodie') || null
+        : (merch?.hoodie?.quiere ? merch.hoodie : null),
       total: merchTotal
     },
     email: attendeeInfo?.email || '',

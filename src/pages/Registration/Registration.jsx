@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { 
   Ticket, User, Mail, Phone, MapPin, CheckCircle, Flame, 
   Printer, RotateCcw, Sparkles, Building, Calendar, ShieldCheck, Clock,
@@ -114,6 +114,7 @@ const Registration = () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [lightboxIndex]);
+
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -124,12 +125,115 @@ const Registration = () => {
     customChurch: '',
     participaTalleres: null,
     tallerSeleccionado: '',
-    participaMerch: null,
-    merch: {
-      tshirt: { quiere: false, modelo: 'Cristo Vive en Mí', color: 'Blanco (Letras Gris)', talla: 'M' },
-      hoodie: { quiere: false, modelo: 'Chosen', color: 'Negro (Letras Blanco)', talla: 'M' }
+    participaMerch: null
+  });
+
+  // Estado de Carrito / Selección Múltiple de Merch (Array de objetos)
+  const [selectedMerch, setSelectedMerch] = useState([]);
+
+  // Configuración previa/borrador de opciones por prenda (para retener elecciones del usuario)
+  const [cardConfigs, setCardConfigs] = useState({
+    tshirt: {
+      modelo: MERCH_CATALOG.tshirt?.defaultModelo || 'Cristo Vive en Mí',
+      color: MERCH_CATALOG.tshirt?.defaultColor || 'Blanco (Letras Gris)',
+      talla: MERCH_CATALOG.tshirt?.defaultTalla || 'M',
+      cantidad: 1
+    },
+    hoodie: {
+      modelo: MERCH_CATALOG.hoodie?.defaultModelo || 'Chosen',
+      color: MERCH_CATALOG.hoodie?.defaultColor || 'Negro (Letras Blanco)',
+      talla: MERCH_CATALOG.hoodie?.defaultTalla || 'M',
+      cantidad: 1
     }
   });
+
+  // Cálculo derivado de Total y Resumen de Merch (useMemo)
+  const merchTotal = useMemo(() => {
+    return selectedMerch.reduce((sum, item) => {
+      const precio = Number(item?.precio) || 0;
+      const cant = Math.max(1, Number(item?.cantidad) || 1);
+      return sum + (precio * cant);
+    }, 0);
+  }, [selectedMerch]);
+
+  const merchSummary = useMemo(() => {
+    if (!selectedMerch || selectedMerch.length === 0) return 'Ninguna';
+    return selectedMerch.map(item => {
+      const cant = Math.max(1, Number(item?.cantidad) || 1);
+      const subtotal = (Number(item?.precio) || 0) * cant;
+      const mod = item?.modelo ? `"${item.modelo}" ` : '';
+      return `${cant}x ${item?.nombre || item?.productId || 'Prenda'} ${mod}(${item?.talla || 'M'} - ${item?.color || 'Color'}) [RD$ ${subtotal.toLocaleString()}]`;
+    }).join(' + ');
+  }, [selectedMerch]);
+
+  // Helpers para conectar MerchCard con el Array de Selecciones
+  const getCardSelection = (productId) => {
+    const selectedItem = selectedMerch.find(item => item.productId === productId || item.id === productId);
+    if (selectedItem) {
+      return {
+        quiere: true,
+        modelo: selectedItem.modelo,
+        color: selectedItem.color,
+        talla: selectedItem.talla,
+        cantidad: Math.max(1, Number(selectedItem.cantidad) || 1)
+      };
+    }
+    const config = cardConfigs[productId] || {};
+    const cat = MERCH_CATALOG[productId];
+    return {
+      quiere: false,
+      modelo: config.modelo || cat?.defaultModelo,
+      color: config.color || cat?.defaultColor,
+      talla: config.talla || cat?.defaultTalla || 'M',
+      cantidad: Math.max(1, Number(config.cantidad) || 1)
+    };
+  };
+
+  const handleMerchSelectionChange = (product, updatedSelection) => {
+    if (formError) setFormError('');
+
+    const qty = Math.max(1, Number(updatedSelection.cantidad) || 1);
+
+    // 1. Guardar la configuración activa de la prenda en borradores
+    setCardConfigs(prev => ({
+      ...prev,
+      [product.id]: {
+        modelo: updatedSelection.modelo,
+        color: updatedSelection.color,
+        talla: updatedSelection.talla,
+        cantidad: qty
+      }
+    }));
+
+    // 2. Gestionar adición, edición o retiro en el array selectedMerch
+    setSelectedMerch(prev => {
+      const isCurrentlyInArray = prev.some(item => (item.productId === product.id || item.id === product.id));
+
+      if (updatedSelection.quiere) {
+        const itemData = {
+          id: product.id,
+          productId: product.id,
+          nombre: product.nombre,
+          modelo: updatedSelection.modelo,
+          color: updatedSelection.color,
+          talla: updatedSelection.talla,
+          precio: product.precio,
+          cantidad: qty
+        };
+
+        if (isCurrentlyInArray) {
+          // Actualizar talla, color, modelo o cantidad del item ya seleccionado
+          return prev.map(item => (item.productId === product.id || item.id === product.id) ? itemData : item);
+        } else {
+          // Agregar nueva prenda al array
+          return [...prev, itemData];
+        }
+      } else {
+        // Toggle/Remove: Desmarcar prenda y eliminar del array
+        return prev.filter(item => item.productId !== product.id && item.id !== product.id);
+      }
+    });
+  };
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
@@ -247,8 +351,8 @@ ${total ? `Monto a transferir: ${total}` : ''}`;
       return;
     }
 
-    if (formData.participaMerch === true && !formData.merch?.tshirt?.quiere && !formData.merch?.hoodie?.quiere) {
-      setFormError('Has indicado que deseas adquirir Merch oficial. Por favor selecciona al menos una prenda (T-Shirt o Hoodie) o marca la opción "No".');
+    if (formData.participaMerch === true && selectedMerch.length === 0) {
+      setFormError('Has indicado que deseas adquirir Merch oficial. Por favor selecciona al menos una prenda (haz clic en "+ Agregar Prenda" en T-Shirt o Hoodie) o marca la opción "No".');
       document.getElementById('modulo-merch')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
@@ -259,9 +363,9 @@ ${total ? `Monto a transferir: ${total}` : ''}`;
     const finalChurch = formData.church === 'Otra Iglesia' ? formData.customChurch : formData.church;
     const tallerInfo = TALLERES.find(t => t.id === formData.tallerSeleccionado);
     
-    const isMerchSelected = formData.participaMerch === true && (formData.merch?.tshirt?.quiere || formData.merch?.hoodie?.quiere);
-    const merchSummary = isMerchSelected ? formatMerchSummary(formData.merch) : (formData.participaMerch === false ? 'No' : 'Ninguna');
-    const merchTotal = isMerchSelected ? calculateMerchTotal(formData.merch) : 0;
+    const isMerchSelected = formData.participaMerch === true && selectedMerch.length > 0;
+    const finalMerchSummary = isMerchSelected ? merchSummary : (formData.participaMerch === false ? 'No' : 'Ninguna');
+    const finalMerchTotal = isMerchSelected ? merchTotal : 0;
 
     const registrationRecord = {
       ticketCode: generatedCode,
@@ -279,9 +383,9 @@ ${total ? `Monto a transferir: ${total}` : ''}`;
       tallerTema: tallerInfo?.tema || null,
       participaMerch: formData.participaMerch,
       hasMerch: isMerchSelected,
-      merch: formData.merch,
-      merchSummary: merchSummary,
-      merchTotal: merchTotal,
+      merch: selectedMerch,
+      merchSummary: finalMerchSummary,
+      merchTotal: finalMerchTotal,
       eventName: "Conferencia Despierta 2026 - Upper Room IBC",
       eventDate: "Sábado 31 de Octubre, 2026",
       eventTime: "02:00 PM – 08:00 PM",
@@ -342,6 +446,7 @@ ${total ? `Monto a transferir: ${total}` : ''}`;
     setSheetStatus(null);
     setCopiedBankKey(null);
     setCopiedAllBank(false);
+    setSelectedMerch([]);
     setFormData({
       firstName: '',
       lastName: '',
@@ -352,11 +457,7 @@ ${total ? `Monto a transferir: ${total}` : ''}`;
       customChurch: '',
       participaTalleres: null,
       tallerSeleccionado: '',
-      participaMerch: null,
-      merch: {
-        tshirt: { quiere: false, modelo: 'Cristo Vive en Mí', color: 'Blanco (Letras Gris)', talla: 'M' },
-        hoodie: { quiere: false, modelo: 'Chosen', color: 'Negro (Letras Blanco)', talla: 'M' }
-      }
+      participaMerch: null
     });
     window.scrollTo({ top: 0, behavior: 'instant' });
   };
@@ -681,11 +782,7 @@ ${total ? `Monto a transferir: ${total}` : ''}`;
                             if (formError) setFormError('');
                             setFormData(prev => ({
                               ...prev,
-                              participaMerch: true,
-                              merch: {
-                                ...prev.merch,
-                                tshirt: prev.merch.tshirt.quiere ? prev.merch.tshirt : { ...prev.merch.tshirt, quiere: true }
-                              }
+                              participaMerch: true
                             }));
                           }}
                         >
@@ -698,13 +795,9 @@ ${total ? `Monto a transferir: ${total}` : ''}`;
                             if (formError) setFormError('');
                             setFormData(prev => ({
                               ...prev,
-                              participaMerch: false,
-                              merch: {
-                                hoodie: { ...prev.merch.hoodie, quiere: false },
-                                tshirt: { ...prev.merch.tshirt, quiere: false },
-                                gorra:  { ...prev.merch.gorra, quiere: false }
-                              }
+                              participaMerch: false
                             }));
+                            setSelectedMerch([]);
                           }}
                         >
                           No, solo entrada gratuita
@@ -733,54 +826,63 @@ ${total ? `Monto a transferir: ${total}` : ''}`;
                       <div className="merch-catalog-zone">
                         <div className="zone-hint-box">
                           <Info size={15} />
-                          <span>Elige tus prendas, tallas y colores. El pago se realizará por transferencia bancaria en las siguientes <strong>32 horas</strong>.</span>
+                          <span>Elige tus prendas, tallas y colores. Puedes agregar más de una prenda a tu pedido. El pago se realizará por transferencia bancaria en las siguientes <strong>32 horas</strong>.</span>
                         </div>
 
                         <div className="merch-cards-grid">
-                          <MerchCard
-                            product={MERCH_CATALOG.tshirt}
-                            selection={formData.merch.tshirt}
-                            onSelectionChange={(newVal) => {
-                              if (formError) setFormError('');
-                              setFormData(prev => ({
-                                ...prev,
-                                merch: { ...prev.merch, tshirt: newVal }
-                              }));
-                            }}
-                            mode="registration"
-                          />
+                          {MERCH_CATALOG?.tshirt && (
+                            <MerchCard
+                              product={MERCH_CATALOG.tshirt}
+                              selection={getCardSelection('tshirt')}
+                              onSelectionChange={(newVal) => handleMerchSelectionChange(MERCH_CATALOG.tshirt, newVal)}
+                              mode="registration"
+                            />
+                          )}
 
-                          <MerchCard
-                            product={MERCH_CATALOG.hoodie}
-                            selection={formData.merch.hoodie}
-                            onSelectionChange={(newVal) => {
-                              if (formError) setFormError('');
-                              setFormData(prev => ({
-                                ...prev,
-                                merch: { ...prev.merch, hoodie: newVal }
-                              }));
-                            }}
-                            mode="registration"
-                          />
+                          {MERCH_CATALOG?.hoodie && (
+                            <MerchCard
+                              product={MERCH_CATALOG.hoodie}
+                              selection={getCardSelection('hoodie')}
+                              onSelectionChange={(newVal) => handleMerchSelectionChange(MERCH_CATALOG.hoodie, newVal)}
+                              mode="registration"
+                            />
+                          )}
                         </div>
 
-                        {/* Barra de Resumen y Total */}
+                        {/* Barra de Resumen y Total con Lista Detallada de Items */}
                         <div className="merch-order-total-bar">
                           <div className="total-bar-left">
                             <ShoppingBag size={20} className="total-bag-icon" />
-                            <div>
+                            <div className="total-bar-text-group">
                               <span className="total-bar-label">Resumen de tu selección de Merch:</span>
-                              <strong className="total-bar-summary">
-                                {(formData.merch.tshirt.quiere || formData.merch.hoodie.quiere) 
-                                  ? formatMerchSummary(formData.merch) 
-                                  : 'Ninguna prenda marcada aún (marca T-Shirt o Hoodie)'}
-                              </strong>
+                              {selectedMerch.length > 0 ? (
+                                <div className="merch-selected-items-list">
+                                  {selectedMerch.map((item, idx) => {
+                                    const qty = Math.max(1, Number(item.cantidad) || 1);
+                                    const subtotal = (Number(item.precio) || 0) * qty;
+                                    return (
+                                      <div key={item.id || item.productId || idx} className="merch-selected-item-row">
+                                        <span className="item-qty-tag">{qty}x</span>
+                                        <strong className="item-name-tag">{item.nombre || item.productId}</strong>
+                                        <span className="item-meta-tag">
+                                          ({item.modelo ? `"${item.modelo}" • ` : ''}{item.talla} - {item.color})
+                                        </span>
+                                        <span className="item-price-tag">- RD$ {subtotal.toLocaleString()}</span>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              ) : (
+                                <strong className="total-bar-summary">
+                                  Ninguna prenda marcada aún (haz clic en "+ Agregar Prenda" en la prenda deseada)
+                                </strong>
+                              )}
                             </div>
                           </div>
                           <div className="total-bar-right">
                             <span className="total-amount-label">Monto a Transferir:</span>
                             <strong className="total-amount-val">
-                              RD$ {calculateMerchTotal(formData.merch).toLocaleString()}
+                              RD$ {merchTotal.toLocaleString()}
                             </strong>
                           </div>
                         </div>
