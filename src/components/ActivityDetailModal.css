@@ -1,0 +1,721 @@
+/* ==========================================================================
+   MODAL INMERSIVO FULL SCREEN: EXPOSITORES & NOCHE WORSHIP
+   Proyecto: YoungerICC / UPPER ROOM IBC • Paleta Obsidian Fire
+   Requerimientos Estrictos: createPortal, Foto Limpia, Cinta Reubicada, CTA Fijo
+   ========================================================================== */
+
+/* 1. Interfaz Inmersiva de Pantalla Completa Absoluta */
+.fullscreen-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 10, 12, 0.95);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  animation: modalFadeIn 0.22s ease-out;
+  user-select: none;
+  box-sizing: border-box;
+  padding: 1.5rem;
+}
+
+/* 'X' anclada en la esquina superior derecha del modal fijo */
+.modal-close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 30;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(18, 18, 22, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.65);
+}
+
+.modal-close-btn:hover {
+  background: rgba(239, 68, 68, 0.95);
+  border-color: #ef4444;
+  color: #ffffff;
+  transform: rotate(90deg) scale(1.08);
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.55);
+}
+
+/* ==========================================================================
+   2. VISUALIZACIÓN LIBRE DE LA FOTO EN PANTALLA COMPLETA PURA (Segundo Clic)
+   ========================================================================== */
+.pure-photo-viewer {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 100000;
+  background: rgba(3, 3, 5, 0.97);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem;
+  box-sizing: border-box;
+  animation: purePhotoFadeIn 0.25s ease-out;
+  cursor: zoom-out;
+}
+
+.pure-photo-top-bar {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 40;
+}
+
+.pure-photo-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(18, 18, 22, 0.85);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #fb923c;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0.45rem 1rem;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pure-photo-back-btn:hover {
+  background: rgba(234, 88, 12, 0.2);
+  border-color: #ff6a00;
+  color: #ffffff;
+  transform: translateX(-3px);
+}
+
+.pure-photo-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 95vw;
+  max-height: 80vh;
+}
+
+.pure-photo-img {
+  max-width: 90vw;
+  max-height: 80vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.95), 0 0 45px rgba(234, 88, 12, 0.18);
+  cursor: default;
+  animation: purePhotoScaleUp 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pure-photo-bottom-caption {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 1rem;
+  background: rgba(14, 14, 18, 0.8);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 30px;
+}
+
+.pure-photo-name {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.pure-photo-sub {
+  font-size: 0.74rem;
+  color: #94a3b8;
+}
+
+/* ==========================================================================
+   3. CAJA DE CONTENIDO CENTRAL (.modal-content-box)
+   ========================================================================== */
+.modal-content-box {
+  width: 90%;
+  max-width: 1000px;
+  max-height: 90vh;
+  border-radius: 1rem;
+  overflow: hidden;
+  background: #121216;
+  border: 1px solid rgba(234, 88, 12, 0.25);
+  box-shadow: 
+    0 25px 70px -10px rgba(0, 0, 0, 0.96),
+    0 0 50px rgba(234, 88, 12, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  position: relative;
+  box-sizing: border-box;
+  animation: modalBoxPopIn 0.26s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: text;
+}
+
+.modal-content-box.theme-worship {
+  border-color: rgba(168, 85, 247, 0.35);
+  box-shadow: 
+    0 25px 70px -10px rgba(0, 0, 0, 0.96),
+    0 0 55px rgba(168, 85, 247, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* ==========================================================================
+   2. IMAGEN 100% LIMPIA (.modal-image-col)
+   Cero cintas, badges o textos sobre el rostro
+   ========================================================================== */
+.modal-image-col {
+  position: relative;
+  background: #09090c;
+  overflow: hidden;
+}
+
+.modal-image-col.is-clickable {
+  cursor: zoom-in;
+}
+
+.modal-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 20%;
+  display: block;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-image-col.is-clickable:hover .modal-img {
+  transform: scale(1.035);
+}
+
+/* Indicador flotante sutil de clic para ampliar foto */
+.modal-zoom-hint {
+  position: absolute;
+  bottom: 0.85rem;
+  right: 0.85rem;
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(10, 10, 14, 0.78);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #f1f5f9;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.3rem 0.65rem;
+  border-radius: 6px;
+  pointer-events: none;
+  transition: all 0.2s ease;
+}
+
+.modal-image-col:hover .modal-zoom-hint {
+  background: rgba(234, 88, 12, 0.9);
+  border-color: #ff6a00;
+  color: #ffffff;
+}
+
+/* ==========================================================================
+   3. CONTENEDOR DE TEXTO Y ACCIONES (.modal-info-col)
+   ========================================================================== */
+.modal-info-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: #121216;
+  box-sizing: border-box;
+}
+
+.modal-info-scrollable {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 0.5rem;
+}
+
+.modal-info-scrollable::-webkit-scrollbar,
+.modal-info-col::-webkit-scrollbar {
+  width: 5px;
+}
+
+.modal-info-scrollable::-webkit-scrollbar-track,
+.modal-info-col::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.modal-info-scrollable::-webkit-scrollbar-thumb,
+.modal-info-col::-webkit-scrollbar-thumb {
+  background: rgba(234, 88, 12, 0.35);
+  border-radius: 4px;
+}
+
+.modal-info-scrollable::-webkit-scrollbar-thumb:hover,
+.modal-info-col::-webkit-scrollbar-thumb:hover {
+  background: rgba(234, 88, 12, 0.65);
+}
+
+/* 3. REUBICACIÓN INTELIGENTE DE CINTAS Y BADGES (Completamente fuera de la foto) */
+.modal-badges-header-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  padding-right: 2.5rem; /* Margen para no chocar con la 'X' */
+}
+
+.modal-ribbon-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 0.3rem 0.75rem;
+  border-radius: 6px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: rgba(234, 88, 12, 0.12);
+  border: 1px solid rgba(234, 88, 12, 0.4);
+  color: #fb923c;
+}
+
+.modal-ribbon-badge.badge-rojo {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.45);
+  color: #fca5a5;
+}
+
+.modal-ribbon-badge.badge-azul {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: rgba(59, 130, 246, 0.45);
+  color: #93c5fd;
+}
+
+.modal-ribbon-badge.badge-verde {
+  background: rgba(34, 197, 94, 0.15);
+  border-color: rgba(34, 197, 94, 0.45);
+  color: #86efac;
+}
+
+.modal-ribbon-badge.badge-worship {
+  background: rgba(168, 85, 247, 0.15);
+  border-color: rgba(168, 85, 247, 0.45);
+  color: #d8b4fe;
+}
+
+.modal-time-chip,
+.modal-location-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.76rem;
+  font-weight: 700;
+  font-family: var(--font-mono, monospace);
+  color: #cbd5e1;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.25rem 0.65rem;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.modal-session-chip {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #ea580c;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Títulos */
+.modal-titles-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.modal-title {
+  font-family: var(--font-heading, 'Outfit', sans-serif);
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: #ffffff;
+  margin: 0;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+}
+
+.modal-subtitle {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #fbbf24;
+}
+
+/* Ficha del Expositor */
+.modal-speaker-card {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+}
+
+.modal-speaker-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(234, 88, 12, 0.15);
+  border: 1px solid rgba(234, 88, 12, 0.35);
+  color: #fb923c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.theme-worship .modal-speaker-avatar {
+  background: rgba(168, 85, 247, 0.15);
+  border-color: rgba(168, 85, 247, 0.4);
+  color: #c084fc;
+}
+
+.modal-speaker-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.modal-speaker-role {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.modal-speaker-name {
+  font-size: 1.08rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.modal-speaker-church {
+  font-size: 0.78rem;
+  color: #ea580c;
+  font-weight: 600;
+}
+
+/* Enfoque Temático */
+.modal-focus-box {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.22);
+  padding: 0.55rem 0.95rem;
+  border-radius: 6px;
+  font-size: 0.86rem;
+  color: #fef08a;
+}
+
+.focus-icon {
+  color: #f59e0b;
+  flex-shrink: 0;
+}
+
+/* Cita */
+.modal-quote {
+  margin: 0;
+  padding: 0.8rem 1.1rem;
+  border-left: 3px solid #ea580c;
+  background: rgba(234, 88, 12, 0.06);
+  border-radius: 0 8px 8px 0;
+  font-style: italic;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: #f8fafc;
+}
+
+/* Descripción */
+.modal-desc-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.modal-desc-heading {
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.modal-desc-text {
+  font-size: 0.92rem;
+  line-height: 1.65;
+  color: #e2e8f0;
+  margin: 0;
+}
+
+/* ==========================================================================
+   4. BOTÓN OUTLINE SUTIL DE INSTAGRAM & SPOTIFY (Desacoplado)
+   ========================================================================== */
+.modal-external-links-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding-top: 0.35rem;
+}
+
+.btn-outline-instagram {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1rem;
+  border-radius: 8px;
+  background: rgba(234, 88, 12, 0.06);
+  border: 1px solid rgba(234, 88, 12, 0.45);
+  color: #fb923c;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.22s ease;
+}
+
+.btn-outline-instagram:hover {
+  background: rgba(234, 88, 12, 0.2);
+  border-color: #ff6a00;
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(234, 88, 12, 0.25);
+}
+
+.btn-outline-spotify {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1rem;
+  border-radius: 8px;
+  background: rgba(29, 185, 84, 0.08);
+  border: 1px solid rgba(29, 185, 84, 0.4);
+  color: #4ade80;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.22s ease;
+}
+
+.btn-outline-spotify:hover {
+  background: rgba(29, 185, 84, 0.22);
+  border-color: #22c55e;
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+/* ==========================================================================
+   4. BOTONES FLOTANTES Y CTA DE REGISTRO FIJADOS AL FINAL (.modal-footer)
+   ========================================================================== */
+.modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: auto;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+
+.btn-modal-dismiss {
+  padding: 0.75rem 1.35rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #cbd5e1;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-modal-dismiss:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
+
+.btn-modal-cta-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.55rem;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #ff6a00 0%, #ea580c 100%);
+  border: 1px solid rgba(255, 106, 0, 0.45);
+  color: #ffffff;
+  font-size: 0.88rem;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 20px rgba(234, 88, 12, 0.4);
+}
+
+.btn-modal-cta-primary:hover {
+  background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(234, 88, 12, 0.55);
+}
+
+/* ==========================================================================
+   DISTRIBUCIÓN ADAPTATIVA (DESKTOP: @media min-width: 768px)
+   ========================================================================== */
+@media (min-width: 768px) {
+  .modal-content-box {
+    display: flex;
+    flex-direction: row;
+    height: min(86vh, 640px);
+  }
+
+  /* La imagen a la izquierda: flex: 1; height: 100%; object-fit: cover; */
+  .modal-image-col {
+    flex: 1;
+    height: 100%;
+    min-height: 100%;
+  }
+
+  /* El texto a la derecha: flex: 1.2; padding: 2.5rem; */
+  .modal-info-col {
+    flex: 1.2;
+    padding: 2.5rem;
+    overflow: hidden;
+  }
+}
+
+/* ==========================================================================
+   DISTRIBUCIÓN ADAPTATIVA (MOBILE: @media max-width: 767px)
+   ========================================================================== */
+@media (max-width: 767px) {
+  .fullscreen-overlay {
+    padding: 0.75rem;
+    align-items: flex-end;
+  }
+
+  .modal-content-box {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    max-height: 90vh;
+  }
+
+  /* La imagen arriba: height: 35vh; min-height: 250px; */
+  .modal-image-col {
+    width: 100%;
+    height: 35vh;
+    min-height: 250px;
+    flex-shrink: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  /* El texto abajo */
+  .modal-info-col {
+    padding: 1.5rem;
+    overflow-y: auto;
+    flex: 1;
+    gap: 1.25rem;
+  }
+
+  .modal-info-scrollable {
+    overflow: visible;
+    padding-right: 0;
+  }
+
+  .modal-badges-header-row {
+    padding-right: 0;
+  }
+
+  .modal-title {
+    font-size: 1.35rem;
+  }
+
+  .modal-speaker-name {
+    font-size: 0.98rem;
+  }
+
+  .modal-desc-text {
+    font-size: 0.88rem;
+    line-height: 1.55;
+  }
+
+  .modal-footer {
+    flex-direction: column-reverse;
+    gap: 0.6rem;
+    padding-top: 1rem;
+  }
+
+  .btn-modal-dismiss,
+  .btn-modal-cta-primary {
+    width: 100%;
+    justify-content: center;
+    box-sizing: border-box;
+    padding: 0.8rem 1rem;
+  }
+}
+
+/* Animaciones */
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalBoxPopIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes purePhotoFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes purePhotoScaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

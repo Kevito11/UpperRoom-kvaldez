@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import CountdownTimer from '../../components/CountdownTimer';
 import EventDetailsModal from '../../components/EventDetailsModal';
+import ActivityDetailModal from '../../components/ActivityDetailModal';
 import Lightbox from '../../components/Lightbox';
 import SpotifyIcon from '../../components/icons/SpotifyIcon';
 import './Home.css';
@@ -34,8 +35,110 @@ const ALL_CONFERENCE_FLYERS = [
   }
 ];
 
+const TALLERES_DATA = [
+  {
+    id: 'taller-1',
+    num: '01',
+    tag: 'TALLER 01 • ROJO',
+    tagClass: 'tag-rojo',
+    cardClass: 'card-rojo',
+    colorClass: 'badge-rojo',
+    hora: '5:20 PM',
+    sesionTipo: 'Sesión Paralela',
+    titulo: '¿Dónde quedó el fuego?',
+    rol: 'Expositora',
+    expositor: 'Natali de Ruiz',
+    enfoque: 'Estancamiento espiritual',
+    pregunta: '¿En qué momento dejé de buscar a Dios?',
+    descripcion: 'Un espacio íntimo y bíblico para identificar las causas del enfriamiento espiritual y reavivar la pasión por Cristo volviendo con humildad al primer amor.',
+    foto: `${import.meta.env.BASE_URL}expositores/natali-ruiz.jpeg`,
+    instagramUrl: 'https://www.instagram.com/upperroomibcrd/'
+  },
+  {
+    id: 'taller-2',
+    num: '02',
+    tag: 'TALLER 02 • AZUL',
+    tagClass: 'tag-azul',
+    cardClass: 'card-azul',
+    colorClass: 'badge-azul',
+    hora: '5:20 PM',
+    sesionTipo: 'Sesión Paralela',
+    titulo: 'Modo Automático',
+    rol: 'Expositor',
+    expositor: 'Ps. Pedro da Cuhna',
+    iglesia: 'Pastor IBC',
+    enfoque: 'Rutina y distracciones',
+    pregunta: '¿Estoy siguiendo a Jesús o simplemente cumpliendo una rutina?',
+    descripcion: 'Aprende a discernir la religiosidad mecánica de la verdadera devoción y rompe con la monotonía en tu caminar diario con Cristo.',
+    foto: `${import.meta.env.BASE_URL}expositores/pedro-dacuhna.jpeg`,
+    instagramUrl: 'https://www.instagram.com/upperroomibcrd/'
+  },
+  {
+    id: 'taller-3',
+    num: '03',
+    tag: 'TALLER 03 • VERDE',
+    tagClass: 'tag-verde',
+    cardClass: 'card-verde',
+    colorClass: 'badge-verde',
+    hora: '5:20 PM',
+    sesionTipo: 'Sesión Paralela',
+    titulo: '¿Y ahora qué hago?',
+    rol: 'Expositor',
+    expositor: 'Andy Tejada',
+    enfoque: 'Propósito y llamado',
+    pregunta: '¿Qué está impidiendo que responda al llamado de Dios?',
+    descripcion: 'Un taller práctico sobre cómo discernir y responder con convicción al propósito de Dios en tu vida venciendo miedos y dudas.',
+    foto: `${import.meta.env.BASE_URL}expositores/andy-tejada.jpeg`,
+    instagramUrl: 'https://www.instagram.com/upperroomibcrd/'
+  }
+];
+
+const PLENARIA_ACTIVITY_DATA = {
+  id: 'plenaria-humberto',
+  isWorship: false,
+  tipo: 'predicacion',
+  tag: 'EXPOSITOR CENTRAL • PLENARIAS',
+  colorClass: 'badge-rojo',
+  hora: '03:30 PM & 04:30 PM',
+  lugar: 'Auditorio IBC',
+  sesionTipo: 'Plenarias Centrales 1 y 2',
+  titulo: 'Despierta: El Llamado de Dios',
+  subtitulo: 'Plenarias Centrales de la Conferencia',
+  rol: 'Expositor de Plenarias',
+  expositor: 'Humberto Méndez',
+  iglesia: 'Pastor en Iglesia Cristiana Oasis',
+  enfoque: 'Fidelidad Bíblica y Despertamiento Espiritual',
+  pregunta: '¿Por qué te duermes? Dios te llama a despertar.',
+  descripcion: 'Nos acompañará en las dos plenarias centrales de la conferencia, llamándonos con fidelidad bíblica a despertar del letargo espiritual y reenfocar nuestras vidas en la supremacía y suficiencia de Jesucristo.',
+  foto: `${import.meta.env.BASE_URL}expositores/humberto-mendez.jpeg`,
+  instagramUrl: 'https://www.instagram.com/upperroomibcrd/'
+};
+
+const WORSHIP_ACTIVITY_DATA = {
+  id: 'worship-night',
+  isWorship: true,
+  tipo: 'worship',
+  tag: 'GRAN CIERRE • WORSHIP NIGHT',
+  colorClass: 'badge-worship',
+  hora: '07:00 PM – 08:00 PM',
+  lugar: 'Auditorio IBC',
+  sesionTipo: 'Culminación Oficial',
+  titulo: 'Worship Night',
+  subtitulo: 'Adoración y Acción de Gracias',
+  rol: 'Ministerio de Alabanza',
+  expositor: 'Worship Team IBC',
+  iglesia: 'Iglesia Bautista Cristiana',
+  enfoque: 'Alabanza, Gratitud e Intercesión',
+  pregunta: '¿Estás listo para adorar con nosotros a una sola voz?',
+  descripcion: 'El broche de oro de la Conferencia Despierta: un tiempo íntimo y conmovedor de adoración congregacional con alabanzas cristocéntricas, clamor e intercesión unánime por nuestra generación.',
+  foto: `${import.meta.env.BASE_URL}worship/worship-night.jpeg`,
+  instagramUrl: 'https://www.instagram.com/upperroomibcrd/',
+  spotifyUrl: 'https://open.spotify.com/playlist/6BM0YYuAadGX4rxq8LUcjK?si=e02beb64e4b84927'
+};
+
 const Home = () => {
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [selectedActivity, setSelectedActivity] = useState(null);
   const [lightboxIndex, setLightboxIndex] = useState(null);
   const [activeFilter, setActiveFilter] = useState('todos');
 
@@ -45,6 +148,13 @@ const Home = () => {
       <EventDetailsModal 
         isOpen={isDetailsOpen} 
         onClose={() => setIsDetailsOpen(false)} 
+      />
+
+      {/* Activity / Speaker Detail Full Screen Modal */}
+      <ActivityDetailModal 
+        activity={selectedActivity} 
+        isOpen={Boolean(selectedActivity)} 
+        onClose={() => setSelectedActivity(null)} 
       />
 
       {/* Hero Section */}
@@ -222,11 +332,11 @@ const Home = () => {
             <div className="plenaria-feature-wrapper">
               <div className="plenaria-feature-card glass-panel">
                 <div 
-                  className="plenaria-poster-side"
-                  onClick={() => setLightboxIndex(0)}
+                  className="plenaria-poster-side is-clickable"
+                  onClick={() => setSelectedActivity(PLENARIA_ACTIVITY_DATA)}
                   role="button"
                   tabIndex={0}
-                  title="Afiche Humberto Méndez"
+                  title="Ver detalles completos: Humberto Méndez"
                 >
                   <div className="poster-zoom-hint" aria-hidden="true">
                     <Maximize2 size={16} />
@@ -312,156 +422,77 @@ const Home = () => {
               </div>
 
               <div className="talleres-cards-grid">
-                {/* Taller 1 */}
-                <div className="taller-card-item glass-panel card-rojo">
-                  <div 
-                    className="taller-card-poster"
-                    onClick={() => setLightboxIndex(1)}
-                    role="button"
-                    tabIndex={0}
-                    title="Afiche Natali de Ruiz"
-                  >
-                    <img 
-                      src={`${import.meta.env.BASE_URL}expositores/natali-ruiz.jpeg`} 
-                      alt="Afiche Natali de Ruiz - ¿Dónde quedó el fuego?" 
-                      className="taller-poster-img"
-                    />
-                    <div className="taller-poster-overlay">
-                      <Maximize2 size={18} />
+                {TALLERES_DATA.map((taller) => (
+                  <div key={taller.id} className={`taller-card-item glass-panel ${taller.cardClass}`}>
+                    <div 
+                      className="taller-card-poster"
+                      onClick={() => setSelectedActivity(taller)}
+                      role="button"
+                      tabIndex={0}
+                      title={`Ver detalles completos: ${taller.titulo} • ${taller.expositor}`}
+                    >
+                      <img 
+                        src={taller.foto} 
+                        alt={`Afiche ${taller.expositor} - ${taller.titulo}`} 
+                        className="taller-poster-img"
+                      />
+                      <div className="taller-poster-overlay">
+                        <Maximize2 size={18} />
+                      </div>
+                    </div>
+
+                    <div className="taller-card-body">
+                      <div className="taller-header-row">
+                        <span className={`taller-tag-badge ${taller.tagClass}`}>{taller.tag}</span>
+                        <span className="taller-time-chip"><Clock size={12} /> {taller.hora}</span>
+                      </div>
+
+                      <h4 
+                        className="taller-card-title is-clickable"
+                        onClick={() => setSelectedActivity(taller)}
+                        title="Abrir detalles de la actividad"
+                      >
+                        {taller.titulo}
+                      </h4>
+
+                      <div 
+                        className="taller-speaker-row is-clickable"
+                        onClick={() => setSelectedActivity(taller)}
+                        title="Abrir detalles del expositor"
+                      >
+                        <span className="taller-speaker-label">{taller.rol}:</span>
+                        <strong className="taller-speaker-val">{taller.expositor}</strong>
+                        {taller.iglesia && (
+                          <span className="taller-church-sub">{taller.iglesia}</span>
+                        )}
+                      </div>
+
+                      <div className="taller-focus-pill">
+                        <span>Enfoque: {taller.enfoque}</span>
+                      </div>
+
+                      <p className="taller-card-question">"{taller.pregunta}"</p>
+                      <p className="taller-card-summary">
+                        {taller.descripcion}
+                      </p>
+
+                      <div className="taller-card-footer">
+                        <button 
+                          type="button"
+                          className="taller-btn-quickview"
+                          onClick={() => setSelectedActivity(taller)}
+                          title="Ver modal de detalles"
+                        >
+                          Ver Detalles
+                        </button>
+                        <Link to="/registro" className="taller-btn-enroll">
+                          <span>Elegir Taller</span>
+                          <ArrowRight size={13} />
+                        </Link>
+                      </div>
                     </div>
                   </div>
-
-                  <div className="taller-card-body">
-                    <div className="taller-header-row">
-                      <span className="taller-tag-badge tag-rojo">TALLER 01 • ROJO</span>
-                      <span className="taller-time-chip"><Clock size={12} /> 5:20 PM</span>
-                    </div>
-
-                    <h4 className="taller-card-title">¿Dónde quedó el fuego?</h4>
-                    <div className="taller-speaker-row">
-                      <span className="taller-speaker-label">Expositora:</span>
-                      <strong className="taller-speaker-val">Natali de Ruiz</strong>
-                    </div>
-
-                    <div className="taller-focus-pill">
-                      <span>Enfoque: Estancamiento espiritual</span>
-                    </div>
-
-                    <p className="taller-card-question">"¿En qué momento dejé de buscar a Dios?"</p>
-                    <p className="taller-card-summary">
-                      Un espacio para identificar las causas del enfriamiento espiritual y reavivar la pasión por Cristo volviendo al primer amor.
-                    </p>
-
-                    <div className="taller-card-footer">
-                      <span className="taller-status-available">Sesión Paralela</span>
-                      <Link to="/registro" className="taller-btn-enroll">
-                        <span>Elegir Taller</span>
-                        <ArrowRight size={13} />
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Taller 2 */}
-                <div className="taller-card-item glass-panel card-azul">
-                  <div 
-                    className="taller-card-poster"
-                    onClick={() => setLightboxIndex(2)}
-                    role="button"
-                    tabIndex={0}
-                    title="Afiche Ps. Pedro da Cuhna"
-                  >
-                    <img 
-                      src={`${import.meta.env.BASE_URL}expositores/pedro-dacuhna.jpeg`} 
-                      alt="Afiche Ps. Pedro da Cuhna - Modo Automático" 
-                      className="taller-poster-img"
-                    />
-                    <div className="taller-poster-overlay">
-                      <Maximize2 size={18} />
-                    </div>
-                  </div>
-
-                  <div className="taller-card-body">
-                    <div className="taller-header-row">
-                      <span className="taller-tag-badge tag-azul">TALLER 02 • AZUL</span>
-                      <span className="taller-time-chip"><Clock size={12} /> 5:20 PM</span>
-                    </div>
-
-                    <h4 className="taller-card-title">Modo Automático</h4>
-                    <div className="taller-speaker-row">
-                      <span className="taller-speaker-label">Expositor:</span>
-                      <strong className="taller-speaker-val">Ps. Pedro da Cuhna</strong>
-                      <span className="taller-church-sub">Pastor IBC</span>
-                    </div>
-
-                    <div className="taller-focus-pill">
-                      <span>Enfoque: Rutina y distracciones</span>
-                    </div>
-
-                    <p className="taller-card-question">"¿Estoy siguiendo a Jesús o simplemente cumpliendo una rutina?"</p>
-                    <p className="taller-card-summary">
-                      Aprende a discernir la religiosidad mecánica de la verdadera devoción y rompe con la monotonía en tu caminar diario.
-                    </p>
-
-                    <div className="taller-card-footer">
-                      <span className="taller-status-available">Sesión Paralela</span>
-                      <Link to="/registro" className="taller-btn-enroll">
-                        <span>Elegir Taller</span>
-                        <ArrowRight size={13} />
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Taller 3 */}
-                <div className="taller-card-item glass-panel card-verde">
-                  <div 
-                    className="taller-card-poster"
-                    onClick={() => setLightboxIndex(3)}
-                    role="button"
-                    tabIndex={0}
-                    title="Afiche Andy Tejada"
-                  >
-                    <img 
-                      src={`${import.meta.env.BASE_URL}expositores/andy-tejada.jpeg`} 
-                      alt="Afiche Andy Tejada - ¿Y ahora qué hago?" 
-                      className="taller-poster-img"
-                    />
-                    <div className="taller-poster-overlay">
-                      <Maximize2 size={18} />
-                    </div>
-                  </div>
-
-                  <div className="taller-card-body">
-                    <div className="taller-header-row">
-                      <span className="taller-tag-badge tag-verde">TALLER 03 • VERDE</span>
-                      <span className="taller-time-chip"><Clock size={12} /> 5:20 PM</span>
-                    </div>
-
-                    <h4 className="taller-card-title">¿Y ahora qué hago?</h4>
-                    <div className="taller-speaker-row">
-                      <span className="taller-speaker-label">Expositor:</span>
-                      <strong className="taller-speaker-val">Andy Tejada</strong>
-                    </div>
-
-                    <div className="taller-focus-pill">
-                      <span>Enfoque: Propósito y llamado</span>
-                    </div>
-
-                    <p className="taller-card-question">"¿Qué está impidiendo que responda al llamado de Dios?"</p>
-                    <p className="taller-card-summary">
-                      Un taller práctico sobre cómo discernir y responder con convicción al propósito de Dios en tu vida venciendo miedos y dudas.
-                    </p>
-
-                    <div className="taller-card-footer">
-                      <span className="taller-status-available">Sesión Paralela</span>
-                      <Link to="/registro" className="taller-btn-enroll">
-                        <span>Elegir Taller</span>
-                        <ArrowRight size={13} />
-                      </Link>
-                    </div>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
           )}
@@ -483,11 +514,11 @@ const Home = () => {
             <div className="worship-feature-wrapper">
               <div className="worship-feature-card glass-panel">
                 <div 
-                  className="worship-poster-col"
-                  onClick={() => setLightboxIndex(4)}
+                  className="worship-poster-col is-clickable"
+                  onClick={() => setSelectedActivity(WORSHIP_ACTIVITY_DATA)}
                   role="button"
                   tabIndex={0}
-                  title="Afiche Oficial Worship Night"
+                  title="Ver detalles completos: Noche Worship"
                 >
                   <div className="worship-poster-glow"></div>
                   <div className="poster-zoom-hint" aria-hidden="true">

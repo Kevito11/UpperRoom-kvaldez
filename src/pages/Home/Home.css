@@ -1442,20 +1442,35 @@
   border-top: 1px solid rgba(255, 255, 255, 0.07);
 }
 
-.btn-link-action {
-  background: transparent;
-  border: none;
-  color: var(--text-muted);
-  font-size: 0.78rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
+.taller-card-title.is-clickable,
+.taller-speaker-row.is-clickable {
   cursor: pointer;
-  padding: 0;
   transition: color 0.2s ease;
 }
 
-.btn-link-action:hover {
+.taller-card-title.is-clickable:hover {
+  color: #ff8c00;
+}
+
+.taller-speaker-row.is-clickable:hover .taller-speaker-val {
+  color: #fbbf24;
+}
+
+.taller-btn-quickview {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.taller-btn-quickview:hover {
+  background: rgba(234, 88, 12, 0.18);
+  border-color: rgba(234, 88, 12, 0.4);
   color: #ffffff;
 }
 
