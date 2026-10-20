@@ -4,7 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import { 
   Check, X, ShoppingBag, 
-  Sparkles, ChevronLeft, ChevronRight, ZoomIn, Ticket, Minus, Plus 
+  Sparkles, ChevronLeft, ChevronRight, ZoomIn, Ticket, Minus, Plus,
+  AlertCircle
 } from 'lucide-react';
 import { getMerchImagePath, getMerchWhatsAppUrl } from '../../lib/merchData';
 import './MerchCard.css';
@@ -70,13 +71,15 @@ const MerchCard = ({
   const currentCantidad = Math.max(1, Number(activeSelection?.cantidad) || 1);
 
   // ---------------------------------------------------------------------------
-  // 2. REGLA DE NEGOCIO: TALLA 'S' AGOTADA EN T-SHIRTS PARA NEGRO Y CREMA
+  // 2. REGLA DE NEGOCIO: TALLA 'S' AGOTADA EN T-SHIRTS SOLO PARA NEGRO Y CREMA
   // ---------------------------------------------------------------------------
   const isTshirt = product.id === 'tshirt';
   const isRestrictedColor = (colorName) => {
     if (!colorName || typeof colorName !== 'string') return false;
-    const lower = colorName.toLowerCase();
-    return lower.startsWith('negro') || lower.startsWith('crema') || lower.includes('negro') || lower.includes('crema');
+    const lower = colorName.toLowerCase().trim();
+    const isNegro = lower.startsWith('negro');
+    const isCrema = lower.startsWith('crema');
+    return isNegro || isCrema;
   };
 
   const isSmallOutOfStock = isTshirt && isRestrictedColor(currentColor);
@@ -118,11 +121,28 @@ const MerchCard = ({
   const imagePointerStartRef = useRef({ x: 0, y: 0, time: 0 });
   const singleTapTimerRef = useRef(null);
 
+  // Estado del aviso visual de auto-corrección de inventario (Talla S -> M)
+  const [autoCorrectNotice, setAutoCorrectNotice] = useState(null);
+  const noticeTimerRef = useRef(null);
+
+  const triggerAutoCorrectNotice = useCallback(() => {
+    setAutoCorrectNotice('La talla S está agotada en este color. Hemos cambiado tu talla a M.');
+    if (noticeTimerRef.current) {
+      clearTimeout(noticeTimerRef.current);
+    }
+    noticeTimerRef.current = setTimeout(() => {
+      setAutoCorrectNotice(null);
+    }, 7000);
+  }, []);
+
   // Limpieza de temporizadores al desmontar
   useEffect(() => {
     return () => {
       if (singleTapTimerRef.current) {
         clearTimeout(singleTapTimerRef.current);
+      }
+      if (noticeTimerRef.current) {
+        clearTimeout(noticeTimerRef.current);
       }
     };
   }, []);
@@ -151,8 +171,9 @@ const MerchCard = ({
     // Si la prenda es T-Shirt en color restringido y la talla es 'S', auto-corregir a 'M'
     if (isSmallOutOfStock && currentTalla === 'S') {
       updateState({ talla: 'M' });
+      triggerAutoCorrectNotice();
     }
-  }, [isSmallOutOfStock, currentTalla, activeSelection?.talla, updateState]);
+  }, [isSmallOutOfStock, currentTalla, activeSelection?.talla, updateState, triggerAutoCorrectNotice]);
 
   // Sincronización del Carrusel al índice activo
   const scrollToSlide = useCallback((index, smooth = true) => {
@@ -191,6 +212,7 @@ const MerchCard = ({
         const nextUpdates = { color: targetColor };
         if (isTshirt && isRestrictedColor(targetColor) && currentTalla === 'S') {
           nextUpdates.talla = 'M';
+          triggerAutoCorrectNotice();
         }
         updateState(nextUpdates);
       }
@@ -206,6 +228,7 @@ const MerchCard = ({
       const nextUpdates = { color: targetColor };
       if (isTshirt && isRestrictedColor(targetColor) && currentTalla === 'S') {
         nextUpdates.talla = 'M';
+        triggerAutoCorrectNotice();
       }
       updateState(nextUpdates);
     }
@@ -220,6 +243,7 @@ const MerchCard = ({
       const nextUpdates = { color: targetColor };
       if (isTshirt && isRestrictedColor(targetColor) && currentTalla === 'S') {
         nextUpdates.talla = 'M';
+        triggerAutoCorrectNotice();
       }
       updateState(nextUpdates);
     }
@@ -240,6 +264,7 @@ const MerchCard = ({
     };
     if (isTshirt && isRestrictedColor(firstColor) && currentTalla === 'S') {
       nextUpdates.talla = 'M';
+      triggerAutoCorrectNotice();
     }
     updateState(nextUpdates);
   };
@@ -248,12 +273,13 @@ const MerchCard = ({
     const nextUpdates = { color: newColor };
     if (isTshirt && isRestrictedColor(newColor) && currentTalla === 'S') {
       nextUpdates.talla = 'M';
+      triggerAutoCorrectNotice();
     }
     updateState(nextUpdates);
     if (transformRef.current) {
       transformRef.current.resetTransform();
     }
-  }, [isTshirt, currentTalla, updateState]);
+  }, [isTshirt, currentTalla, updateState, triggerAutoCorrectNotice]);
 
   // Navegación secuencial entre estilos/colores para Lightbox
   const goToNextLightboxSlide = useCallback(() => {
@@ -276,6 +302,11 @@ const MerchCard = ({
 
   const handleTallaChange = (e) => {
     const val = e?.target?.value || 'M';
+    if (isTshirt && isRestrictedColor(currentColor) && val === 'S') {
+      updateState({ talla: 'M' });
+      triggerAutoCorrectNotice();
+      return;
+    }
     updateState({ talla: val === 'XS' ? 'M' : val });
   };
 
@@ -622,6 +653,25 @@ const MerchCard = ({
           {/* Descripción ultra-compacta (2 líneas con elipsis) */}
           {safeDescripcion && (
             <p className="merch-description">{safeDescripcion}</p>
+          )}
+
+          {/* Aviso visual de auto-corrección cuando talla S está agotada */}
+          {autoCorrectNotice && (
+            <div className="merch-autocorrect-notice" role="alert" aria-live="assertive">
+              <div className="merch-autocorrect-content">
+                <AlertCircle size={15} className="merch-autocorrect-icon" />
+                <span className="merch-autocorrect-message">{autoCorrectNotice}</span>
+              </div>
+              <button 
+                type="button" 
+                className="merch-autocorrect-dismiss" 
+                onClick={() => setAutoCorrectNotice(null)}
+                title="Cerrar aviso"
+                aria-label="Cerrar aviso de talla"
+              >
+                <X size={13} />
+              </button>
+            </div>
           )}
 
           {/* 3. Grid Compacto de Selectores: Modelo 100%, Talla 50% | Color 50% */}

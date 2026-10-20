@@ -1290,3 +1290,82 @@
     padding: 0 0.5rem;
   }
 }
+
+/* ==========================================================================
+   Aviso Toast/Banner de Auto-Corrección de Inventario (Talla S -> M)
+   ========================================================================== */
+.merch-autocorrect-notice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.55rem;
+  background: rgba(234, 88, 12, 0.14);
+  border: 1px solid rgba(234, 88, 12, 0.45);
+  box-shadow: 0 4px 16px rgba(234, 88, 12, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 0.55rem 0.75rem;
+  margin-bottom: 0.75rem;
+  animation: noticeSlideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+@keyframes noticeSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.merch-autocorrect-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.merch-autocorrect-icon {
+  color: #ea580c;
+  flex-shrink: 0;
+  animation: noticePulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes noticePulse {
+  0% { transform: scale(0.95); opacity: 0.85; }
+  100% { transform: scale(1.1); opacity: 1; }
+}
+
+.merch-autocorrect-message {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.72rem;
+  line-height: 1.35;
+  color: #fed7aa;
+  font-weight: 500;
+}
+
+.merch-autocorrect-dismiss {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background: transparent;
+  border: none;
+  color: #fdba74;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.merch-autocorrect-dismiss:hover {
+  background: rgba(234, 88, 12, 0.25);
+  color: #ffffff;
+}
+
