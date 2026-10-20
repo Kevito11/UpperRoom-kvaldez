@@ -22,9 +22,11 @@ function AppContent() {
 
   return (
     <div className="app-container">
-      {/* Dynamic Ambient Background Orbs */}
-      <div className="bg-ambient-orb bg-orb-1"></div>
-      <div className="bg-ambient-orb bg-orb-2"></div>
+      {/* Dynamic Ambient Background Orbs (Contenidos estrictamente para evitar overflow) */}
+      <div className="bg-ambient-wrapper" aria-hidden="true">
+        <div className="bg-ambient-orb bg-orb-1"></div>
+        <div className="bg-ambient-orb bg-orb-2"></div>
+      </div>
 
       {!isStandalonePage && <Navbar />}
 

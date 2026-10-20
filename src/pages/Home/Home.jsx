@@ -153,6 +153,7 @@ const Home = () => {
       {/* Activity / Speaker Detail Full Screen Modal */}
       <ActivityDetailModal 
         activity={selectedActivity} 
+        activities={[PLENARIA_ACTIVITY_DATA, ...TALLERES_DATA, WORSHIP_ACTIVITY_DATA]}
         isOpen={Boolean(selectedActivity)} 
         onClose={() => setSelectedActivity(null)} 
       />

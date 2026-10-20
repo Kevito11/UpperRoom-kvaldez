@@ -58,12 +58,13 @@
 .merch-card-media {
   position: relative;
   width: 100%;
+  max-width: 100%;
   aspect-ratio: 16 / 10;
-  max-height: 220px;
   background: radial-gradient(circle at center, rgba(38, 28, 22, 0.94) 0%, rgba(10, 8, 8, 0.98) 100%);
   overflow: hidden;
   border-bottom: 1px solid rgba(255, 255, 255, 0.07);
   user-select: none;
+  box-sizing: border-box;
 }
 
 /* Track Horizontal con Scroll Snap Nativo */
@@ -101,8 +102,9 @@
 .merch-card-img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  padding: 8px 12px;
+  max-width: 100%;
+  object-fit: cover;
+  display: block;
   transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), filter 0.25s ease;
   filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.65));
 }
@@ -1072,13 +1074,20 @@
     border-radius: 12px;
   }
 
-  /* 1. Reducción vertical del carrusel en móvil */
+  /* 1. Proporción del carrusel en móvil */
   .merch-card-media {
-    aspect-ratio: 16 / 9;
-    max-height: 195px;
+    width: 100%;
+    max-width: 100%;
+    aspect-ratio: 16 / 10;
+    max-height: none;
   }
 
   .merch-card-img {
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
     padding: 6px 10px;
   }
 

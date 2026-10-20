@@ -339,8 +339,9 @@ const Merch = () => {
   // =========================================================================
   if (activeFlow === 'ticket_flow') {
     return (
-      <div className="merch-kiosk-page">
-        <div className="container">
+      <div className="merch-page merch-kiosk-page">
+        <section className="merch-kiosk-section section-padding">
+          <div className="container">
           {/* Barra Superior del Kiosco: Regreso + Badge */}
           <div className="kiosk-top-nav">
             <button 
@@ -723,19 +724,21 @@ const Merch = () => {
             </div>
           )}
         </div>
-      </div>
-    );
+      </section>
+    </div>
+  );
   }
 
   // =========================================================================
   // VISTA 2: CATÁLOGO PÚBLICO GENERAL (MODO STORE)
   // =========================================================================
   return (
-    <div className="merch-store-page section-padding">
-      <div className="container">
+    <div className="merch-page">
+      <section className="merch-store-section section-padding">
+        <div className="container">
 
-        {/* Cabecera Principal de la Tienda */}
-        <header className="merch-store-header">
+          {/* Cabecera Principal de la Tienda */}
+          <header className="section-header merch-store-header">
           <div className="merch-store-badge">
             <Flame size={14} className="text-fire" />
             <span>COLECCIÓN OFICIAL • DESPIERTA 2026</span>
@@ -838,7 +841,8 @@ const Merch = () => {
         </section>
 
       </div>
-    </div>
+    </section>
+  </div>
   );
 };
 

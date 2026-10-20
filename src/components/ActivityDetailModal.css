@@ -21,6 +21,8 @@
   user-select: none;
   box-sizing: border-box;
   padding: 1.5rem;
+  overscroll-behavior: contain;
+  touch-action: none;
 }
 
 /* 'X' anclada en la esquina superior derecha del modal fijo */
@@ -170,6 +172,7 @@
   box-sizing: border-box;
   animation: modalBoxPopIn 0.26s cubic-bezier(0.16, 1, 0.3, 1);
   user-select: text;
+  overscroll-behavior: contain;
 }
 
 .modal-content-box.theme-worship {
@@ -301,19 +304,22 @@
   color: #fb923c;
 }
 
-.modal-ribbon-badge.badge-rojo {
+.modal-ribbon-badge.badge-rojo,
+.modal-ribbon-badge.ticket-rojo {
   background: rgba(239, 68, 68, 0.15);
   border-color: rgba(239, 68, 68, 0.45);
   color: #fca5a5;
 }
 
-.modal-ribbon-badge.badge-azul {
+.modal-ribbon-badge.badge-azul,
+.modal-ribbon-badge.ticket-azul {
   background: rgba(59, 130, 246, 0.15);
   border-color: rgba(59, 130, 246, 0.45);
   color: #93c5fd;
 }
 
-.modal-ribbon-badge.badge-verde {
+.modal-ribbon-badge.badge-verde,
+.modal-ribbon-badge.ticket-verde {
   background: rgba(34, 197, 94, 0.15);
   border-color: rgba(34, 197, 94, 0.45);
   color: #86efac;
@@ -541,6 +547,7 @@
 /* ==========================================================================
    4. BOTONES FLOTANTES Y CTA DE REGISTRO FIJADOS AL FINAL (.modal-footer)
    ========================================================================== */
+.modal-actions-box,
 .modal-footer {
   display: flex;
   align-items: center;
@@ -550,6 +557,7 @@
   padding-top: 1.25rem;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   flex-shrink: 0;
+  flex-wrap: wrap;
 }
 
 .btn-modal-dismiss {
@@ -597,23 +605,65 @@
    ========================================================================== */
 @media (min-width: 768px) {
   .modal-content-box {
-    display: flex;
-    flex-direction: row;
-    height: min(86vh, 640px);
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    width: 90%;
+    max-width: 950px;
+    height: 85vh;
+    max-height: 720px;
+    min-height: 520px;
+    border-radius: 1rem;
+    overflow: hidden;
   }
 
-  /* La imagen a la izquierda: flex: 1; height: 100%; object-fit: cover; */
+  /* Columna Izquierda: La imagen ocupa el 100% de la altura sin deformarse */
   .modal-image-col {
-    flex: 1;
+    width: 100%;
     height: 100%;
     min-height: 100%;
+    position: relative;
+    overflow: hidden;
+    background: #09090c;
   }
 
-  /* El texto a la derecha: flex: 1.2; padding: 2.5rem; */
+  .modal-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    display: block;
+  }
+
+  /* Columna Derecha: Contenido completo con padding amplio (2.5rem) y scroll vertical */
   .modal-info-col {
-    flex: 1.2;
+    display: flex;
+    flex-direction: column;
     padding: 2.5rem;
-    overflow: hidden;
+    height: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-sizing: border-box;
+    gap: 1rem;
+    position: relative;
+  }
+
+  .modal-info-scrollable {
+    display: flex;
+    flex-direction: column;
+    gap: 1.15rem;
+    flex: 1;
+    overflow-y: visible;
+  }
+
+  .modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: auto;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    flex-shrink: 0;
   }
 }
 
@@ -623,36 +673,60 @@
 @media (max-width: 767px) {
   .fullscreen-overlay {
     padding: 0.75rem;
-    align-items: flex-end;
+    align-items: center;
+    justify-content: center;
   }
 
   .modal-content-box {
     display: flex;
     flex-direction: column;
+    width: 100%;
+    max-width: 100%;
     height: auto;
     max-height: 90vh;
+    overflow-y: auto;
+    border-radius: 14px;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
   }
 
-  /* La imagen arriba: height: 35vh; min-height: 250px; */
+  /* Columna Superior: Foto con altura fija/máxima */
   .modal-image-col {
     width: 100%;
     height: 35vh;
     min-height: 250px;
+    max-height: 320px;
     flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+    background: #09090c;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   }
 
-  /* El texto abajo */
+  .modal-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 20%;
+    display: block;
+  }
+
+  /* Columna Inferior: Todos los textos debajo con padding 1.5rem */
   .modal-info-col {
     padding: 1.5rem;
-    overflow-y: auto;
+    overflow-y: visible;
     flex: 1;
-    gap: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.15rem;
   }
 
   .modal-info-scrollable {
     overflow: visible;
     padding-right: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.15rem;
   }
 
   .modal-badges-header-row {
@@ -672,18 +746,25 @@
     line-height: 1.55;
   }
 
+  .modal-actions-box,
   .modal-footer {
+    display: flex;
     flex-direction: column-reverse;
-    gap: 0.6rem;
+    gap: 0.65rem;
     padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    width: 100%;
   }
 
   .btn-modal-dismiss,
-  .btn-modal-cta-primary {
+  .btn-modal-cta-primary,
+  .btn-outline-instagram,
+  .btn-outline-spotify {
     width: 100%;
     justify-content: center;
     box-sizing: border-box;
     padding: 0.8rem 1rem;
+    text-align: center;
   }
 }
 
@@ -719,3 +800,202 @@
     transform: scale(1);
   }
 }
+
+/* ==========================================================================
+   CAROUSEL, INSTAGRAM STORIES & NAVEGACIÓN DINÁMICA
+   ========================================================================== */
+
+/* Flechas de navegación PC/Tablet */
+.modal-nav-arrow {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 100000;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: rgba(18, 18, 24, 0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+}
+
+.modal-nav-arrow.arrow-left {
+  left: 2rem;
+}
+
+.modal-nav-arrow.arrow-right {
+  right: 2rem;
+}
+
+.modal-nav-arrow:hover {
+  background: #ff6a00;
+  border-color: #ff8533;
+  color: #ffffff;
+  transform: translateY(-50%) scale(1.12);
+  box-shadow: 0 0 28px rgba(255, 106, 0, 0.65);
+}
+
+@media (max-width: 1024px) {
+  .modal-nav-arrow.arrow-left {
+    left: 0.75rem;
+  }
+  .modal-nav-arrow.arrow-right {
+    right: 0.75rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .modal-nav-arrow {
+    display: none; /* En móvil se utiliza swipe táctil fluido estilo Instagram */
+  }
+}
+
+/* Barras de progreso superiores estilo Instagram Stories */
+.modal-story-bars {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  display: flex;
+  gap: 6px;
+  padding: 8px 14px 0;
+  z-index: 35;
+}
+
+.story-bar-segment {
+  flex: 1;
+  height: 3px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.story-bar-segment.active {
+  background: #ff6a00;
+  height: 4px;
+  box-shadow: 0 0 12px rgba(255, 106, 0, 0.85);
+}
+
+.story-bar-segment.passed {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.theme-worship .story-bar-segment.active {
+  background: #c084fc;
+  box-shadow: 0 0 12px rgba(192, 132, 252, 0.85);
+}
+
+/* Transición dinámica estilo Instagram al cambiar de taller */
+.modal-content-box.slide-next {
+  animation: instaSlideNext 0.34s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-content-box.slide-prev {
+  animation: instaSlidePrev 0.34s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes instaSlideNext {
+  0% {
+    opacity: 0.75;
+    transform: translateX(40px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes instaSlidePrev {
+  0% {
+    opacity: 0.75;
+    transform: translateX(-40px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+/* Indicadores de teclado en PC */
+.modal-keyboard-hints {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  padding-top: 0.5rem;
+  pointer-events: none;
+}
+
+.kbd-chip {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.kbd-counter {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fb923c;
+}
+
+@media (max-width: 767px) {
+  .modal-keyboard-hints {
+    display: none;
+  }
+}
+
+/* Estado de Taller Seleccionado */
+.btn-modal-cta-primary.is-selected {
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%) !important;
+  border-color: rgba(34, 197, 94, 0.6) !important;
+  box-shadow: 0 4px 20px rgba(34, 197, 94, 0.4) !important;
+}
+
+.btn-modal-cta-primary.is-selected:hover {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important;
+  box-shadow: 0 6px 24px rgba(34, 197, 94, 0.55) !important;
+}
+
+.modal-included-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  background: rgba(168, 85, 247, 0.12);
+  border: 1px solid rgba(168, 85, 247, 0.4);
+  color: #d8b4fe;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+/* Visor de foto pura: acciones y contador */
+.pure-photo-actions-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.pure-photo-counter {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #fb923c;
+  background: rgba(18, 18, 24, 0.8);
+  padding: 0.3rem 0.75rem;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+

@@ -21,8 +21,8 @@
 }
 
 .merch-modal-content {
-  width: 100%;
-  max-width: 860px;
+  width: 90%;
+  max-width: 900px;
   background: #0d111a;
   border: 1px solid rgba(245, 158, 11, 0.3);
   border-radius: var(--radius-lg);

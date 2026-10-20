@@ -12,6 +12,7 @@ import { sendRegistrationToGoogleSheets, formatMerchSummary, calculateMerchTotal
 import { MERCH_CATALOG } from '../../lib/merchData';
 import MerchCard from '../../components/MerchCard/MerchCard';
 import Lightbox from '../../components/Lightbox';
+import ActivityDetailModal from '../../components/ActivityDetailModal';
 import './Registration.css';
 
 const ALL_CONFERENCE_FLYERS = [
@@ -55,44 +56,95 @@ const CHURCH_OPTIONS = [
 const TALLERES = [
   {
     id: 'taller-1',
+    num: '01',
     nombre: '¿Dónde quedó el fuego?',
+    titulo: '¿Dónde quedó el fuego?',
     facilitador: 'Natali de Ruiz',
+    expositor: 'Natali de Ruiz',
+    rol: 'Expositora',
     tema: 'Estancamiento espiritual',
+    enfoque: 'Estancamiento espiritual',
     pregunta: '¿En qué momento dejé de buscar a Dios?',
-    descripcion: 'Un espacio para identificar las raíces del enfriamiento espiritual y reavivar la pasión por Cristo. Exploraremos cómo el corazón se aleja de Dios y cómo volver al primer amor.',
+    descripcion: 'Un espacio íntimo y bíblico para identificar las causas del enfriamiento espiritual y reavivar la pasión por Cristo volviendo con humildad al primer amor.',
     icon: '🔥',
     colorName: 'Rojo',
     colorClass: 'ticket-rojo',
-    foto: `${import.meta.env.BASE_URL}expositores/natali-ruiz.jpeg`
+    tag: 'TALLER 01 • ROJO',
+    hora: '5:20 PM',
+    sesionTipo: 'Sesión Paralela',
+    foto: `${import.meta.env.BASE_URL}expositores/natali-ruiz.jpeg`,
+    instagramUrl: 'https://www.instagram.com/upperroomibcrd/'
   },
   {
     id: 'taller-2',
+    num: '02',
     nombre: 'Modo Automático',
+    titulo: 'Modo Automático',
     facilitador: 'Ps. Pedro da Cuhna',
+    expositor: 'Ps. Pedro da Cuhna',
     cargo: 'Pastor IBC',
+    iglesia: 'Pastor IBC',
+    rol: 'Expositor',
     tema: 'Rutina y distracciones',
+    enfoque: 'Rutina y distracciones',
     pregunta: '¿Estoy siguiendo a Jesús o simplemente cumpliendo una rutina?',
-    descripcion: 'Analizaremos cómo la vida cristiana puede volverse mecánica y sin propósito. Aprenderemos a distinguir la fe viva de la religiosidad vacía y a romper el ciclo de la rutina.',
+    descripcion: 'Aprende a discernir la religiosidad mecánica de la verdadera devoción y rompe con la monotonía en tu caminar diario con Cristo.',
     icon: '⚙️',
     colorName: 'Azul',
     colorClass: 'ticket-azul',
-    foto: `${import.meta.env.BASE_URL}expositores/pedro-dacuhna.jpeg`
+    tag: 'TALLER 02 • AZUL',
+    hora: '5:20 PM',
+    sesionTipo: 'Sesión Paralela',
+    foto: `${import.meta.env.BASE_URL}expositores/pedro-dacuhna.jpeg`,
+    instagramUrl: 'https://www.instagram.com/upperroomibcrd/'
   },
   {
     id: 'taller-3',
+    num: '03',
     nombre: '¿Y ahora qué hago?',
+    titulo: '¿Y ahora qué hago?',
     facilitador: 'Andy Tejada',
+    expositor: 'Andy Tejada',
+    rol: 'Expositor',
     tema: 'Propósito y llamado',
+    enfoque: 'Propósito y llamado',
     pregunta: '¿Qué está impidiendo que responda al llamado de Dios?',
-    descripcion: 'Un taller práctico sobre cómo discernir y responder al llamado de Dios en tu vida. Abordaremos los miedos, excusas y obstáculos que nos impiden vivir en el propósito divino.',
+    descripcion: 'Un taller práctico sobre cómo discernir y responder con convicción al propósito de Dios en tu vida venciendo miedos y dudas.',
     icon: '🎯',
     colorName: 'Verde',
     colorClass: 'ticket-verde',
-    foto: `${import.meta.env.BASE_URL}expositores/andy-tejada.jpeg`
+    tag: 'TALLER 03 • VERDE',
+    hora: '5:20 PM',
+    sesionTipo: 'Sesión Paralela',
+    foto: `${import.meta.env.BASE_URL}expositores/andy-tejada.jpeg`,
+    instagramUrl: 'https://www.instagram.com/upperroomibcrd/'
   }
 ];
 
+const WORSHIP_ACTIVITY_DATA = {
+  id: 'worship-night',
+  isWorship: true,
+  tipo: 'worship',
+  tag: 'GRAN CIERRE • WORSHIP NIGHT',
+  colorClass: 'badge-worship',
+  hora: '07:00 PM – 08:00 PM',
+  lugar: 'Auditorio IBC',
+  sesionTipo: 'Culminación Oficial',
+  titulo: 'Worship Night',
+  subtitulo: 'Adoración y Acción de Gracias',
+  rol: 'Ministerio de Alabanza',
+  expositor: 'Worship Team IBC',
+  iglesia: 'Iglesia Bautista Cristiana',
+  enfoque: 'Alabanza, Gratitud e Intercesión',
+  pregunta: '¿Estás listo para adorar con nosotros a una sola voz?',
+  descripcion: 'El broche de oro de la Conferencia Despierta: un tiempo íntimo y conmovedor de adoración congregacional con alabanzas cristocéntricas, clamor e intercesión unánime por nuestra generación.',
+  foto: `${import.meta.env.BASE_URL}worship/worship-night.jpeg`,
+  instagramUrl: 'https://www.instagram.com/upperroomibcrd/',
+  spotifyUrl: 'https://open.spotify.com/playlist/6BM0YYuAadGX4rxq8LUcjK?si=e02beb64e4b84927'
+};
+
 const Registration = () => {
+  const [selectedActivity, setSelectedActivity] = useState(null);
   const [lightboxIndex, setLightboxIndex] = useState(null);
 
   // Bloqueo de scroll en fondo cuando el modal de afiche está activo
@@ -463,9 +515,10 @@ ${total ? `Monto a transferir: ${total}` : ''}`;
   };
 
   return (
-    <div className="registration-page section-padding">
-      <div className="container">
-        {!isRegistered ? (
+    <div className="registration-page">
+      <section className="registration-section section-padding">
+        <div className="container">
+          {!isRegistered ? (
           /* =========================================================
              PORTAL DE ACREDITACIÓN OFICIAL - FLUJO MODULAR CONTINUO
              ========================================================= */
@@ -704,9 +757,9 @@ ${total ? `Monto a transferir: ${total}` : ''}`;
                                   onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
-                                    setLightboxIndex(taller.id === 'taller-1' ? 1 : taller.id === 'taller-2' ? 2 : 3);
+                                    setSelectedActivity(taller);
                                   }}
-                                  title={`Ver afiche: ${taller.nombre}`}
+                                  title={`Ver detalles: ${taller.nombre}`}
                                 />
                                 <div className="taller-color-indicator"></div>
                                 <div className="taller-entry-title-wrap">
@@ -727,12 +780,19 @@ ${total ? `Monto a transferir: ${total}` : ''}`;
                         {/* Aclaratoria de Worship Night tras los talleres (con clic para afiche) */}
                         <div 
                           className="registration-worship-notice is-clickable"
-                          onClick={() => setLightboxIndex(4)}
+                          onClick={() => setSelectedActivity(WORSHIP_ACTIVITY_DATA)}
                           role="button"
                           tabIndex={0}
-                          title="Ver afiche oficial de Worship Night"
+                          title="Ver detalles oficiales de Worship Night"
                         >
-                          <img src={`${import.meta.env.BASE_URL}worship/worship-night.jpeg`} alt="Worship Night Flyer" className="reg-worship-thumb" />
+                          <div className="reg-worship-thumb-wrap">
+                            <img 
+                              src={`${import.meta.env.BASE_URL}worship/worship-night.jpeg`} 
+                              alt="Worship Night Flyer" 
+                              className="reg-worship-thumb" 
+                              loading="lazy"
+                            />
+                          </div>
                           <div className="reg-worship-content">
                             <div className="reg-worship-tag">
                               <Sparkles size={12} />
@@ -1312,6 +1372,24 @@ ${total ? `Monto a transferir: ${total}` : ''}`;
           </div>
         )}
       </div>
+    </section>
+
+      {/* Modal Inmersivo de Detalles para Talleres y Noche Worship con navegación carrusel */}
+      <ActivityDetailModal 
+        activity={selectedActivity}
+        activities={[...TALLERES, WORSHIP_ACTIVITY_DATA]}
+        selectedWorkshopId={formData.tallerSeleccionado}
+        isOpen={Boolean(selectedActivity)}
+        onClose={() => setSelectedActivity(null)}
+        onSelectWorkshop={(tallerId) => {
+          setFormData(prev => ({
+            ...prev,
+            participaTalleres: 'si',
+            tallerSeleccionado: tallerId
+          }));
+          // Permanece abierto para que el usuario pueda seguir navegando o explorando
+        }}
+      />
 
       {/* Lightbox para afiches en alta resolución */}
       <Lightbox

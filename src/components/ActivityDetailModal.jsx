@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import { 
@@ -14,58 +14,179 @@ import {
   Sparkles, 
   Music, 
   MapPin, 
-  Maximize2 
+  Maximize2,
+  Check,
+  CheckCircle,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
-import InstagramIcon from './icons/InstagramIcon';
 import SpotifyIcon from './icons/SpotifyIcon';
 import './ActivityDetailModal.css';
 
-const ActivityDetailModal = ({ activity, isOpen, onClose }) => {
-  // Estado para el visor de foto en pantalla completa pura (Segundo Clic)
+const ActivityDetailModal = ({ 
+  activity, 
+  activities = [], 
+  isOpen, 
+  onClose, 
+  onSelectWorkshop,
+  selectedWorkshopId 
+}) => {
+  // Lista unificada de actividades para carrusel / scroll continuo
+  const items = useMemo(() => {
+    if (Array.isArray(activities) && activities.length > 0) {
+      return activities;
+    }
+    return activity ? [activity] : [];
+  }, [activities, activity]);
+
+  // Índice activo y dirección de animación estilo Instagram
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [slideDirection, setSlideDirection] = useState('next'); // 'next' | 'prev'
+  const [animKey, setAnimKey] = useState(0);
+
+  // Visor de foto en pantalla completa pura (Segundo Clic)
   const [isFullPhotoOpen, setIsFullPhotoOpen] = useState(false);
 
-  // Reiniciar estado de foto al cambiar de actividad o cerrar
+  // Sincronizar índice inicial cuando se abre o cambia la actividad
   useEffect(() => {
     if (!isOpen) {
       setIsFullPhotoOpen(false);
+      return;
     }
-  }, [isOpen, activity]);
+    if (activity && items.length > 0) {
+      const idx = items.findIndex(item => item.id === activity.id);
+      if (idx >= 0) {
+        setCurrentIndex(idx);
+      }
+    }
+  }, [isOpen, activity, items]);
 
-  // 1. Bloqueo estricto del scroll del body y manejo de tecla Escape
+  // Navegación: Siguiente
+  const goToNext = () => {
+    if (items.length <= 1) return;
+    setSlideDirection('next');
+    setAnimKey(prev => prev + 1);
+    setCurrentIndex(prev => (prev + 1) % items.length);
+  };
+
+  // Navegación: Anterior
+  const goToPrev = () => {
+    if (items.length <= 1) return;
+    setSlideDirection('prev');
+    setAnimKey(prev => prev + 1);
+    setCurrentIndex(prev => (prev - 1 + items.length) % items.length);
+  };
+
+  // Navegación directa por índice (Story bar)
+  const goToIndex = (idx) => {
+    if (idx === currentIndex || idx < 0 || idx >= items.length) return;
+    setSlideDirection(idx > currentIndex ? 'next' : 'prev');
+    setAnimKey(prev => prev + 1);
+    setCurrentIndex(idx);
+  };
+
+  // 1. Control por Teclado en PC (Flechas ← y →, Escape) y Bloqueo Absoluto de Scroll en Fondo
   useEffect(() => {
     if (!isOpen) return;
 
-    const previousOverflow = document.body.style.overflow;
+    // Guardar posición exacta actual del scroll y estilos previos
+    const scrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop;
+    const originalBodyOverflow = document.body.style.overflow;
+    const originalBodyPosition = document.body.style.position;
+    const originalBodyTop = document.body.style.top;
+    const originalBodyWidth = document.body.style.width;
+    const originalHtmlOverflow = document.documentElement.style.overflow;
+
+    // Bloqueo estricto: evita que el fondo se desplace con scroll de mouse o dedos
+    document.documentElement.style.overflow = 'hidden';
     document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
 
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
         e.preventDefault();
-        // Si el visor de foto pura está abierto, volver primero al modal
         if (isFullPhotoOpen) {
           setIsFullPhotoOpen(false);
         } else {
           onClose();
         }
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        goToNext();
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        goToPrev();
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
 
-    return () => {
-      document.body.style.overflow = previousOverflow || '';
-      window.removeEventListener('keydown', handleKeyDown);
+    // Cancelar cualquier touchmove que ocurra en el fondo o fuera del contenedor deslizable
+    const handleTouchMove = (e) => {
+      const target = e.target;
+      const scrollable = target.closest('.modal-info-col, .modal-info-scrollable, .modal-content-box');
+      if (!scrollable) {
+        if (e.cancelable) {
+          e.preventDefault();
+        }
+      }
     };
-  }, [isOpen, isFullPhotoOpen, onClose]);
 
-  if (!isOpen || !activity) return null;
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+
+    return () => {
+      document.documentElement.style.overflow = originalHtmlOverflow;
+      document.body.style.overflow = originalBodyOverflow;
+      document.body.style.position = originalBodyPosition;
+      document.body.style.top = originalBodyTop;
+      document.body.style.width = originalBodyWidth;
+      window.scrollTo(0, scrollY);
+      window.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('touchmove', handleTouchMove);
+    };
+  }, [isOpen, isFullPhotoOpen, onClose, items.length, currentIndex]);
+
+  // 2. Soporte Táctil Móvil (Swipe Horizontal Dinámico estilo Instagram)
+  const touchStartX = useRef(null);
+  const touchStartY = useRef(null);
+
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (e) => {
+    if (touchStartX.current === null || touchStartY.current === null) return;
+    const touchEndX = e.changedTouches[0].clientX;
+    const touchEndY = e.changedTouches[0].clientY;
+
+    const diffX = touchEndX - touchStartX.current;
+    const diffY = touchEndY - touchStartY.current;
+
+    // Detectar swipe horizontal significativo (mínimo 45px y preponderancia horizontal)
+    if (Math.abs(diffX) > 45 && Math.abs(diffX) > Math.abs(diffY)) {
+      if (diffX < 0) {
+        goToNext(); // Deslizar hacia la izquierda = Siguiente
+      } else {
+        goToPrev(); // Deslizar hacia la derecha = Anterior
+      }
+    }
+
+    touchStartX.current = null;
+    touchStartY.current = null;
+  };
+
+  if (!isOpen) return null;
+  const currentActivity = items[currentIndex] || activity;
+  if (!currentActivity) return null;
   if (typeof document === 'undefined') return null;
 
-  const isWorship = Boolean(activity.isWorship || activity.tipo === 'worship');
-  const hasInstagram = Boolean(activity.instagramUrl);
-  const hasSpotify = Boolean(activity.spotifyUrl);
+  const isWorship = Boolean(currentActivity.isWorship || currentActivity.tipo === 'worship');
+  const hasSpotify = Boolean(currentActivity.spotifyUrl);
+  const isCurrentSelected = Boolean(selectedWorkshopId && selectedWorkshopId === currentActivity.id);
 
-  // 1. Renderizado directo en document.body mediante createPortal
   return createPortal(
     <div 
       className="fullscreen-overlay" 
@@ -74,9 +195,39 @@ const ActivityDetailModal = ({ activity, isOpen, onClose }) => {
       aria-modal="true"
       aria-labelledby="activity-modal-title"
     >
+      {/* Flechas de navegación para PC y tablet */}
+      {items.length > 1 && !isFullPhotoOpen && (
+        <>
+          <button 
+            type="button" 
+            className="modal-nav-arrow arrow-left" 
+            onClick={(e) => {
+              e.stopPropagation();
+              goToPrev();
+            }}
+            aria-label="Ver actividad anterior (←)"
+            title="Anterior (Flecha Izquierda ←)"
+          >
+            <ChevronLeft size={28} />
+          </button>
+
+          <button 
+            type="button" 
+            className="modal-nav-arrow arrow-right" 
+            onClick={(e) => {
+              e.stopPropagation();
+              goToNext();
+            }}
+            aria-label="Ver siguiente actividad (→)"
+            title="Siguiente (Flecha Derecha →)"
+          >
+            <ChevronRight size={28} />
+          </button>
+        </>
+      )}
+
       {/* ===================================================================
-         2. VISOR DE FOTO EN PANTALLA COMPLETA PURA (Segundo Clic)
-         Se activa al hacer clic en la foto dentro del modal para verla sin textos
+         VISOR DE FOTO EN PANTALLA COMPLETA PURA
          =================================================================== */}
       {isFullPhotoOpen ? (
         <div 
@@ -85,9 +236,10 @@ const ActivityDetailModal = ({ activity, isOpen, onClose }) => {
             e.stopPropagation();
             setIsFullPhotoOpen(false);
           }}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
           title="Clic para volver al modal de información"
         >
-          {/* Botones de control del visor de foto */}
           <div className="pure-photo-top-bar" onClick={(e) => e.stopPropagation()}>
             <button 
               type="button" 
@@ -98,40 +250,67 @@ const ActivityDetailModal = ({ activity, isOpen, onClose }) => {
               <span>Volver a la información</span>
             </button>
 
-            <button 
-              type="button" 
-              className="modal-close-btn"
-              onClick={onClose}
-              aria-label="Cerrar modal (Esc)"
-              title="Cerrar (Esc)"
-            >
-              <X size={20} />
-            </button>
+            <div className="pure-photo-actions-right">
+              {items.length > 1 && (
+                <span className="pure-photo-counter">
+                  {currentIndex + 1} / {items.length}
+                </span>
+              )}
+
+              <button 
+                type="button" 
+                className="modal-close-btn"
+                onClick={onClose}
+                aria-label="Cerrar modal (Esc)"
+                title="Cerrar (Esc)"
+              >
+                <X size={20} />
+              </button>
+            </div>
           </div>
 
           <div className="pure-photo-wrapper">
             <img 
-              src={activity.foto} 
-              alt={activity.expositor || activity.titulo} 
+              src={currentActivity.foto} 
+              alt={currentActivity.expositor || currentActivity.titulo} 
               className="pure-photo-img"
               onClick={(e) => e.stopPropagation()}
             />
           </div>
 
           <div className="pure-photo-bottom-caption" onClick={(e) => e.stopPropagation()}>
-            <span className="pure-photo-name">{activity.titulo || activity.nombre}</span>
-            <span className="pure-photo-sub">Toca fuera de la imagen o presiona Esc para volver</span>
+            <span className="pure-photo-name">{currentActivity.titulo || currentActivity.nombre}</span>
+            <span className="pure-photo-sub">Usa las flechas ← → o desliza para navegar</span>
           </div>
         </div>
       ) : (
         /* ===================================================================
-           MODAL PRINCIPAL INMERSIVO (Split-Screen en PC • Columna en Móvil)
+           MODAL PRINCIPAL INMERSIVO CON SLIDE DINÁMICO ESTILO INSTAGRAM
            =================================================================== */
         <div 
-          className={`modal-content-box ${isWorship ? 'theme-worship' : 'theme-expositor'}`}
+          key={animKey}
+          className={`modal-content-box ${isWorship ? 'theme-worship' : 'theme-expositor'} slide-${slideDirection}`}
           onClick={(e) => e.stopPropagation()}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
         >
-          {/* 'X' anclada en la esquina superior derecha */}
+          {/* Barras de progreso estilo Instagram Stories en la parte superior */}
+          {items.length > 1 && (
+            <div className="modal-story-bars" onClick={(e) => e.stopPropagation()}>
+              {items.map((it, idx) => (
+                <div 
+                  key={it.id || idx} 
+                  className={`story-bar-segment ${idx === currentIndex ? 'active' : ''} ${idx < currentIndex ? 'passed' : ''}`}
+                  onClick={() => goToIndex(idx)}
+                  role="button"
+                  tabIndex={0}
+                  title={`Ir a: ${it.titulo || it.nombre}`}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Botón de cerrar fijo en la esquina superior derecha */}
           <button 
             type="button" 
             className="modal-close-btn" 
@@ -143,67 +322,61 @@ const ActivityDetailModal = ({ activity, isOpen, onClose }) => {
           </button>
 
           {/* =================================================================
-             2. IMAGEN 100% LIMPIA (Clic para pantalla completa pura)
-             Sin cintas, sin badges ni textos superpuestos en el rostro
+             COLUMNA IZQUIERDA: FOTO LIMPIA (Abre pantalla completa)
              ================================================================= */}
           <div 
             className="modal-image-col is-clickable"
             onClick={() => setIsFullPhotoOpen(true)}
             role="button"
             tabIndex={0}
-            title="Toca para ver la foto en pantalla completa pura"
+            title="Toca para ampliar la foto"
           >
             <img 
-              src={activity.foto} 
-              alt={activity.expositor || activity.titulo} 
+              src={currentActivity.foto} 
+              alt={currentActivity.expositor || currentActivity.titulo} 
               className="modal-img"
             />
-            {/* Indicador sutil de ampliación que no obstruye la foto */}
-            <div className="modal-zoom-hint">
-              <Maximize2 size={13} />
-              <span>Toca para ampliar foto</span>
-            </div>
           </div>
 
           {/* =================================================================
-             3. CONTENEDOR DE TEXTOS Y ACCIONES (Derecha en PC • Abajo en Móvil)
+             COLUMNA DERECHA: INFORMACIÓN, DESCRIPCIONES Y BOTONES
              ================================================================= */}
           <div className="modal-info-col">
             <div className="modal-info-scrollable">
               
-              {/* 3. REUBICACIÓN INTELIGENTE DE CINTA Y BADGES (100% Fuera de la foto) */}
+              {/* Badges y Cintas al inicio */}
               <div className="modal-badges-header-row">
-                {activity.tag && (
-                  <span className={`modal-ribbon-badge ${activity.colorClass || ''}`}>
+                {currentActivity.tag && (
+                  <span className={`modal-ribbon-badge ${currentActivity.colorClass || ''}`}>
                     {isWorship ? <Sparkles size={13} /> : <BookOpen size={13} />}
-                    <span>{activity.tag}</span>
+                    <span>{currentActivity.tag}</span>
                   </span>
                 )}
 
                 <span className="modal-time-chip">
                   <Clock size={13} />
-                  <span>{activity.hora || '5:20 PM'}</span>
+                  <span>{currentActivity.hora || '5:20 PM'}</span>
                 </span>
 
-                {activity.lugar && (
+                {currentActivity.lugar && (
                   <span className="modal-location-chip">
                     <MapPin size={12} />
-                    <span>{activity.lugar}</span>
+                    <span>{currentActivity.lugar}</span>
                   </span>
                 )}
 
-                {activity.sesionTipo && (
-                  <span className="modal-session-chip">{activity.sesionTipo}</span>
+                {currentActivity.sesionTipo && (
+                  <span className="modal-session-chip">{currentActivity.sesionTipo}</span>
                 )}
               </div>
 
               {/* Título de la Actividad / Taller */}
               <div className="modal-titles-block">
                 <h2 id="activity-modal-title" className="modal-title">
-                  {activity.titulo || activity.nombre}
+                  {currentActivity.titulo || currentActivity.nombre}
                 </h2>
-                {activity.subtitulo && (
-                  <span className="modal-subtitle">{activity.subtitulo}</span>
+                {currentActivity.subtitulo && (
+                  <span className="modal-subtitle">{currentActivity.subtitulo}</span>
                 )}
               </div>
 
@@ -214,77 +387,101 @@ const ActivityDetailModal = ({ activity, isOpen, onClose }) => {
                 </div>
                 <div className="modal-speaker-details">
                   <span className="modal-speaker-role">
-                    {activity.rol || (isWorship ? 'Ministerio' : 'Expositor')}:
+                    {currentActivity.rol || (isWorship ? 'Ministerio' : 'Expositor')}:
                   </span>
                   <strong className="modal-speaker-name">
-                    {activity.expositor || (isWorship ? 'Worship Team IBC' : '')}
+                    {currentActivity.expositor || (isWorship ? 'Worship Team IBC' : '')}
                   </strong>
-                  {activity.iglesia && (
-                    <span className="modal-speaker-church">{activity.iglesia}</span>
+                  {currentActivity.iglesia && (
+                    <span className="modal-speaker-church">{currentActivity.iglesia}</span>
                   )}
                 </div>
               </div>
 
               {/* Enfoque Temático */}
-              {activity.enfoque && (
+              {currentActivity.enfoque && (
                 <div className="modal-focus-box">
                   <Flame size={14} className="focus-icon" />
-                  <span><strong>Enfoque:</strong> {activity.enfoque}</span>
+                  <span><strong>Enfoque:</strong> {currentActivity.enfoque}</span>
                 </div>
               )}
 
               {/* Pregunta Reflexiva */}
-              {activity.pregunta && (
+              {currentActivity.pregunta && (
                 <blockquote className="modal-quote">
-                  "{activity.pregunta}"
+                  "{currentActivity.pregunta}"
                 </blockquote>
               )}
 
-              {/* Descripción Detallada */}
+              {/* Descripción */}
               <div className="modal-desc-box">
                 <h4 className="modal-desc-heading">
                   {isWorship ? 'Sobre esta noche de adoración:' : 'Acerca de este taller:'}
                 </h4>
                 <p className="modal-desc-text">
-                  {activity.descripcion}
+                  {currentActivity.descripcion}
                 </p>
               </div>
 
-              {/* 4. ENLACE A INSTAGRAM DESACOPLADO: Botón Outline Sutil */}
-              {hasInstagram && (
-                <div className="modal-external-links-row">
-                  <a 
-                    href={activity.instagramUrl} 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="btn-outline-instagram"
-                    title="Abrir publicación oficial en Instagram"
-                  >
-                    <InstagramIcon size={16} />
-                    <span>Ver en Instagram</span>
-                    <ArrowUpRight size={14} />
-                  </a>
-
-                  {hasSpotify && (
-                    <a 
-                      href={activity.spotifyUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn-outline-spotify"
-                      title="Escuchar canciones en Spotify"
-                    >
-                      <SpotifyIcon size={16} />
-                      <span>Playlist Oficial</span>
-                      <ArrowUpRight size={14} />
-                    </a>
-                  )}
-                </div>
-              )}
-
             </div>
 
-            {/* 4. BOTONES FLOTANTES Y CTA DE REGISTRO FIJADOS AL FINAL */}
-            <div className="modal-footer">
+            {/* ZONA DE ACCIONES Y BOTONES */}
+            <div className="modal-actions-box">
+              {hasSpotify && (
+                <a 
+                  href={currentActivity.spotifyUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="btn-outline-spotify"
+                  title="Escuchar canciones en Spotify"
+                >
+                  <SpotifyIcon size={16} />
+                  <span>Playlist Oficial</span>
+                  <ArrowUpRight size={14} />
+                </a>
+              )}
+
+              {onSelectWorkshop ? (
+                !isWorship ? (
+                  <button 
+                    type="button" 
+                    className={`btn-modal-cta-primary ${isCurrentSelected ? 'is-selected' : ''}`}
+                    onClick={() => {
+                      onSelectWorkshop(currentActivity.id);
+                    }}
+                    title={isCurrentSelected ? 'Taller ya seleccionado' : 'Elegir este taller para tu entrada'}
+                  >
+                    {isCurrentSelected ? (
+                      <>
+                        <CheckCircle size={16} />
+                        <span>✓ Taller Seleccionado</span>
+                      </>
+                    ) : (
+                      <>
+                        <Check size={16} />
+                        <span>Elegir este Taller</span>
+                        <ArrowRight size={15} />
+                      </>
+                    )}
+                  </button>
+                ) : (
+                  <div className="modal-included-badge">
+                    <Sparkles size={14} />
+                    <span>100% Incluido con tu Entrada</span>
+                  </div>
+                )
+              ) : (
+                <Link 
+                  to="/registro" 
+                  className="btn-modal-cta-primary"
+                  onClick={onClose}
+                >
+                  <Ticket size={16} />
+                  <span>{isWorship ? 'Registrarme a la Conferencia' : 'Elegir Taller en Registro'}</span>
+                  <ArrowRight size={15} />
+                </Link>
+              )}
+
               <button 
                 type="button" 
                 className="btn-modal-dismiss" 
@@ -292,20 +489,18 @@ const ActivityDetailModal = ({ activity, isOpen, onClose }) => {
               >
                 Cerrar
               </button>
-
-              <Link 
-                to="/registro" 
-                className="btn-modal-cta-primary"
-                onClick={onClose}
-              >
-                <Ticket size={16} />
-                <span>{isWorship ? 'Registrarme a la Conferencia' : 'Elegir Taller en Registro'}</span>
-                <ArrowRight size={15} />
-              </Link>
             </div>
 
-          </div>
+            {/* Indicador de ayuda de navegación / teclado en PC */}
+            {items.length > 1 && (
+              <div className="modal-keyboard-hints">
+                <span className="kbd-chip">← Anterior</span>
+                <span className="kbd-counter">{currentIndex + 1} de {items.length}</span>
+                <span className="kbd-chip">Siguiente →</span>
+              </div>
+            )}
 
+          </div>
         </div>
       )}
     </div>,
