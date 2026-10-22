@@ -118,7 +118,7 @@ const Merch = () => {
         modelo: merchData.tshirt.modelo || MERCH_CATALOG.tshirt?.defaultModelo,
         color: merchData.tshirt.color || MERCH_CATALOG.tshirt?.defaultColor,
         talla: merchData.tshirt.talla || MERCH_CATALOG.tshirt?.defaultTalla,
-        precio: MERCH_CATALOG.tshirt?.precio || 1000,
+        precio: MERCH_CATALOG.tshirt?.precio || 1400,
         cantidad: Math.max(1, Number(merchData.tshirt.cantidad) || 1)
       });
     }
@@ -130,7 +130,7 @@ const Merch = () => {
         modelo: merchData.hoodie.modelo || MERCH_CATALOG.hoodie?.defaultModelo,
         color: merchData.hoodie.color || MERCH_CATALOG.hoodie?.defaultColor,
         talla: merchData.hoodie.talla || MERCH_CATALOG.hoodie?.defaultTalla,
-        precio: MERCH_CATALOG.hoodie?.precio || 1400,
+        precio: MERCH_CATALOG.hoodie?.precio || 1800,
         cantidad: Math.max(1, Number(merchData.hoodie.cantidad) || 1)
       });
     }

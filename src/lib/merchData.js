@@ -3,7 +3,7 @@ export const MERCH_CATALOG = {
   tshirt: {
     id: 'tshirt',
     nombre: 'T-Shirt Despierta 2026',
-    precio: 1000,
+    precio: 1400,
     badge: '100% ALGODÓN OVERSIZE',
     descripcion: 'Corte oversize contemporáneo de alta caída, tejido 100% algodón peinado y serigrafía exclusiva Upper Room.',
     tallas: ['S', 'M', 'L', 'XL', '2XL'],
@@ -101,7 +101,7 @@ export const MERCH_CATALOG = {
   hoodie: {
     id: 'hoodie',
     nombre: 'Hoodie Despierta 2026',
-    precio: 1400,
+    precio: 1800,
     badge: 'EDICIÓN OFICIAL',
     descripcion: 'Sudadera con capucha ajustable, forro térmico suave, bolsillo canguro y acabados elásticos en puños y pretina.',
     tallas: ['S', 'M', 'L', 'XL', '2XL'],

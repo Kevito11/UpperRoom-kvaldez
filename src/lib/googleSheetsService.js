@@ -4,6 +4,7 @@ import {
   mergeRemoteRegistrations, 
   exportRegistrationsToCSV 
 } from './ticketStorage';
+import { MERCH_CATALOG } from './merchData';
 
 const APPS_SCRIPT_STORAGE_KEY = 'upper_room_apps_script_url';
 
@@ -34,11 +35,13 @@ export const calculateMerchTotal = (merch) => {
   let total = 0;
   if (merch.tshirt?.quiere) {
     const cant = Number(merch.tshirt.cantidad) || 1;
-    total += (Number(merch.tshirt.precio) || 1000) * cant;
+    const tshirtPrice = Number(merch.tshirt.precio) || MERCH_CATALOG.tshirt?.precio || 1400;
+    total += tshirtPrice * cant;
   }
   if (merch.hoodie?.quiere) {
     const cant = Number(merch.hoodie.cantidad) || 1;
-    total += (Number(merch.hoodie.precio) || 1400) * cant;
+    const hoodiePrice = Number(merch.hoodie.precio) || MERCH_CATALOG.hoodie?.precio || 1800;
+    total += hoodiePrice * cant;
   }
   return total;
 };
@@ -59,13 +62,15 @@ export const formatMerchSummary = (merch) => {
   const items = [];
   if (merch.tshirt?.quiere) {
     const cant = Number(merch.tshirt.cantidad) || 1;
-    const subtotal = 1000 * cant;
+    const tshirtPrice = Number(merch.tshirt.precio) || MERCH_CATALOG.tshirt?.precio || 1400;
+    const subtotal = tshirtPrice * cant;
     const mod = merch.tshirt.modelo ? `"${merch.tshirt.modelo}" ` : '';
     items.push(`${cant}x T-Shirt Oversize ${mod}(${merch.tshirt.talla} - ${merch.tshirt.color}) [RD$ ${subtotal.toLocaleString()}]`);
   }
   if (merch.hoodie?.quiere) {
     const cant = Number(merch.hoodie.cantidad) || 1;
-    const subtotal = 1400 * cant;
+    const hoodiePrice = Number(merch.hoodie.precio) || MERCH_CATALOG.hoodie?.precio || 1800;
+    const subtotal = hoodiePrice * cant;
     const mod = merch.hoodie.modelo ? `"${merch.hoodie.modelo}" ` : '';
     items.push(`${cant}x Hoodie ${mod}(${merch.hoodie.talla} - ${merch.hoodie.color}) [RD$ ${subtotal.toLocaleString()}]`);
   }
